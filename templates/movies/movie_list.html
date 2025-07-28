@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Moodie - Movies{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Movies</h1>
+    
+    <!-- Search Form -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-xl font-semibold mb-4">Search Movies</h2>
+        <form method="get" action="{% url 'movies:movie_list' %}" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="id_query" class="form-label">Search</label>
+                    {{ search_form.query }}
+                </div>
+                <div>
+                    <label for="id_genre" class="form-label">Genre</label>
+                    {{ search_form.genre }}
+                </div>
+                <div>
+                    <label for="id_year_from" class="form-label">Year From</label>
+                    {{ search_form.year_from }}
+                </div>
+                <div>
+                    <label for="id_year_to" class="form-label">Year To</label>
+                    {{ search_form.year_to }}
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Movies Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for movie in movies %}
+            <div class="movie-card">
+                <a href="{% url 'movies:movie_detail' movie.id %}">
+                    {% if movie.poster %}
+                        <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full h-80 object-cover">
+                    {% else %}
+                        <div class="w-full h-80 bg-gray-300 flex items-center justify-center">
+                            <span class="text-gray-500">No Image</span>
+                        </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg truncate">{{ movie.title }}</h3>
+                        <p class="text-gray-600">{{ movie.release_year }}</p>
+                        <div class="flex items-center mt-2">
+                            <span class="text-yellow-500">★</span>
+                            <span class="ml-1">{{ movie.average_rating|floatformat:1 }}/10</span>
+                        </div>
+                        <div class="mt-2 flex flex-wrap gap-1">
+                            {% for genre in movie.genres.all|slice:":3" %}
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ genre.name }}</span>
+                            {% endfor %}
+                            {% if movie.genres.count > 3 %}
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">+{{ movie.genres.count|add:"-3" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <div class="col-span-4 text-center py-12">
+                <p class="text-gray-500 text-lg">No movies found matching your criteria.</p>
+                <a href="{% url 'movies:movie_list' %}" class="text-blue-600 hover:underline mt-2 inline-block">Clear filters</a>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="mt-8 flex justify-center">
+        <div class="inline-flex rounded-md shadow-sm">
+            {% if page_obj.has_previous %}
+                <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}page=1" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">First</a>
+                <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}page={{ page_obj.previous_page_number }}" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
+            {% endif %}
+            
+            <span class="px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-700">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}page={{ page_obj.next_page_number }}" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+                <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">Last</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

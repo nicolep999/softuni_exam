@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Moodie - Home{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Hero Section -->
+    <section class="bg-blue-900 text-white py-16 rounded-lg shadow-md">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl font-bold mb-4">Welcome to Moodie</h1>
+            <p class="text-xl mb-8">Your ultimate movie database and review platform</p>
+            <div class="flex justify-center space-x-4">
+                <a href="{% url 'movies:movie_list' %}" class="btn-primary">Browse Movies</a>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'accounts:register' %}" class="btn-secondary">Join Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Movies Section -->
+    <section>
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Latest Movies</h2>
+                <a href="{% url 'movies:movie_list' %}" class="text-blue-600 hover:underline">View All</a>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                {% for movie in latest_movies %}
+                    <div class="movie-card">
+                        <a href="{% url 'movies:movie_detail' movie.id %}">
+                            {% if movie.poster %}
+                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full h-64 object-cover">
+                            {% else %}
+                                <div class="w-full h-64 bg-gray-300 flex items-center justify-center">
+                                    <span class="text-gray-500">No Image</span>
+                                </div>
+                            {% endif %}
+                            <div class="p-4">
+                                <h3 class="font-bold truncate">{{ movie.title }}</h3>
+                                <p class="text-gray-600">{{ movie.release_year }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <p class="col-span-6 text-center text-gray-500">No movies available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Rated Movies Section -->
+    <section>
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Top Rated Movies</h2>
+                <a href="{% url 'movies:movie_list' %}" class="text-blue-600 hover:underline">View All</a>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                {% for movie in top_rated_movies %}
+                    <div class="movie-card">
+                        <a href="{% url 'movies:movie_detail' movie.id %}">
+                            {% if movie.poster %}
+                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full h-64 object-cover">
+                            {% else %}
+                                <div class="w-full h-64 bg-gray-300 flex items-center justify-center">
+                                    <span class="text-gray-500">No Image</span>
+                                </div>
+                            {% endif %}
+                            <div class="p-4">
+                                <h3 class="font-bold truncate">{{ movie.title }}</h3>
+                                <p class="text-gray-600">{{ movie.release_year }}</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-yellow-500">★</span>
+                                    <span class="ml-1">{{ movie.average_rating|floatformat:1 }}/10</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <p class="col-span-6 text-center text-gray-500">No rated movies available yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
