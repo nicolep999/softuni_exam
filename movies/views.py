@@ -59,6 +59,32 @@ class MovieListView(ListView):
             if year_to:
                 queryset = queryset.filter(release_year__lte=year_to)
 
+        # Additional filters from GET parameters
+        rating_min = self.request.GET.get('rating_min')
+        has_rating = self.request.GET.get('has_rating')
+        has_poster = self.request.GET.get('has_poster')
+        sort_by = self.request.GET.get('sort_by', '-release_year')  # Default sort
+
+        # Rating minimum filter
+        if rating_min:
+            queryset = queryset.filter(imdb_rating__gte=float(rating_min))
+
+        # Has rating filter
+        if has_rating == 'yes':
+            queryset = queryset.exclude(imdb_rating__isnull=True)
+        elif has_rating == 'no':
+            queryset = queryset.filter(imdb_rating__isnull=True)
+
+        # Has poster filter
+        if has_poster == 'yes':
+            queryset = queryset.exclude(poster='')
+        elif has_poster == 'no':
+            queryset = queryset.filter(poster='')
+
+        # Sorting
+        if sort_by:
+            queryset = queryset.order_by(sort_by)
+
         return queryset
 
     def get_context_data(self, **kwargs):
