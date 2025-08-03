@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DetailView, UpdateView, TemplateView
+from django.views.generic import CreateView, DetailView, UpdateView, TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, logout
 from django.contrib import messages
@@ -101,3 +101,16 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         response = super().form_valid(form)
         messages.success(self.request, "Your password has been changed successfully.")
         return response
+
+class WatchlistView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/watchlist.html'
+    context_object_name = 'watchlist_items'
+    paginate_by = 12
+
+    def get_queryset(self):
+        return Watchlist.objects.filter(user=self.request.user).select_related('movie')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_movies'] = self.get_queryset().count()
+        return context
