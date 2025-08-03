@@ -6,8 +6,9 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.views import View
+from django.contrib.auth.views import PasswordChangeView
 
-from .forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm
+from .forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm, CustomPasswordChangeForm
 from .models import Profile
 from movies.models import Watchlist
 
@@ -90,3 +91,13 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
                 profile_form=profile_form
             )
         )
+
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'accounts/password_change.html'
+    success_url = reverse_lazy('accounts:profile')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Your password has been changed successfully.")
+        return response

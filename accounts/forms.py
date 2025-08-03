@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from .models import Profile
 
@@ -47,6 +47,35 @@ class CustomAuthenticationForm(AuthenticationForm):
             'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
             'placeholder': 'Enter your password'
         })
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['old_password'].widget.attrs.update({
+            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm pr-10',
+            'placeholder': 'Enter your current password'
+        })
+        self.fields['new_password1'].widget.attrs.update({
+            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm pr-10',
+            'placeholder': 'Enter your new password'
+        })
+        self.fields['new_password2'].widget.attrs.update({
+            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm pr-10',
+            'placeholder': 'Confirm your new password'
+        })
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        old_password = cleaned_data.get('old_password')
+        new_password1 = cleaned_data.get('new_password1')
+        
+        if old_password and new_password1:
+            if old_password == new_password1:
+                raise forms.ValidationError(
+                    "Your new password must be different from your current password."
+                )
+        
+        return cleaned_data
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
