@@ -7,7 +7,7 @@ from movies.models import Movie, Genre, Director, Actor
 import time
 
 class Command(BaseCommand):
-    help = 'Import real movies from TMDB API with posters, genres, and cast information'
+    help = 'Import a mix of top-rated movies (90%) and newer movies (10%) for latest releases'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -16,17 +16,16 @@ class Command(BaseCommand):
             help='TMDB API key (or set TMDB_API_KEY environment variable)',
         )
         parser.add_argument(
-            '--pages',
+            '--top-rated-pages',
             type=int,
-            default=10,
-            help='Number of pages to import from popular movies (default: 10)',
+            default=9,
+            help='Number of pages from top-rated movies (default: 9)',
         )
         parser.add_argument(
-            '--category',
-            type=str,
-            default='popular',
-            choices=['popular', 'top_rated', 'now_playing', 'upcoming'],
-            help='Movie category to import (default: popular)',
+            '--new-movies-pages',
+            type=int,
+            default=1,
+            help='Number of pages from now_playing/upcoming movies (default: 1)',
         )
 
     def handle(self, *args, **options):
@@ -36,24 +35,77 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('TMDB API key is required. Set TMDB_API_KEY environment variable or use --api-key'))
             return
 
-        pages = options['pages']
-        category = options['category']
+        top_rated_pages = options['top_rated_pages']
+        new_movies_pages = options['new_movies_pages']
         
-        self.stdout.write(f'Starting import of {pages} pages from TMDB {category} movies...')
+        self.stdout.write(f'Starting import of {top_rated_pages} pages from top-rated movies and {new_movies_pages} pages from newer movies...')
         
         total_movies_imported = 0
         
-        for page in range(1, pages + 1):
-            self.stdout.write(f'Importing page {page}/{pages}...')
+        # Import top-rated movies (90% of the collection)
+        self.stdout.write(self.style.SUCCESS('=== IMPORTING TOP-RATED MOVIES ==='))
+        for page in range(1, top_rated_pages + 1):
+            self.stdout.write(f'Importing top-rated page {page}/{top_rated_pages}...')
             
-            # Get movies from TMDB
-            movies_data = self.get_movies_from_tmdb(api_key, category, page)
+            movies_data = self.get_movies_from_tmdb(api_key, 'top_rated', page)
             
             if not movies_data:
-                self.stdout.write(self.style.WARNING(f'No movies found on page {page}'))
+                self.stdout.write(self.style.WARNING(f'No movies found on top-rated page {page}'))
                 continue
             
-            # Import each movie
+            for movie_data in movies_data:
+                try:
+                    movie = self.import_movie(api_key, movie_data)
+                    if movie:
+                        total_movies_imported += 1
+                        self.stdout.write(f'✅ Imported: {movie.title} ({movie.release_year})')
+                except Exception as e:
+                    self.stdout.write(
+                        self.style.ERROR(f'❌ Error importing {movie_data.get("title", "Unknown")}: {e}')
+                    )
+                
+                time.sleep(0.1)  # Rate limiting
+            
+            time.sleep(0.5)  # Rate limiting between pages
+        
+        # Import newer movies (10% of the collection) - mix of now_playing and upcoming
+        self.stdout.write(self.style.SUCCESS('=== IMPORTING NEWER MOVIES FOR LATEST RELEASES ==='))
+        
+        # Import some now_playing movies
+        for page in range(1, new_movies_pages + 1):
+            self.stdout.write(f'Importing now_playing page {page}/{new_movies_pages}...')
+            
+            movies_data = self.get_movies_from_tmdb(api_key, 'now_playing', page)
+            
+            if not movies_data:
+                self.stdout.write(self.style.WARNING(f'No movies found on now_playing page {page}'))
+                continue
+            
+            for movie_data in movies_data:
+                try:
+                    movie = self.import_movie(api_key, movie_data)
+                    if movie:
+                        total_movies_imported += 1
+                        self.stdout.write(f'✅ Imported: {movie.title} ({movie.release_year})')
+                except Exception as e:
+                    self.stdout.write(
+                        self.style.ERROR(f'❌ Error importing {movie_data.get("title", "Unknown")}: {e}')
+                    )
+                
+                time.sleep(0.1)  # Rate limiting
+            
+            time.sleep(0.5)  # Rate limiting between pages
+        
+        # Import some upcoming movies
+        for page in range(1, new_movies_pages + 1):
+            self.stdout.write(f'Importing upcoming page {page}/{new_movies_pages}...')
+            
+            movies_data = self.get_movies_from_tmdb(api_key, 'upcoming', page)
+            
+            if not movies_data:
+                self.stdout.write(self.style.WARNING(f'No movies found on upcoming page {page}'))
+                continue
+            
             for movie_data in movies_data:
                 try:
                     movie = self.import_movie(api_key, movie_data)
