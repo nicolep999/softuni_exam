@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models import Q, Avg
+from django.db.models import Q, Avg, F
 from django.contrib import messages
 
 from .models import Movie, Genre, Director, Actor, Watchlist
@@ -30,7 +30,7 @@ class MovieListView(ListView):
     model = Movie
     template_name = 'movies/movie_list.html'
     context_object_name = 'movies'
-    paginate_by = 12
+    paginate_by = 15
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -83,7 +83,14 @@ class MovieListView(ListView):
 
         # Sorting
         if sort_by:
-            queryset = queryset.order_by(sort_by)
+            if sort_by == '-imdb_rating':
+                # For highest rated, put NULL ratings last
+                queryset = queryset.order_by(F('imdb_rating').desc(nulls_last=True))
+            elif sort_by == 'imdb_rating':
+                # For lowest rated, put NULL ratings last
+                queryset = queryset.order_by(F('imdb_rating').asc(nulls_last=True))
+            else:
+                queryset = queryset.order_by(sort_by)
 
         return queryset
 

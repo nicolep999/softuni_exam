@@ -8,7 +8,12 @@
 }
 
 .movie-card-modern {
-    @apply bg-white rounded-xl overflow-hidden transition-all duration-300 hover:transform hover:scale-105;
+    @apply bg-white rounded-2xl overflow-hidden transition-all duration-500 hover:transform hover:scale-105 hover:shadow-2xl;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.movie-card-modern:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .btn-primary {

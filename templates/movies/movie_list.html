@@ -4,25 +4,35 @@
 
 {% block content %}
 <!-- Hero Header -->
-<div class="bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white">
-    <div class="container mx-auto px-4 py-12">
+<div class="bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 text-white relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 py-16 relative">
         <div class="text-center">
-            <h1 class="text-5xl font-bold mb-4">Discover Amazing Movies</h1>
-            <p class="text-xl text-indigo-100 mb-8">Explore our vast collection of films from classics to the latest releases</p>
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                </svg>
+            </div>
+            <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-indigo-100 bg-clip-text text-transparent">Discover Amazing Movies</h1>
+            <p class="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto">Explore our vast collection of films from classics to the latest releases</p>
             
             <!-- Search Stats -->
-            <div class="flex justify-center space-x-8 text-indigo-100">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">{{ page_obj.paginator.count|default:"0" }}</div>
-                    <div class="text-sm">Movies Available</div>
+            <div class="flex justify-center space-x-12 text-indigo-100">
+                <div class="text-center group">
+                    <div class="text-4xl font-bold text-white group-hover:text-indigo-200 transition-colors">{{ page_obj.paginator.count|default:"0" }}</div>
+                    <div class="text-sm font-medium">Movies Available</div>
                 </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">{{ page_obj.paginator.num_pages|default:"1" }}</div>
-                    <div class="text-sm">Pages</div>
+                <div class="text-center group">
+                    <div class="text-4xl font-bold text-white group-hover:text-indigo-200 transition-colors">{{ page_obj.paginator.num_pages|default:"1" }}</div>
+                    <div class="text-sm font-medium">Pages</div>
                 </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-white">{{ movies|length }}</div>
-                    <div class="text-sm">Showing Now</div>
+                <div class="text-center group">
+                    <div class="text-4xl font-bold text-white group-hover:text-indigo-200 transition-colors">{{ movies|length }}</div>
+                    <div class="text-sm font-medium">Showing Now</div>
                 </div>
             </div>
         </div>
@@ -31,14 +41,17 @@
 
 <div class="container mx-auto px-4 py-8">
     <!-- Modern Search Form -->
-    <div class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-100 p-8 mb-12">
-        <div class="flex items-center mb-6">
-            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100 p-8 mb-12 backdrop-blur-sm">
+        <div class="flex items-center mb-8">
+            <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
-            <h2 class="text-2xl font-bold text-gray-900">Find Your Perfect Movie</h2>
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-1">Find Your Perfect Movie</h2>
+                <p class="text-gray-600">Use our advanced filters to discover exactly what you're looking for</p>
+            </div>
         </div>
         
         <form method="get" action="{% url 'movies:movie_list' %}" class="space-y-6">
@@ -276,14 +289,19 @@
                 </div>
             </div>
             
-            <div class="pt-6 border-t border-gray-200">
+            <div class="pt-8 border-t border-gray-200">
                 <!-- Active Filters Display -->
                 {% if request.GET.query or request.GET.genre or request.GET.year_from or request.GET.year_to or request.GET.rating_min or request.GET.sort_by or request.GET.has_rating or request.GET.has_poster %}
-                    <div class="mb-6">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-sm font-semibold text-gray-700">Active Filters:</h3>
-                            <a href="{% url 'movies:movie_list' %}" class="text-sm text-red-600 hover:text-red-700 font-medium flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mb-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-semibold text-gray-700 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                                Active Filters
+                            </h3>
+                            <a href="{% url 'movies:movie_list' %}" class="text-sm text-red-600 hover:text-red-700 font-medium flex items-center bg-red-50 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                                 Clear All
@@ -344,15 +362,18 @@
                 
                 <!-- Search Button -->
                 <div class="flex justify-center">
-                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center group relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                        <svg class="w-6 h-6 mr-3 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        {% if request.GET.query or request.GET.genre or request.GET.year_from or request.GET.year_to or request.GET.rating_min or request.GET.sort_by or request.GET.has_rating or request.GET.has_poster %}
-                            Update Results
-                        {% else %}
-                            Search Movies
-                        {% endif %}
+                        <span class="relative">
+                            {% if request.GET.query or request.GET.genre or request.GET.year_from or request.GET.year_to or request.GET.rating_min or request.GET.sort_by or request.GET.has_rating or request.GET.has_poster %}
+                                Update Results
+                            {% else %}
+                                Search Movies
+                            {% endif %}
+                        </span>
                     </button>
                 </div>
             </div>
@@ -361,15 +382,15 @@
     
     <!-- Movies Grid -->
     {% if movies %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 mb-12">
             {% for movie in movies %}
-                <div class="movie-card-modern group">
+                <div class="movie-card-modern group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100">
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
                         <!-- Movie Poster -->
-                        <div class="relative overflow-hidden rounded-t-xl">
+                        <div class="relative overflow-hidden">
                             {% if movie.poster %}
                                 <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" 
-                                     class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
+                                     class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700">
                             {% else %}
                                 <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                     <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -380,13 +401,13 @@
                             
                             <!-- Rating Badge -->
                             {% if movie.imdb_rating %}
-                                <div class="absolute top-3 right-3 bg-black bg-opacity-75 text-white px-2 py-1 rounded-lg text-sm font-semibold">
+                                <div class="absolute top-3 right-3 bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-lg">
                                     ⭐ {{ movie.imdb_rating }}/10
                                 </div>
                             {% endif %}
                             
                             <!-- Year Badge -->
-                            <div class="absolute top-3 left-3 bg-indigo-600 text-white px-2 py-1 rounded-lg text-sm font-semibold">
+                            <div class="absolute top-3 left-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-lg">
                                 {{ movie.release_year }}
                             </div>
                             
@@ -417,16 +438,16 @@
                         </div>
                         
                         <!-- Movie Info -->
-                        <div class="p-4 bg-white">
-                            <h3 class="font-bold text-gray-900 text-lg truncate group-hover:text-indigo-600 transition-colors mb-2">{{ movie.title }}</h3>
+                        <div class="p-5 bg-white">
+                            <h3 class="font-bold text-gray-900 text-lg truncate group-hover:text-indigo-600 transition-colors mb-3">{{ movie.title }}</h3>
                             
                             <!-- Genres -->
-                            <div class="flex flex-wrap gap-1 mb-3">
+                            <div class="flex flex-wrap gap-2 mb-4">
                                 {% for genre in movie.genres.all|slice:":2" %}
-                                    <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full font-medium">{{ genre.name }}</span>
+                                    <span class="bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-800 text-xs px-3 py-1.5 rounded-full font-semibold border border-indigo-200">{{ genre.name }}</span>
                                 {% endfor %}
                                 {% if movie.genres.count > 2 %}
-                                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">+{{ movie.genres.count|add:"-2" }}</span>
+                                    <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1.5 rounded-full font-medium">+{{ movie.genres.count|add:"-2" }}</span>
                                 {% endif %}
                             </div>
                             
@@ -458,36 +479,36 @@
         
         <!-- Modern Pagination -->
         {% if is_paginated %}
-        <div class="mt-12 flex justify-center">
-            <nav class="flex items-center space-x-2">
+        <div class="flex justify-center">
+            <nav class="flex items-center space-x-3 bg-white rounded-2xl shadow-lg border border-gray-100 p-2">
                 {% if page_obj.has_previous %}
                     <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}{% if request.GET.rating_min %}rating_min={{ request.GET.rating_min }}&{% endif %}{% if request.GET.sort_by %}sort_by={{ request.GET.sort_by }}&{% endif %}{% if request.GET.has_rating %}has_rating={{ request.GET.has_rating }}&{% endif %}{% if request.GET.has_poster %}has_poster={{ request.GET.has_poster }}&{% endif %}page=1" 
-                       class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                       class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
                         </svg>
                     </a>
                     <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}{% if request.GET.rating_min %}rating_min={{ request.GET.rating_min }}&{% endif %}{% if request.GET.sort_by %}sort_by={{ request.GET.sort_by }}&{% endif %}{% if request.GET.has_rating %}has_rating={{ request.GET.has_rating }}&{% endif %}{% if request.GET.has_poster %}has_poster={{ request.GET.has_poster }}&{% endif %}page={{ page_obj.previous_page_number }}" 
-                       class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                       class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
                     </a>
                 {% endif %}
                 
-                <span class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg">
+                <span class="px-6 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                 </span>
                 
                 {% if page_obj.has_next %}
                     <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}{% if request.GET.rating_min %}rating_min={{ request.GET.rating_min }}&{% endif %}{% if request.GET.sort_by %}sort_by={{ request.GET.sort_by }}&{% endif %}{% if request.GET.has_rating %}has_rating={{ request.GET.has_rating }}&{% endif %}{% if request.GET.has_poster %}has_poster={{ request.GET.has_poster }}&{% endif %}page={{ page_obj.next_page_number }}" 
-                       class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                       class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </a>
                     <a href="?{% if request.GET.query %}query={{ request.GET.query }}&{% endif %}{% if request.GET.genre %}genre={{ request.GET.genre }}&{% endif %}{% if request.GET.year_from %}year_from={{ request.GET.year_from }}&{% endif %}{% if request.GET.year_to %}year_to={{ request.GET.year_to }}&{% endif %}{% if request.GET.rating_min %}rating_min={{ request.GET.rating_min }}&{% endif %}{% if request.GET.sort_by %}sort_by={{ request.GET.sort_by }}&{% endif %}{% if request.GET.has_rating %}has_rating={{ request.GET.has_rating }}&{% endif %}{% if request.GET.has_poster %}has_poster={{ request.GET.has_poster }}&{% endif %}page={{ page_obj.paginator.num_pages }}" 
-                       class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                       class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-200">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7"></path>
                         </svg>
