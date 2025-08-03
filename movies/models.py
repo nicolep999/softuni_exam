@@ -45,6 +45,7 @@ class Movie(models.Model):
     release_date = models.DateField(null=True, blank=True)  # Full release date for latest releases
     plot = models.TextField()
     poster = models.ImageField(upload_to='posters/', null=True, blank=True)
+    backdrop_url = models.URLField(blank=True, help_text="High-quality backdrop image URL from TMDB")
     trailer_url = models.URLField(blank=True)
     imdb_rating = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)  # IMDb rating (e.g., 8.5)
     genres = models.ManyToManyField(Genre, related_name='movies')

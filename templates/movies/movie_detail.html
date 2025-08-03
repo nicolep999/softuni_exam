@@ -1,180 +1,431 @@
 {% extends 'base.html' %}
+{% load movie_filters %}
 
 {% block title %}{{ movie.title }} ({{ movie.release_year }}) - Moodie{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <!-- Movie Header -->
-        <div class="bg-blue-900 text-white p-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <h1 class="text-3xl font-bold mb-2 md:mb-0">{{ movie.title }} <span class="text-blue-300">({{ movie.release_year }})</span></h1>
+<!-- Modern Hero Section -->
+<div class="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <!-- Dynamic Background -->
+    {% if movie.backdrop_url %}
+        <div class="absolute inset-0 overflow-hidden">
+            <img src="{{ movie.backdrop_url }}" alt="{{ movie.title }} backdrop" 
+                 class="w-full h-full object-cover object-center opacity-30" 
+                 style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+        </div>
+    {% endif %}
+    
+    <!-- Modern Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-transparent"></div>
+    
+    <!-- Subtle Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 0%, transparent 50%);"></div>
+    </div>
+    
+    <!-- Hero Content -->
+    <div class="relative z-10 container mx-auto px-6 py-16">
+        <div class="flex flex-col lg:flex-row gap-12 items-start">
+            <!-- Modern Movie Poster -->
+            <div class="flex-shrink-0">
+                <div class="relative group">
+                    {% if movie.poster %}
+                        <div class="relative overflow-hidden rounded-3xl shadow-2xl">
+                            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" 
+                                 class="w-80 h-96 object-cover group-hover:scale-105 transition-transform duration-500">
+                            <!-- Modern Gradient Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        </div>
+                    {% else %}
+                        <div class="w-80 h-96 bg-gradient-to-br from-slate-700 to-slate-900 rounded-3xl shadow-2xl flex items-center justify-center">
+                            <svg class="w-24 h-24 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                            </svg>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Modern Play Button -->
+                    {% if movie.trailer_url %}
+                    <div class="absolute inset-0 bg-black/20 backdrop-blur-sm rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                        <div class="bg-white/20 backdrop-blur-md rounded-full p-6 border border-white/30">
+                            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Modern Movie Info -->
+            <div class="flex-1 text-white">
+                <!-- Title and Year -->
+                <div class="mb-8">
+                    <h1 class="text-6xl font-bold mb-4 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">{{ movie.title }}</h1>
+                    <div class="flex items-center gap-6 text-xl text-slate-300">
+                        <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">{{ movie.release_year }}</span>
+                        {% if movie.release_date %}
+                            <span class="text-slate-400">•</span>
+                            <span>{{ movie.release_date|date:"F d, Y" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Modern Rating Cards -->
+                <div class="flex flex-wrap gap-4 mb-8">
+                                         {% if movie.imdb_rating %}
+                     <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                         <div class="flex items-center gap-3">
+                                                                <div class="flex text-yellow-400">
+                                       {% for i in "12345" %}
+                                           {% if movie.imdb_rating|star_class:forloop.counter == "text-yellow-400 half-star" %}
+                                               <span class="half-star">★</span>
+                                           {% elif movie.imdb_rating|star_class:forloop.counter == "text-yellow-400" %}
+                                               <span class="text-yellow-400">★</span>
+                                           {% else %}
+                                               <span class="text-slate-600">★</span>
+                                           {% endif %}
+                                       {% endfor %}
+                                   </div>
+                             <div>
+                                 <div class="text-2xl font-bold">{{ movie.imdb_rating }}/10</div>
+                                 <div class="text-sm text-slate-300">IMDB</div>
+                             </div>
+                         </div>
+                     </div>
+                     {% endif %}
+                    
+                                         {% if movie.average_rating > 0 %}
+                     <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                         <div class="flex items-center gap-3">
+                                                                <div class="flex text-yellow-400">
+                                       {% for i in "12345" %}
+                                           {% if movie.average_rating|star_class:forloop.counter == "text-yellow-400 half-star" %}
+                                               <span class="half-star">★</span>
+                                           {% elif movie.average_rating|star_class:forloop.counter == "text-yellow-400" %}
+                                               <span class="text-yellow-400">★</span>
+                                           {% else %}
+                                               <span class="text-slate-600">★</span>
+                                           {% endif %}
+                                       {% endfor %}
+                                   </div>
+                             <div>
+                                 <div class="text-2xl font-bold">{{ movie.average_rating|floatformat:1 }}/10</div>
+                                 <div class="text-sm text-slate-300">User Rating</div>
+                             </div>
+                         </div>
+                     </div>
+                     {% endif %}
+                </div>
+                
+                <!-- Modern Genre Pills -->
+                <div class="flex flex-wrap gap-3 mb-8">
+                    {% for genre in movie.genres.all %}
+                        <a href="{% url 'movies:genre_detail' genre.id %}" 
+                           class="bg-white/10 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-white/20 transition-all border border-white/20 hover:border-white/40">
+                            {{ genre.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <!-- Modern Plot -->
+                <div class="mb-10">
+                    <p class="text-xl text-slate-200 leading-relaxed max-w-4xl">{{ movie.plot }}</p>
+                </div>
+                
+                <!-- Modern Action Buttons -->
+                <div class="flex flex-wrap gap-4 mb-8">
+                    {% if user.is_authenticated %}
+                        {% if in_watchlist %}
+                            <a href="{% url 'movies:remove_from_watchlist' movie.id %}" 
+                               class="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-2xl font-semibold transition-all flex items-center gap-3 shadow-lg hover:shadow-xl">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Remove from Watchlist
+                            </a>
+                        {% else %}
+                            <a href="{% url 'movies:add_to_watchlist' movie.id %}" 
+                               class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all flex items-center gap-3 shadow-lg hover:shadow-xl">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add to Watchlist
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'reviews:review_create' movie.id %}" 
+                           class="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 px-8 py-4 rounded-2xl font-semibold transition-all flex items-center gap-3 border border-white/20 hover:border-white/40">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Write Review
+                        </a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" 
+                           class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl">
+                            Login to Add to Watchlist
+                        </a>
+                        <a href="{% url 'accounts:login' %}" 
+                           class="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 px-8 py-4 rounded-2xl font-semibold transition-all border border-white/20 hover:border-white/40">
+                            Login to Write Review
+                        </a>
+                    {% endif %}
+                    
+                    {% if movie.trailer_url %}
+                    <a href="{{ movie.trailer_url }}" target="_blank" 
+                       class="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-8 py-4 rounded-2xl font-semibold transition-all flex items-center gap-3 shadow-lg hover:shadow-xl">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        Watch Trailer
+                    </a>
+                    {% endif %}
+                </div>
                 
                 <!-- Admin Actions -->
                 {% if user.is_staff %}
-                <div class="flex space-x-2 mt-2 md:mt-0">
-                    <a href="{% url 'movies:movie_update' movie.id %}" class="btn-secondary text-sm">Edit Movie</a>
-                    <a href="{% url 'movies:movie_delete' movie.id %}" class="btn-danger text-sm">Delete Movie</a>
+                <div class="flex gap-4">
+                    <a href="{% url 'movies:movie_update' movie.id %}" 
+                       class="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl text-sm transition-all">
+                        Edit Movie
+                    </a>
+                    <a href="{% url 'movies:movie_delete' movie.id %}" 
+                       class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl text-sm transition-all">
+                        Delete Movie
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Main Content -->
+<div class="bg-slate-50">
+    <div class="container mx-auto px-6 py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Left Column: Cast & Crew -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- Modern Director Card -->
+                {% if movie.director %}
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        Director
+                    </h2>
+                    <div class="flex items-center gap-4">
+                        {% if movie.director.photo %}
+                            <img src="{{ movie.director.photo.url }}" alt="{{ movie.director.name }}" 
+                                 class="w-20 h-20 rounded-2xl object-cover shadow-lg">
+                        {% else %}
+                            <div class="w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <span class="text-white font-bold text-xl">{{ movie.director.name|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-lg">{{ movie.director.name }}</h3>
+                            {% if movie.director.birth_date %}
+                                <p class="text-slate-600">{{ movie.director.birth_date|date:"Y" }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if movie.director.bio %}
+                        <p class="text-slate-600 mt-4 text-sm leading-relaxed">{{ movie.director.bio|truncatewords:25 }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Modern Cast Card -->
+                {% if movie.actors.all %}
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        Cast
+                    </h2>
+                    <div class="space-y-4">
+                        {% for actor in movie.actors.all|slice:":6" %}
+                            <div class="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-colors">
+                                {% if actor.photo %}
+                                    <img src="{{ actor.photo.url }}" alt="{{ actor.name }}" 
+                                         class="w-14 h-14 rounded-xl object-cover shadow-md">
+                                {% else %}
+                                    <div class="w-14 h-14 bg-gradient-to-br from-slate-400 to-slate-600 rounded-xl flex items-center justify-center shadow-md">
+                                        <span class="text-white font-bold text-sm">{{ actor.name|first|upper }}</span>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h3 class="font-semibold text-slate-900">{{ actor.name }}</h3>
+                                    {% if actor.birth_date %}
+                                        <p class="text-sm text-slate-600">{{ actor.birth_date|date:"Y" }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if movie.actors.count > 6 %}
+                            <div class="text-center pt-4">
+                                <span class="text-slate-500 text-sm bg-slate-100 px-4 py-2 rounded-full">+{{ movie.actors.count|add:"-6" }} more</span>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
             </div>
             
-            <!-- Movie Meta -->
-            <div class="mt-4 flex flex-wrap gap-2">
-                {% for genre in movie.genres.all %}
-                    <a href="{% url 'movies:genre_detail' genre.id %}" class="bg-blue-700 text-white text-xs px-2 py-1 rounded hover:bg-blue-600">{{ genre.name }}</a>
-                {% endfor %}
-                
-                {% if movie.average_rating > 0 %}
-                    <span class="bg-yellow-500 text-white text-xs px-2 py-1 rounded flex items-center">
-                        <span class="mr-1">★</span> {{ movie.average_rating|floatformat:1 }}/10
-                    </span>
-                {% endif %}
-            </div>
-        </div>
-        
-        <!-- Movie Content -->
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Left Column: Poster and Actions -->
-                <div>
-                    {% if movie.poster %}
-                        <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full rounded-lg shadow-md">
-                    {% else %}
-                        <div class="w-full h-96 bg-gray-300 flex items-center justify-center rounded-lg">
-                            <span class="text-gray-500">No Image Available</span>
-                        </div>
-                    {% endif %}
-                    
-                    <!-- User Actions -->
-                    <div class="mt-4 space-y-2">
-                        {% if user.is_authenticated %}
-                            {% if in_watchlist %}
-                                <a href="{% url 'movies:remove_from_watchlist' movie.id %}" class="btn-secondary w-full block text-center">Remove from Watchlist</a>
-                            {% else %}
-                                <a href="{% url 'movies:add_to_watchlist' movie.id %}" class="btn-primary w-full block text-center">Add to Watchlist</a>
-                            {% endif %}
-                            <a href="{% url 'reviews:review_create' movie.id %}" class="btn-primary w-full block text-center">Write a Review</a>
-                        {% else %}
-                            <a href="{% url 'accounts:login' %}" class="btn-secondary w-full block text-center">Login to Add to Watchlist</a>
-                            <a href="{% url 'accounts:login' %}" class="btn-secondary w-full block text-center">Login to Write a Review</a>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <!-- Right Column: Details -->
-                <div class="md:col-span-2 space-y-6">
-                    <!-- Plot -->
-                    <div>
-                        <h2 class="text-xl font-bold mb-2">Plot</h2>
-                        <p class="text-gray-700">{{ movie.plot }}</p>
+            <!-- Right Column: Reviews -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </div>
+                            Reviews
+                        </h2>
+                        <a href="{% url 'reviews:movie_reviews' movie.id %}" 
+                           class="text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2 transition-colors">
+                            View All
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
                     </div>
                     
-                    <!-- Director -->
-                    {% if movie.director %}
-                    <div>
-                        <h2 class="text-xl font-bold mb-2">Director</h2>
-                        <p class="text-gray-700">{{ movie.director.name }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Cast -->
-                    {% if movie.actors.all %}
-                    <div>
-                        <h2 class="text-xl font-bold mb-2">Cast</h2>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {% for actor in movie.actors.all %}
-                                <div class="flex items-center space-x-2">
-                                    {% if actor.photo %}
-                                        <img src="{{ actor.photo.url }}" alt="{{ actor.name }}" class="w-10 h-10 rounded-full object-cover">
-                                    {% else %}
-                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
-                                            <span class="text-gray-500 text-xs">No Photo</span>
+                    {% if reviews %}
+                        <div class="space-y-6">
+                            {% for review in reviews %}
+                                <div class="border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition-shadow bg-slate-50/50">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+                                                <span class="text-white font-bold">{{ review.user.username|first|upper }}</span>
+                                            </div>
+                                            <div>
+                                                <h3 class="font-bold text-slate-900 text-lg">{{ review.title }}</h3>
+                                                <p class="text-slate-600">By {{ review.user.username }} • {{ review.created_at|date:"M d, Y" }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-xl font-semibold flex items-center gap-2">
+                                            <span class="text-yellow-500">★</span>
+                                            <span>{{ review.rating }}/10</span>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-700 leading-relaxed text-lg">{{ review.content|truncatewords:120 }}</p>
+                                    {% if user == review.user or user.is_staff %}
+                                        <div class="flex gap-4 mt-6 pt-4 border-t border-slate-200">
+                                            <a href="{% url 'reviews:review_edit' review.id %}" 
+                                               class="text-purple-600 hover:text-purple-700 font-medium flex items-center gap-2 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                                Edit
+                                            </a>
+                                            <a href="{% url 'reviews:review_delete' review.id %}" 
+                                               class="text-red-600 hover:text-red-700 font-medium flex items-center gap-2 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Delete
+                                            </a>
                                         </div>
                                     {% endif %}
-                                    <span>{{ actor.name }}</span>
                                 </div>
                             {% endfor %}
                         </div>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Trailer -->
-                    {% if movie.trailer_url %}
-                    <div>
-                        <h2 class="text-xl font-bold mb-2">Trailer</h2>
-                        <div class="aspect-w-16 aspect-h-9">
-                            <iframe src="{{ movie.trailer_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-64 rounded-lg"></iframe>
+                    {% else %}
+                        <div class="text-center py-16">
+                            <div class="w-32 h-32 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-8">
+                                <svg class="w-16 h-16 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-4">No reviews yet</h3>
+                            <p class="text-slate-600 mb-8 text-lg">Be the first to share your thoughts about this movie!</p>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'reviews:review_create' movie.id %}" 
+                                   class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all inline-flex items-center gap-3 shadow-lg hover:shadow-xl">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Write a Review
+                                </a>
+                            {% else %}
+                                <a href="{% url 'accounts:login' %}" 
+                                   class="bg-slate-600 hover:bg-slate-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all shadow-lg hover:shadow-xl">
+                                    Login to Write a Review
+                                </a>
+                            {% endif %}
                         </div>
-                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Reviews Section -->
-    <div class="mt-8">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold">Reviews</h2>
-            <a href="{% url 'reviews:movie_reviews' movie.id %}" class="text-blue-600 hover:underline">View All Reviews</a>
-        </div>
-        
-        <div class="space-y-4">
-            {% for review in reviews %}
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold">{{ review.title }}</h3>
-                            <p class="text-sm text-gray-500">By {{ review.user.username }} on {{ review.created_at|date:"F d, Y" }}</p>
-                        </div>
-                        <div class="bg-yellow-500 text-white px-2 py-1 rounded">
-                            <span class="font-bold">{{ review.rating }}/10</span>
-                        </div>
-                    </div>
-                    <p class="mt-2 text-gray-700">{{ review.content|truncatewords:50 }}</p>
-                    {% if user == review.user or user.is_staff %}
-                        <div class="mt-2 flex space-x-2">
-                            <a href="{% url 'reviews:review_edit' review.id %}" class="text-blue-600 hover:underline text-sm">Edit</a>
-                            <a href="{% url 'reviews:review_delete' review.id %}" class="text-red-600 hover:underline text-sm">Delete</a>
-                        </div>
-                    {% endif %}
-                </div>
-            {% empty %}
-                <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                    <p class="text-gray-500">No reviews yet. Be the first to review this movie!</p>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'reviews:review_create' movie.id %}" class="btn-primary mt-4 inline-block">Write a Review</a>
-                    {% else %}
-                        <a href="{% url 'accounts:login' %}" class="btn-secondary mt-4 inline-block">Login to Write a Review</a>
-                    {% endif %}
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    <!-- Similar Movies Section -->
-    {% if similar_movies %}
-    <div class="mt-8">
-        <h2 class="text-2xl font-bold mb-4">Similar Movies</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+</div>
+
+<!-- Modern Similar Movies Section -->
+{% if similar_movies %}
+<div class="bg-white py-16">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold text-slate-900 mb-12 flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+            </div>
+            Similar Movies
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
             {% for similar_movie in similar_movies %}
-                <div class="movie-card">
-                    <a href="{% url 'movies:movie_detail' similar_movie.id %}">
-                        {% if similar_movie.poster %}
-                            <img src="{{ similar_movie.poster.url }}" alt="{{ similar_movie.title }}" class="w-full h-64 object-cover">
-                        {% else %}
-                            <div class="w-full h-64 bg-gray-300 flex items-center justify-center">
-                                <span class="text-gray-500">No Image</span>
+                <div class="group">
+                    <a href="{% url 'movies:movie_detail' similar_movie.id %}" class="block">
+                        <div class="relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                            {% if similar_movie.poster %}
+                                <img src="{{ similar_movie.poster.url }}" alt="{{ similar_movie.title }}" 
+                                     class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                            {% else %}
+                                <div class="w-full h-64 bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                                    </svg>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Modern Rating Badge -->
+                            {% if similar_movie.average_rating > 0 %}
+                                <div class="absolute top-3 right-3 bg-black/80 backdrop-blur-sm text-white px-3 py-1 rounded-xl text-sm font-semibold">
+                                    ⭐ {{ similar_movie.average_rating|floatformat:1 }}
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Modern Year Badge -->
+                            <div class="absolute top-3 left-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-3 py-1 rounded-xl text-sm font-semibold">
+                                {{ similar_movie.release_year }}
                             </div>
-                        {% endif %}
-                        <div class="p-4">
-                            <h3 class="font-bold truncate">{{ similar_movie.title }}</h3>
-                            <p class="text-gray-600">{{ similar_movie.release_year }}</p>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="font-bold text-slate-900 group-hover:text-purple-600 transition-colors truncate text-lg">{{ similar_movie.title }}</h3>
                             {% if similar_movie.average_rating > 0 %}
                                 <div class="flex items-center mt-2">
-                                    <span class="text-yellow-500">★</span>
-                                    <span class="ml-1">{{ similar_movie.average_rating|floatformat:1 }}/10</span>
+                                    <div class="flex text-yellow-400 text-sm">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= similar_movie.average_rating|floatformat:0 %}
+                                                <span class="text-yellow-400">★</span>
+                                            {% else %}
+                                                <span class="text-slate-300">★</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <span class="ml-2 text-sm text-slate-600">{{ similar_movie.average_rating|floatformat:1 }}</span>
                                 </div>
                             {% endif %}
                         </div>
@@ -183,6 +434,6 @@
             {% endfor %}
         </div>
     </div>
-    {% endif %}
 </div>
+{% endif %}
 {% endblock %}

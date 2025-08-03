@@ -28,6 +28,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#x'
 
+# TMDB API Configuration
+TMDB_API_KEY = env('TMDB_API_KEY', default=None)
+
 
 ALLOWED_HOSTS = []
 DEBUG = True
