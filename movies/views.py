@@ -13,8 +13,15 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['latest_movies'] = Movie.objects.all().order_by('-created_at')[:6]
-        context['top_rated_movies'] = Movie.objects.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')[:6]
+        # Get latest movies sorted by release date (not created_at)
+        context['latest_movies'] = Movie.objects.exclude(
+            release_date__isnull=True
+        ).order_by('-release_date')[:6]
+        
+        # Get top rated movies sorted by IMDB rating (not average rating)
+        context['top_rated_movies'] = Movie.objects.exclude(
+            imdb_rating__isnull=True
+        ).order_by('-imdb_rating')[:6]
         return context
 
 class MovieListView(ListView):

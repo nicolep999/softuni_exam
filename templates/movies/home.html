@@ -58,7 +58,7 @@
         <div class="flex justify-between items-center mb-12">
             <div>
                 <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Latest Releases</h2>
-                <p class="text-gray-600">Discover the newest additions to our collection</p>
+                <p class="text-gray-600">Discover the most recently released movies</p>
             </div>
             <a href="{% url 'movies:movie_list' %}" 
                class="group flex items-center text-indigo-600 hover:text-indigo-700 font-semibold transition-colors">
@@ -100,10 +100,10 @@
                             </div>
                             
                             <!-- Rating badge -->
-                            {% if movie.average_rating > 0 %}
+                            {% if movie.imdb_rating %}
                                 <div class="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center">
                                     <span class="mr-1">★</span>
-                                    {{ movie.average_rating|floatformat:1 }}
+                                    {{ movie.imdb_rating }}/10
                                 </div>
                             {% endif %}
                         </div>
@@ -135,7 +135,7 @@
         <div class="flex justify-between items-center mb-12">
             <div>
                 <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Top Rated Movies</h2>
-                <p class="text-gray-600">The highest-rated films by our community</p>
+                <p class="text-gray-600">The highest-rated films according to IMDB</p>
             </div>
             <a href="{% url 'movies:movie_list' %}" 
                class="group flex items-center text-indigo-600 hover:text-indigo-700 font-semibold transition-colors">
@@ -177,10 +177,10 @@
                             </div>
                             
                             <!-- Rating badge -->
-                            {% if movie.average_rating > 0 %}
+                            {% if movie.imdb_rating %}
                                 <div class="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center">
                                     <span class="mr-1">★</span>
-                                    {{ movie.average_rating|floatformat:1 }}
+                                    {{ movie.imdb_rating }}/10
                                 </div>
                             {% endif %}
                         </div>
@@ -188,18 +188,18 @@
                         <div class="mt-4">
                             <h3 class="font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{{ movie.title }}</h3>
                             <p class="text-gray-600 text-sm">{{ movie.release_year }}</p>
-                            {% if movie.average_rating > 0 %}
+                            {% if movie.imdb_rating %}
                                 <div class="flex items-center mt-2">
                                     <div class="flex text-yellow-400">
                                         {% for i in "12345" %}
-                                            {% if forloop.counter <= movie.average_rating|floatformat:0 %}
+                                            {% if forloop.counter <= movie.imdb_rating|floatformat:0 %}
                                                 <span class="text-yellow-400">★</span>
                                             {% else %}
                                                 <span class="text-gray-300">★</span>
                                             {% endif %}
                                         {% endfor %}
                                     </div>
-                                    <span class="ml-2 text-sm text-gray-600">{{ movie.average_rating|floatformat:1 }}/10</span>
+                                    <span class="ml-2 text-sm text-gray-600 font-medium">IMDB: {{ movie.imdb_rating }}/10</span>
                                 </div>
                             {% endif %}
                         </div>
@@ -212,8 +212,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
                         </svg>
                     </div>
-                    <p class="text-gray-500 text-lg">No rated movies available yet.</p>
-                    <p class="text-gray-400">Be the first to rate a movie!</p>
+                    <p class="text-gray-500 text-lg">No IMDB rated movies available yet.</p>
+                    <p class="text-gray-400">Check back soon for rated movies!</p>
                 </div>
             {% endfor %}
         </div>

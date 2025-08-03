@@ -107,10 +107,20 @@ class Command(BaseCommand):
         if Movie.objects.filter(title=movie_data['title'], release_year=movie_data['release_date'][:4]).exists():
             return None
         
+        # Parse release date
+        release_date = None
+        if movie_data.get('release_date'):
+            try:
+                from datetime import datetime
+                release_date = datetime.strptime(movie_data['release_date'], '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        
         # Create movie
         movie = Movie.objects.create(
             title=movie_data['title'],
             release_year=int(movie_data['release_date'][:4]),
+            release_date=release_date,
             plot=movie_data.get('overview', 'No plot available.'),
             trailer_url=''  # We'll get this later if needed
         )
@@ -125,7 +135,32 @@ class Command(BaseCommand):
             # Update plot with more detailed one
             if detailed_data.get('overview'):
                 movie.plot = detailed_data['overview']
-                movie.save()
+            
+            # Update IMDb rating
+            if detailed_data.get('external_ids', {}).get('imdb_id'):
+                imdb_id = detailed_data['external_ids']['imdb_id']
+                imdb_rating = self.get_imdb_rating(api_key, imdb_id)
+                if imdb_rating:
+                    movie.imdb_rating = imdb_rating
+                    self.stdout.write(f'  📊 Updated IMDb rating for {movie.title}: {imdb_rating}')
+                else:
+                    # Fallback to TMDB vote_average if IMDb rating not available
+                    if detailed_data.get('vote_average'):
+                        movie.imdb_rating = detailed_data['vote_average']
+                        self.stdout.write(f'  📊 Using TMDB rating for {movie.title}: {detailed_data["vote_average"]}')
+            elif detailed_data.get('vote_average'):
+                # Fallback to TMDB vote_average if no IMDb ID
+                movie.imdb_rating = detailed_data['vote_average']
+                self.stdout.write(f'  📊 Using TMDB rating for {movie.title}: {detailed_data["vote_average"]}')
+            
+            # Update release date if we have a more accurate one
+            if detailed_data.get('release_date') and not release_date:
+                try:
+                    movie.release_date = datetime.strptime(detailed_data['release_date'], '%Y-%m-%d').date()
+                except ValueError:
+                    pass
+            
+            movie.save()
             
             # Import genres
             self.import_genres(movie, detailed_data.get('genres', []))
@@ -154,7 +189,8 @@ class Command(BaseCommand):
         url = f'https://api.themoviedb.org/3/movie/{movie_id}'
         params = {
             'api_key': api_key,
-            'language': 'en-US'
+            'language': 'en-US',
+            'append_to_response': 'external_ids'
         }
         
         try:
@@ -163,6 +199,38 @@ class Command(BaseCommand):
             return response.json()
         except Exception as e:
             self.stdout.write(f'⚠️  Could not get details for movie {movie_id}: {e}')
+            return None
+
+    def get_imdb_rating(self, api_key, imdb_id):
+        """Get IMDb rating using OMDB API (requires OMDB API key)"""
+        if not imdb_id:
+            return None
+            
+        # Try to get rating from environment variable first
+        omdb_api_key = os.getenv('OMDB_API_KEY')
+        if not omdb_api_key:
+            self.stdout.write(f'⚠️  OMDB_API_KEY not set, skipping IMDb rating for {imdb_id}')
+            return None
+            
+        url = f'http://www.omdbapi.com/'
+        params = {
+            'apikey': omdb_api_key,
+            'i': imdb_id,
+            'plot': 'short'
+        }
+        
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            if data.get('Response') == 'True' and data.get('imdbRating') != 'N/A':
+                return float(data['imdbRating'])
+            else:
+                return None
+                
+        except Exception as e:
+            self.stdout.write(f'⚠️  Could not get IMDb rating for {imdb_id}: {e}')
             return None
 
     def get_movie_credits(self, api_key, movie_id):
