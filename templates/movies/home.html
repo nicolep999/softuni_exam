@@ -111,6 +111,20 @@
                         <div class="mt-4">
                             <h3 class="font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{{ movie.title }}</h3>
                             <p class="text-gray-600 text-sm">{{ movie.release_year }}</p>
+                            {% if movie.imdb_rating %}
+                                <div class="flex items-center mt-2">
+                                    <div class="flex text-yellow-400">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= movie.imdb_rating|floatformat:0 %}
+                                                <span class="text-yellow-400">★</span>
+                                            {% else %}
+                                                <span class="text-gray-300">★</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-600 font-medium">IMDB: {{ movie.imdb_rating }}/10</span>
+                                </div>
+                            {% endif %}
                         </div>
                     </a>
                 </div>

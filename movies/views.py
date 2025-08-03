@@ -13,9 +13,11 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get latest movies sorted by release date (not created_at)
+        # Get latest movies with IMDB ratings, sorted by release date
         context['latest_movies'] = Movie.objects.exclude(
             release_date__isnull=True
+        ).exclude(
+            imdb_rating__isnull=True
         ).order_by('-release_date')[:6]
         
         # Get top rated movies sorted by IMDB rating (not average rating)
