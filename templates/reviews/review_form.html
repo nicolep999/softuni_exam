@@ -5,82 +5,216 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6">
-            {% if is_update %}Edit Review for "{{ movie.title }}"{% else %}Write Review for "{{ movie.title }}"{% endif %}
-        </h1>
-        
-        <!-- Movie Preview -->
-        <div class="flex items-center p-4 bg-gray-100 rounded-lg mb-6">
-            {% if movie.poster %}
-                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="h-24 w-auto mr-4 rounded">
-            {% else %}
-                <div class="h-24 w-16 bg-gray-300 flex items-center justify-center rounded mr-4">
-                    <span class="text-gray-500 text-xs">No Image</span>
+<!-- Review Form Section -->
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center py-4">
+    <div class="container mx-auto px-6">
+        <div class="max-w-2xl mx-auto">
+            <!-- Form Card -->
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden backdrop-blur-sm">
+                <!-- Form Header -->
+                <div class="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 px-6 py-4 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"></div>
+                    <div class="relative">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            {% if is_update %}Edit Review{% else %}Write Your Review{% endif %}
+                        </h2>
+                        <div class="text-white/90 text-xs">
+                            <span class="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/30">Required fields marked with *</span>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
-            <div>
-                <h2 class="font-bold">{{ movie.title }}</h2>
-                <p class="text-gray-600">{{ movie.release_year }}</p>
-                <div class="flex flex-wrap gap-1 mt-1">
-                    {% for genre in movie.genres.all|slice:":3" %}
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ genre.name }}</span>
-                    {% endfor %}
+                </div>
+                
+                <!-- Form Content -->
+                <div class="p-6">
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded-lg">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div class="text-red-700 text-sm">
+                                        {% for error in form.non_field_errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Interactive Rating Section -->
+                        <div class="space-y-3">
+                            <label class="block text-base font-semibold text-slate-900">
+                                Your Rating <span class="text-red-500">*</span>
+                            </label>
+                            
+                            <!-- Star Rating Display -->
+                            <div class="flex items-center gap-4 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <div id="star-display" class="flex text-3xl">
+                                        {% for i in "12345678910"|slice:":10" %}
+                                            <span class="text-slate-300 hover:text-yellow-400 cursor-pointer transition-all duration-200 hover:scale-110" 
+                                                  data-rating="{{ forloop.counter }}">★</span>
+                                        {% endfor %}
+                                    </div>
+                                    <span id="rating-text" class="text-xl font-bold text-slate-700 ml-4">Select a rating</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden Rating Input -->
+                            {{ form.rating }}
+                            {% if form.rating.errors %}
+                                <p class="text-red-600 text-xs mt-1">{{ form.rating.errors.0 }}</p>
+                            {% endif %}
+                            
+
+                        </div>
+                        
+                        <!-- Review Title -->
+                        <div class="space-y-2">
+                            <label for="{{ form.title.id_for_label }}" class="block text-base font-semibold text-slate-900">
+                                Review Title <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                {{ form.title }}
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% if form.title.errors %}
+                                <p class="text-red-600 text-xs">{{ form.title.errors.0 }}</p>
+                            {% endif %}
+                            <p class="text-slate-600 text-xs">Give your review a catchy title that captures your main point</p>
+                        </div>
+                        
+                        <!-- Review Content -->
+                        <div class="space-y-2">
+                            <label for="{{ form.content.id_for_label }}" class="block text-base font-semibold text-slate-900">
+                                Your Review <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                {{ form.content }}
+                                <div class="absolute top-2 right-2 text-slate-400">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            {% if form.content.errors %}
+                                <p class="text-red-600 text-xs">{{ form.content.errors.0 }}</p>
+                            {% endif %}
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 rounded-xl">
+                                <div class="flex items-start">
+                                    <svg class="w-4 h-4 text-blue-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div class="text-blue-700">
+                                        <p class="font-semibold mb-2 text-sm">Writing Tips:</p>
+                                        <ul class="text-sm space-y-1">
+                                            <li>• Share what you liked or disliked about the movie</li>
+                                            <li>• Mention specific scenes, performances, or technical aspects</li>
+                                            <li>• Be honest and constructive in your feedback</li>
+                                            <li>• Aim for at least 50 words for a meaningful review</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200">
+                            <a href="{% url 'movies:movie_detail' movie.id %}" 
+                               class="flex-1 sm:flex-none px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-sm shadow-sm hover:shadow-md">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
+                                Cancel
+                            </a>
+                            <button type="submit" 
+                                    class="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm relative overflow-hidden group">
+                                <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                <div class="relative flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                    </svg>
+                                    <span>{% if is_update %}Update Review{% else %}Post Review{% endif %}</span>
+                                </div>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        
-        <form method="post" class="space-y-6">
-            {% csrf_token %}
-            
-            {% if form.non_field_errors %}
-                <div class="alert-error">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-            
-            <!-- Rating -->
-            <div>
-                <label for="{{ form.rating.id_for_label }}" class="form-label">Rating (1-10)</label>
-                {{ form.rating }}
-                {% if form.rating.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.rating.errors.0 }}</p>
-                {% endif %}
-                <div class="flex items-center mt-2">
-                    <span class="text-yellow-500">★</span>
-                    <span class="ml-1 text-sm text-gray-600">1 = Poor, 10 = Excellent</span>
-                </div>
-            </div>
-            
-            <!-- Title -->
-            <div>
-                <label for="{{ form.title.id_for_label }}" class="form-label">Review Title</label>
-                {{ form.title }}
-                {% if form.title.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.title.errors.0 }}</p>
-                {% endif %}
-            </div>
-            
-            <!-- Content -->
-            <div>
-                <label for="{{ form.content.id_for_label }}" class="form-label">Review Content</label>
-                {{ form.content }}
-                {% if form.content.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ form.content.errors.0 }}</p>
-                {% endif %}
-                <p class="text-sm text-gray-600 mt-1">Share your thoughts about the movie. What did you like or dislike?</p>
-            </div>
-            
-            <div class="flex justify-end space-x-4">
-                <a href="{% url 'movies:movie_detail' movie.id %}" class="btn-secondary">Cancel</a>
-                <button type="submit" class="btn-primary">
-                    {% if is_update %}Update Review{% else %}Post Review{% endif %}
-                </button>
-            </div>
-        </form>
     </div>
 </div>
+
+<!-- JavaScript for Interactive Rating -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('#star-display span');
+    const ratingInput = document.getElementById('{{ form.rating.id_for_label }}');
+    const ratingText = document.getElementById('rating-text');
+    
+    // Rating descriptions
+    const ratingDescriptions = {
+        1: 'Poor - Not worth watching',
+        2: 'Fair - Below average',
+        3: 'Average - Decent but forgettable',
+        4: 'Good - Worth a watch',
+        5: 'Very Good - Solid entertainment',
+        6: 'Great - Highly enjoyable',
+        7: 'Excellent - Outstanding quality',
+        8: 'Amazing - Must-see movie',
+        9: 'Masterpiece - Near perfect',
+        10: 'Perfect - Absolute perfection'
+    };
+    
+    function updateStars(rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('text-slate-300');
+                star.classList.add('text-yellow-400');
+            } else {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-slate-300');
+            }
+        });
+        
+        // Update hidden input and text
+        ratingInput.value = rating;
+        ratingText.textContent = ratingDescriptions[rating] || 'Select a rating';
+    }
+    
+    // Star click events
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            updateStars(index + 1);
+        });
+        
+        star.addEventListener('mouseenter', () => {
+            updateStars(index + 1);
+        });
+    });
+    
+    // Reset stars when mouse leaves the container
+    document.getElementById('star-display').addEventListener('mouseleave', () => {
+        const currentRating = parseInt(ratingInput.value) || 0;
+        updateStars(currentRating);
+    });
+    
+    // Initialize with current value if editing
+    if (ratingInput.value) {
+        updateStars(parseInt(ratingInput.value));
+    }
+});
+</script>
 {% endblock %}

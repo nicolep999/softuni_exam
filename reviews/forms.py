@@ -6,9 +6,16 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['rating', 'title', 'content']
         widgets = {
-            'rating': forms.Select(attrs={'class': 'form-input'}),
-            'title': forms.TextInput(attrs={'class': 'form-input'}),
-            'content': forms.Textarea(attrs={'class': 'form-input', 'rows': 5}),
+            'rating': forms.Select(attrs={'class': 'hidden'}),
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white shadow-sm pr-10 hover:border-gray-300',
+                'placeholder': 'Enter your review title...'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 bg-white shadow-sm resize-none hover:border-gray-300',
+                'rows': 4,
+                'placeholder': 'Share your thoughts about the movie...'
+            }),
         }
     
     def __init__(self, *args, **kwargs):
