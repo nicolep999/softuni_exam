@@ -363,9 +363,14 @@
                                     <div class="flex justify-between items-start mb-4">
                                         <div class="flex items-center gap-4">
                                             <div class="relative">
-                                                <div class="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                                    <span class="text-white font-bold text-lg">{{ review.user.username|first|upper }}</span>
-                                                </div>
+                                                {% if review.user.profile.avatar %}
+                                                    <img src="{{ review.user.profile.avatar.url }}" alt="{{ review.user.username }}" 
+                                                         class="w-14 h-14 rounded-xl object-cover shadow-lg border-2 border-white">
+                                                {% else %}
+                                                    <div class="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                                        <span class="text-white font-bold text-lg">{{ review.user.username|first|upper }}</span>
+                                                    </div>
+                                                {% endif %}
                                                 <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center shadow-md">
                                                     <span class="text-yellow-900 font-bold text-xs">★</span>
                                                 </div>

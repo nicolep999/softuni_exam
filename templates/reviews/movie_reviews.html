@@ -56,12 +56,24 @@
             {% for review in reviews %}
                 <div class="bg-white p-6 rounded-lg shadow-md">
                     <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-xl font-bold">{{ review.title }}</h3>
-                            <p class="text-gray-600">
-                                By <a href="{% url 'reviews:user_reviews' review.user.id %}" class="text-blue-600 hover:underline">{{ review.user.username }}</a> 
-                                on {{ review.created_at|date:"F d, Y" }}
-                            </p>
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                {% if review.user.profile.avatar %}
+                                    <img src="{{ review.user.profile.avatar.url }}" alt="{{ review.user.username }}" 
+                                         class="w-12 h-12 rounded-full object-cover shadow-md border-2 border-white">
+                                {% else %}
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-md">
+                                        <span class="text-white font-bold text-sm">{{ review.user.username|first|upper }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">{{ review.title }}</h3>
+                                <p class="text-gray-600">
+                                    By <a href="{% url 'reviews:user_reviews' review.user.id %}" class="text-blue-600 hover:underline">{{ review.user.username }}</a> 
+                                    on {{ review.created_at|date:"F d, Y" }}
+                                </p>
+                            </div>
                         </div>
                         <div class="bg-yellow-500 text-white px-3 py-2 rounded-lg">
                             <span class="text-xl font-bold">{{ review.rating }}/10</span>
