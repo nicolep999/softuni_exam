@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, UpdateView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.views import View
 
 from .forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm
 from .models import Profile
@@ -26,6 +27,17 @@ class RegisterView(CreateView):
         if request.user.is_authenticated:
             return redirect('movies:home')
         return super().dispatch(request, *args, **kwargs)
+
+class LogoutView(View):
+    def get(self, request):
+        # Show confirmation page
+        return render(request, 'accounts/logout_confirm.html')
+    
+    def post(self, request):
+        # Perform logout
+        logout(request)
+        messages.success(request, "You have been successfully logged out.")
+        return redirect('movies:home')
 
 class ProfileView(LoginRequiredMixin, DetailView):
     model = Profile
