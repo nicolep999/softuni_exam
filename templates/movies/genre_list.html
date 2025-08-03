@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Genres - Moodie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Movie Genres</h1>
+        {% if user.is_staff %}
+            <a href="#" class="btn-primary">Add New Genre</a>
+        {% endif %}
+    </div>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for genre in genres %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                <a href="{% url 'movies:genre_detail' genre.id %}" class="block p-6">
+                    <h2 class="text-xl font-bold mb-2">{{ genre.name }}</h2>
+                    <p class="text-gray-600 mb-4 line-clamp-3">
+                        {% if genre.description %}
+                            {{ genre.description|truncatewords:20 }}
+                        {% else %}
+                            No description available.
+                        {% endif %}
+                    </p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-blue-600">{{ genre.movies.count }} movies</span>
+                        <span class="text-blue-600 hover:underline">View &rarr;</span>
+                    </div>
+                </a>
+            </div>
+        {% empty %}
+            <div class="col-span-4 text-center py-12">
+                <p class="text-gray-500 text-lg">No genres available yet.</p>
+                {% if user.is_staff %}
+                    <a href="#" class="btn-primary mt-4 inline-block">Add First Genre</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

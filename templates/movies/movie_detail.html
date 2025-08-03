@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} ({{ movie.release_year }}) - Moodie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Movie Header -->
+        <div class="bg-blue-900 text-white p-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <h1 class="text-3xl font-bold mb-2 md:mb-0">{{ movie.title }} <span class="text-blue-300">({{ movie.release_year }})</span></h1>
+                
+                <!-- Admin Actions -->
+                {% if user.is_staff %}
+                <div class="flex space-x-2 mt-2 md:mt-0">
+                    <a href="{% url 'movies:movie_update' movie.id %}" class="btn-secondary text-sm">Edit Movie</a>
+                    <a href="{% url 'movies:movie_delete' movie.id %}" class="btn-danger text-sm">Delete Movie</a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Movie Meta -->
+            <div class="mt-4 flex flex-wrap gap-2">
+                {% for genre in movie.genres.all %}
+                    <a href="{% url 'movies:genre_detail' genre.id %}" class="bg-blue-700 text-white text-xs px-2 py-1 rounded hover:bg-blue-600">{{ genre.name }}</a>
+                {% endfor %}
+                
+                {% if movie.average_rating > 0 %}
+                    <span class="bg-yellow-500 text-white text-xs px-2 py-1 rounded flex items-center">
+                        <span class="mr-1">★</span> {{ movie.average_rating|floatformat:1 }}/10
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Movie Content -->
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Left Column: Poster and Actions -->
+                <div>
+                    {% if movie.poster %}
+                        <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-full rounded-lg shadow-md">
+                    {% else %}
+                        <div class="w-full h-96 bg-gray-300 flex items-center justify-center rounded-lg">
+                            <span class="text-gray-500">No Image Available</span>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- User Actions -->
+                    <div class="mt-4 space-y-2">
+                        {% if user.is_authenticated %}
+                            {% if in_watchlist %}
+                                <a href="{% url 'movies:remove_from_watchlist' movie.id %}" class="btn-secondary w-full block text-center">Remove from Watchlist</a>
+                            {% else %}
+                                <a href="{% url 'movies:add_to_watchlist' movie.id %}" class="btn-primary w-full block text-center">Add to Watchlist</a>
+                            {% endif %}
+                            <a href="{% url 'reviews:review_create' movie.id %}" class="btn-primary w-full block text-center">Write a Review</a>
+                        {% else %}
+                            <a href="{% url 'accounts:login' %}" class="btn-secondary w-full block text-center">Login to Add to Watchlist</a>
+                            <a href="{% url 'accounts:login' %}" class="btn-secondary w-full block text-center">Login to Write a Review</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Right Column: Details -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- Plot -->
+                    <div>
+                        <h2 class="text-xl font-bold mb-2">Plot</h2>
+                        <p class="text-gray-700">{{ movie.plot }}</p>
+                    </div>
+                    
+                    <!-- Director -->
+                    {% if movie.director %}
+                    <div>
+                        <h2 class="text-xl font-bold mb-2">Director</h2>
+                        <p class="text-gray-700">{{ movie.director.name }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Cast -->
+                    {% if movie.actors.all %}
+                    <div>
+                        <h2 class="text-xl font-bold mb-2">Cast</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {% for actor in movie.actors.all %}
+                                <div class="flex items-center space-x-2">
+                                    {% if actor.photo %}
+                                        <img src="{{ actor.photo.url }}" alt="{{ actor.name }}" class="w-10 h-10 rounded-full object-cover">
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <span class="text-gray-500 text-xs">No Photo</span>
+                                        </div>
+                                    {% endif %}
+                                    <span>{{ actor.name }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Trailer -->
+                    {% if movie.trailer_url %}
+                    <div>
+                        <h2 class="text-xl font-bold mb-2">Trailer</h2>
+                        <div class="aspect-w-16 aspect-h-9">
+                            <iframe src="{{ movie.trailer_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-64 rounded-lg"></iframe>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Reviews</h2>
+            <a href="{% url 'reviews:movie_reviews' movie.id %}" class="text-blue-600 hover:underline">View All Reviews</a>
+        </div>
+        
+        <div class="space-y-4">
+            {% for review in reviews %}
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold">{{ review.title }}</h3>
+                            <p class="text-sm text-gray-500">By {{ review.user.username }} on {{ review.created_at|date:"F d, Y" }}</p>
+                        </div>
+                        <div class="bg-yellow-500 text-white px-2 py-1 rounded">
+                            <span class="font-bold">{{ review.rating }}/10</span>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-gray-700">{{ review.content|truncatewords:50 }}</p>
+                    {% if user == review.user or user.is_staff %}
+                        <div class="mt-2 flex space-x-2">
+                            <a href="{% url 'reviews:review_edit' review.id %}" class="text-blue-600 hover:underline text-sm">Edit</a>
+                            <a href="{% url 'reviews:review_delete' review.id %}" class="text-red-600 hover:underline text-sm">Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-gray-500">No reviews yet. Be the first to review this movie!</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'reviews:review_create' movie.id %}" class="btn-primary mt-4 inline-block">Write a Review</a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="btn-secondary mt-4 inline-block">Login to Write a Review</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Similar Movies Section -->
+    {% if similar_movies %}
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold mb-4">Similar Movies</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {% for similar_movie in similar_movies %}
+                <div class="movie-card">
+                    <a href="{% url 'movies:movie_detail' similar_movie.id %}">
+                        {% if similar_movie.poster %}
+                            <img src="{{ similar_movie.poster.url }}" alt="{{ similar_movie.title }}" class="w-full h-64 object-cover">
+                        {% else %}
+                            <div class="w-full h-64 bg-gray-300 flex items-center justify-center">
+                                <span class="text-gray-500">No Image</span>
+                            </div>
+                        {% endif %}
+                        <div class="p-4">
+                            <h3 class="font-bold truncate">{{ similar_movie.title }}</h3>
+                            <p class="text-gray-600">{{ similar_movie.release_year }}</p>
+                            {% if similar_movie.average_rating > 0 %}
+                                <div class="flex items-center mt-2">
+                                    <span class="text-yellow-500">★</span>
+                                    <span class="ml-1">{{ similar_movie.average_rating|floatformat:1 }}/10</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

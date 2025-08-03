@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Review - Moodie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-red-600">Delete Review</h1>
+        
+        <div class="mb-6">
+            <p class="text-lg mb-4">Are you sure you want to delete your review for "{{ review.movie.title }}"?</p>
+            <p class="text-gray-600">This action cannot be undone.</p>
+        </div>
+        
+        <!-- Review Preview -->
+        <div class="bg-gray-100 p-4 rounded-lg mb-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-bold">{{ review.title }}</h3>
+                    <p class="text-sm text-gray-500">By {{ review.user.username }} on {{ review.created_at|date:"F d, Y" }}</p>
+                </div>
+                <div class="bg-yellow-500 text-white px-2 py-1 rounded">
+                    <span class="font-bold">{{ review.rating }}/10</span>
+                </div>
+            </div>
+            <p class="mt-2 text-gray-700">{{ review.content|truncatewords:50 }}</p>
+        </div>
+        
+        <form method="post" class="flex justify-end space-x-4">
+            {% csrf_token %}
+            <a href="{% url 'movies:movie_detail' review.movie.id %}" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-danger">Delete Review</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

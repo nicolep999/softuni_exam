@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete {{ movie.title }} - Moodie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-red-600">Delete Movie</h1>
+        
+        <div class="mb-6">
+            <p class="text-lg mb-4">Are you sure you want to delete the movie "{{ movie.title }}" ({{ movie.release_year }})?</p>
+            <p class="text-gray-600">This action cannot be undone. All reviews associated with this movie will also be deleted.</p>
+        </div>
+        
+        <div class="flex items-center p-4 bg-gray-100 rounded-lg mb-6">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="h-24 w-auto mr-4 rounded">
+            {% else %}
+                <div class="h-24 w-16 bg-gray-300 flex items-center justify-center rounded mr-4">
+                    <span class="text-gray-500 text-xs">No Image</span>
+                </div>
+            {% endif %}
+            <div>
+                <h2 class="font-bold">{{ movie.title }}</h2>
+                <p class="text-gray-600">{{ movie.release_year }}</p>
+                <p class="text-sm text-gray-600">
+                    {% for genre in movie.genres.all %}
+                        {% if not forloop.first %}, {% endif %}{{ genre.name }}
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+        
+        <form method="post" class="flex justify-end space-x-4">
+            {% csrf_token %}
+            <a href="{% url 'movies:movie_detail' movie.id %}" class="btn-secondary">Cancel</a>
+            <button type="submit" class="btn-danger">Delete Movie</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

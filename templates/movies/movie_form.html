@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Movie: {{ form.instance.title }}{% else %}Add New Movie{% endif %} - Moodie
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">
+            {% if form.instance.pk %}Edit Movie: {{ form.instance.title }}{% else %}Add New Movie{% endif %}
+        </h1>
+        
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert-error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Title -->
+                <div>
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Release Year -->
+                <div>
+                    <label for="{{ form.release_year.id_for_label }}" class="form-label">Release Year</label>
+                    {{ form.release_year }}
+                    {% if form.release_year.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.release_year.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Plot -->
+            <div>
+                <label for="{{ form.plot.id_for_label }}" class="form-label">Plot</label>
+                {{ form.plot }}
+                {% if form.plot.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.plot.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Poster -->
+            <div>
+                <label for="{{ form.poster.id_for_label }}" class="form-label">Poster</label>
+                {% if form.instance.poster %}
+                    <div class="mb-2 flex items-center">
+                        <img src="{{ form.instance.poster.url }}" alt="{{ form.instance.title }}" class="h-24 w-auto mr-4">
+                        <p class="text-sm text-gray-600">Current poster. Upload a new one to replace it.</p>
+                    </div>
+                {% endif %}
+                {{ form.poster }}
+                {% if form.poster.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.poster.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Trailer URL -->
+            <div>
+                <label for="{{ form.trailer_url.id_for_label }}" class="form-label">Trailer URL</label>
+                {{ form.trailer_url }}
+                {% if form.trailer_url.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.trailer_url.errors.0 }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-600 mt-1">Enter a YouTube or Vimeo URL for the movie trailer.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Genres -->
+                <div>
+                    <label for="{{ form.genres.id_for_label }}" class="form-label">Genres</label>
+                    {{ form.genres }}
+                    {% if form.genres.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.genres.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-sm text-gray-600 mt-1">Hold Ctrl (or Cmd on Mac) to select multiple genres.</p>
+                </div>
+                
+                <!-- Director -->
+                <div>
+                    <label for="{{ form.director.id_for_label }}" class="form-label">Director</label>
+                    {{ form.director }}
+                    {% if form.director.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.director.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Actors -->
+            <div>
+                <label for="{{ form.actors.id_for_label }}" class="form-label">Actors</label>
+                {{ form.actors }}
+                {% if form.actors.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.actors.errors.0 }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-600 mt-1">Hold Ctrl (or Cmd on Mac) to select multiple actors.</p>
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <a href="{% if form.instance.pk %}{% url 'movies:movie_detail' form.instance.pk %}{% else %}{% url 'movies:movie_list' %}{% endif %}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-primary">
+                    {% if form.instance.pk %}Update Movie{% else %}Create Movie{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

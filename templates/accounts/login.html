@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Moodie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">Login to Moodie</h1>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert-error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.password.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <button type="submit" class="btn-primary w-full">Login</button>
+            </div>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+        
+        <div class="mt-6 text-center">
+            <p class="text-gray-600">Don't have an account? <a href="{% url 'accounts:register' %}" class="text-blue-600 hover:underline">Register</a></p>
+            <p class="text-gray-600 mt-2">Forgot your password? <a href="#" class="text-blue-600 hover:underline">Reset Password</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

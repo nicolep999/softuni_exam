@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if is_update %}Edit Review for {{ movie.title }}{% else %}Write Review for {{ movie.title }}{% endif %} - Moodie
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">
+            {% if is_update %}Edit Review for "{{ movie.title }}"{% else %}Write Review for "{{ movie.title }}"{% endif %}
+        </h1>
+        
+        <!-- Movie Preview -->
+        <div class="flex items-center p-4 bg-gray-100 rounded-lg mb-6">
+            {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="h-24 w-auto mr-4 rounded">
+            {% else %}
+                <div class="h-24 w-16 bg-gray-300 flex items-center justify-center rounded mr-4">
+                    <span class="text-gray-500 text-xs">No Image</span>
+                </div>
+            {% endif %}
+            <div>
+                <h2 class="font-bold">{{ movie.title }}</h2>
+                <p class="text-gray-600">{{ movie.release_year }}</p>
+                <div class="flex flex-wrap gap-1 mt-1">
+                    {% for genre in movie.genres.all|slice:":3" %}
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ genre.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert-error">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Rating -->
+            <div>
+                <label for="{{ form.rating.id_for_label }}" class="form-label">Rating (1-10)</label>
+                {{ form.rating }}
+                {% if form.rating.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.rating.errors.0 }}</p>
+                {% endif %}
+                <div class="flex items-center mt-2">
+                    <span class="text-yellow-500">★</span>
+                    <span class="ml-1 text-sm text-gray-600">1 = Poor, 10 = Excellent</span>
+                </div>
+            </div>
+            
+            <!-- Title -->
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="form-label">Review Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Content -->
+            <div>
+                <label for="{{ form.content.id_for_label }}" class="form-label">Review Content</label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.content.errors.0 }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-600 mt-1">Share your thoughts about the movie. What did you like or dislike?</p>
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'movies:movie_detail' movie.id %}" class="btn-secondary">Cancel</a>
+                <button type="submit" class="btn-primary">
+                    {% if is_update %}Update Review{% else %}Post Review{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

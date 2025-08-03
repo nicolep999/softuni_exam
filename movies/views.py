@@ -141,29 +141,37 @@ def add_to_watchlist(request, movie_id):
         messages.error(request, "You need to be logged in to add movies to your watchlist.")
         return redirect('accounts:login')
 
-    movie = get_object_or_404(Movie, id=movie_id)
+    try:
+        movie = get_object_or_404(Movie, id=movie_id)
 
-    # Check if already in watchlist
-    if Watchlist.objects.filter(user=request.user, movie=movie).exists():
-        messages.info(request, f"'{movie.title}' is already in your watchlist.")
-    else:
-        Watchlist.objects.create(user=request.user, movie=movie)
-        messages.success(request, f"'{movie.title}' added to your watchlist.")
+        # Check if already in watchlist
+        if Watchlist.objects.filter(user=request.user, movie=movie).exists():
+            messages.info(request, f"'{movie.title}' is already in your watchlist.")
+        else:
+            Watchlist.objects.create(user=request.user, movie=movie)
+            messages.success(request, f"'{movie.title}' added to your watchlist.")
 
-    return redirect('movies:movie_detail', pk=movie_id)
+        return redirect('movies:movie_detail', pk=movie_id)
+    except Exception as e:
+        messages.error(request, "An error occurred while adding the movie to your watchlist.")
+        return redirect('movies:movie_list')
 
 def remove_from_watchlist(request, movie_id):
     if not request.user.is_authenticated:
         return redirect('accounts:login')
 
-    movie = get_object_or_404(Movie, id=movie_id)
-    watchlist_item = get_object_or_404(Watchlist, user=request.user, movie=movie)
-    watchlist_item.delete()
+    try:
+        movie = get_object_or_404(Movie, id=movie_id)
+        watchlist_item = get_object_or_404(Watchlist, user=request.user, movie=movie)
+        watchlist_item.delete()
 
-    messages.success(request, f"'{movie.title}' removed from your watchlist.")
+        messages.success(request, f"'{movie.title}' removed from your watchlist.")
 
-    # Check if we should redirect back to watchlist or movie detail
-    next_url = request.GET.get('next')
-    if next_url == 'watchlist':
-        return redirect('accounts:profile')
-    return redirect('movies:movie_detail', pk=movie_id)
+        # Check if we should redirect back to watchlist or movie detail
+        next_url = request.GET.get('next')
+        if next_url == 'watchlist':
+            return redirect('accounts:profile')
+        return redirect('movies:movie_detail', pk=movie_id)
+    except Exception as e:
+        messages.error(request, "An error occurred while removing the movie from your watchlist.")
+        return redirect('movies:movie_list')

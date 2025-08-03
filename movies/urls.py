@@ -12,4 +12,6 @@ urlpatterns = [
     path('movies/<int:pk>/delete/', views.MovieDeleteView.as_view(), name='movie_delete'),
     path('genres/', views.GenreListView.as_view(), name='genre_list'),
     path('genres/<int:pk>/', views.GenreDetailView.as_view(), name='genre_detail'),
+    path('movies/<int:movie_id>/add-to-watchlist/', views.add_to_watchlist, name='add_to_watchlist'),
+    path('movies/<int:movie_id>/remove-from-watchlist/', views.remove_from_watchlist, name='remove_from_watchlist'),
 ]

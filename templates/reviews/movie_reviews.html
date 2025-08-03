@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Reviews for {{ movie.title }} - Moodie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Movie Header -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="bg-blue-900 text-white p-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-3xl font-bold">Reviews for "{{ movie.title }}"</h1>
+                <a href="{% url 'movies:movie_detail' movie.id %}" class="btn-secondary">Back to Movie</a>
+            </div>
+        </div>
+        
+        <!-- Movie Preview -->
+        <div class="p-6">
+            <div class="flex items-center">
+                {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="h-32 w-auto mr-6 rounded">
+                {% else %}
+                    <div class="h-32 w-24 bg-gray-300 flex items-center justify-center rounded mr-6">
+                        <span class="text-gray-500">No Image</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h2 class="text-2xl font-bold">{{ movie.title }} <span class="text-gray-600">({{ movie.release_year }})</span></h2>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        {% for genre in movie.genres.all %}
+                            <a href="{% url 'movies:genre_detail' genre.id %}" class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{{ genre.name }}</a>
+                        {% endfor %}
+                    </div>
+                    {% if movie.average_rating > 0 %}
+                        <div class="flex items-center mt-2">
+                            <span class="text-yellow-500">★</span>
+                            <span class="ml-1 font-bold">{{ movie.average_rating|floatformat:1 }}/10</span>
+                            <span class="ml-2 text-gray-600">({{ reviews|length }} reviews)</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if user.is_authenticated %}
+                        <div class="mt-4">
+                            <a href="{% url 'reviews:review_create' movie.id %}" class="btn-primary">Write a Review</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="space-y-6">
+        <h2 class="text-2xl font-bold mb-4">All Reviews</h2>
+        
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-xl font-bold">{{ review.title }}</h3>
+                            <p class="text-gray-600">
+                                By <a href="{% url 'reviews:user_reviews' review.user.id %}" class="text-blue-600 hover:underline">{{ review.user.username }}</a> 
+                                on {{ review.created_at|date:"F d, Y" }}
+                            </p>
+                        </div>
+                        <div class="bg-yellow-500 text-white px-3 py-2 rounded-lg">
+                            <span class="text-xl font-bold">{{ review.rating }}/10</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-gray-700">{{ review.content }}</p>
+                    </div>
+                    
+                    {% if user == review.user or user.is_staff %}
+                        <div class="mt-4 flex space-x-4">
+                            <a href="{% url 'reviews:review_edit' review.id %}" class="text-blue-600 hover:underline">Edit</a>
+                            <a href="{% url 'reviews:review_delete' review.id %}" class="text-red-600 hover:underline">Delete</a>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Comments Section (if implemented) -->
+                    {% if review.comments.all %}
+                        <div class="mt-6 border-t pt-4">
+                            <h4 class="font-semibold mb-2">Comments</h4>
+                            <div class="space-y-3">
+                                {% for comment in review.comments.all %}
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <p class="text-sm">{{ comment.content }}</p>
+                                        <p class="text-xs text-gray-500 mt-1">{{ comment.user.username }} - {{ comment.created_at|date:"F d, Y" }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="mt-8 flex justify-center">
+                <div class="inline-flex rounded-md shadow-sm">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">First</a>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-700">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">Last</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                <p class="text-gray-500">No reviews yet for this movie.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'reviews:review_create' movie.id %}" class="btn-primary mt-4 inline-block">Be the First to Review</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={% url 'reviews:review_create' movie.id %}" class="btn-secondary mt-4 inline-block">Login to Write a Review</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
