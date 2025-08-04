@@ -22,4 +22,6 @@ urlpatterns = [
     path('admin-genres/', views.AdminGenreListView.as_view(), name='admin_genres'),
     path('admin-directors/', views.AdminDirectorListView.as_view(), name='admin_directors'),
     path('admin-actors/', views.AdminActorListView.as_view(), name='admin_actors'),
+    path('admin-reviews/', views.AdminReviewListView.as_view(), name='admin_reviews'),
+    path('admin-users/', views.AdminUserListView.as_view(), name='admin_users'),
 ]

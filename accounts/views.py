@@ -198,3 +198,56 @@ class AdminActorListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         from movies.models import Actor
         return Actor.objects.all().order_by('name')
+
+class AdminReviewListView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/admin_reviews.html'
+    context_object_name = 'reviews'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        from reviews.models import Review
+        return Review.objects.all().select_related('user', 'movie').order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from reviews.models import Review
+        from django.contrib.auth.models import User
+        
+        context['stats'] = {
+            'total_reviews': Review.objects.count(),
+            'active_users': User.objects.filter(is_active=True).count(),
+            'movies_reviewed': Review.objects.values('movie').distinct().count(),
+        }
+        return context
+
+class AdminUserListView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/admin_users.html'
+    context_object_name = 'users'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        return User.objects.all().select_related('profile').order_by('-date_joined')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from django.contrib.auth.models import User
+        
+        context['stats'] = {
+            'total_users': User.objects.count(),
+            'active_users': User.objects.filter(is_active=True).count(),
+            'staff_users': User.objects.filter(is_staff=True).count(),
+            'superusers': User.objects.filter(is_superuser=True).count(),
+        }
+        return context

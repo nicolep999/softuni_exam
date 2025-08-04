@@ -114,7 +114,7 @@
                 </div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-2">Total Reviews</h3>
                 <p class="text-slate-600 text-sm">User reviews submitted</p>
-                <a href="#" class="inline-flex items-center mt-4 text-yellow-600 hover:text-yellow-700 font-medium text-sm">
+                <a href="{% url 'accounts:admin_reviews' %}" class="inline-flex items-center mt-4 text-yellow-600 hover:text-yellow-700 font-medium text-sm">
                     View Reviews
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -134,7 +134,7 @@
                 </div>
                 <h3 class="text-lg font-semibold text-slate-800 mb-2">Total Users</h3>
                 <p class="text-slate-600 text-sm">Registered users</p>
-                <a href="#" class="inline-flex items-center mt-4 text-indigo-600 hover:text-indigo-700 font-medium text-sm">
+                <a href="{% url 'accounts:admin_users' %}" class="inline-flex items-center mt-4 text-indigo-600 hover:text-indigo-700 font-medium text-sm">
                     View Users
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
