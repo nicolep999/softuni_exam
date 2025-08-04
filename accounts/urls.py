@@ -15,4 +15,11 @@ urlpatterns = [
         template_name='accounts/password_change_done.html'), 
         name='password_change_done'),
     path('watchlist/', views.WatchlistView.as_view(), name='watchlist'),
+    
+    # Admin URLs
+    path('admin-dashboard/', views.AdminDashboardView.as_view(), name='admin_dashboard'),
+    path('admin-movies/', views.AdminMovieListView.as_view(), name='admin_movies'),
+    path('admin-genres/', views.AdminGenreListView.as_view(), name='admin_genres'),
+    path('admin-directors/', views.AdminDirectorListView.as_view(), name='admin_directors'),
+    path('admin-actors/', views.AdminActorListView.as_view(), name='admin_actors'),
 ]

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Movies - Admin{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mb-2">
+                    Manage Movies
+                </h1>
+                <p class="text-slate-600">Add, edit, and manage movies in the database</p>
+            </div>
+            <a href="{% url 'movies:movie_create' %}" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add New Movie
+            </a>
+        </div>
+
+        <!-- Movies Grid -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-200">
+                <h2 class="text-xl font-semibold text-slate-800">All Movies ({{ movies.paginator.count }})</h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Poster</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Title</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Year</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Director</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Genres</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        {% for movie in movies %}
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-6 py-4">
+                                {% if movie.poster %}
+                                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-16 h-24 object-cover rounded-lg shadow-sm">
+                                {% else %}
+                                    <div class="w-16 h-24 bg-slate-200 rounded-lg flex items-center justify-center">
+                                        <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div>
+                                    <h3 class="font-semibold text-slate-800">{{ movie.title }}</h3>
+                                    <p class="text-sm text-slate-600">{{ movie.plot|truncatewords:10 }}</p>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                    {{ movie.release_year }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if movie.director %}
+                                    <span class="text-slate-700">{{ movie.director.name }}</span>
+                                {% else %}
+                                    <span class="text-slate-400">No director</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-wrap gap-1">
+                                    {% for genre in movie.genres.all|slice:":3" %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            {{ genre.name }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if movie.genres.count > 3 %}
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                                            +{{ movie.genres.count|add:"-3" }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center space-x-2">
+                                    <a href="{% url 'movies:movie_detail' movie.pk %}" class="text-blue-600 hover:text-blue-700 p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{% url 'movies:movie_update' movie.pk %}" class="text-green-600 hover:text-green-700 p-2 hover:bg-green-50 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{% url 'movies:movie_delete' movie.pk %}" class="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center">
+                                <div class="text-slate-500">
+                                    <svg class="w-12 h-12 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                                    </svg>
+                                    <h3 class="text-lg font-medium mb-2">No movies found</h3>
+                                    <p class="mb-4">Get started by adding your first movie.</p>
+                                    <a href="{% url 'movies:movie_create' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Add First Movie
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if movies.has_other_pages %}
+            <div class="px-6 py-4 border-t border-slate-200">
+                <nav class="flex items-center justify-between">
+                    <div class="text-sm text-slate-600">
+                        Showing {{ movies.start_index }} to {{ movies.end_index }} of {{ movies.paginator.count }} movies
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {% if movies.has_previous %}
+                            <a href="?page={{ movies.previous_page_number }}" class="px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+                                Previous
+                            </a>
+                        {% endif %}
+                        
+                        {% for num in movies.paginator.page_range %}
+                            {% if movies.number == num %}
+                                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg">{{ num }}</span>
+                            {% elif num > movies.number|add:'-3' and num < movies.number|add:'3' %}
+                                <a href="?page={{ num }}" class="px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if movies.has_next %}
+                            <a href="?page={{ movies.next_page_number }}" class="px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+                                Next
+                            </a>
+                        {% endif %}
+                    </div>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Back to Dashboard -->
+        <div class="mt-8 text-center">
+            <a href="{% url 'accounts:admin_dashboard' %}" class="inline-flex items-center text-slate-600 hover:text-slate-800 font-medium">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Admin Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

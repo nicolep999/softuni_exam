@@ -114,3 +114,87 @@ class WatchlistView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['total_movies'] = self.get_queryset().count()
         return context
+
+class AdminDashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/admin_dashboard.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access the admin dashboard.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from movies.models import Movie, Genre, Director, Actor
+        from reviews.models import Review
+        
+        context['stats'] = {
+            'total_movies': Movie.objects.count(),
+            'total_genres': Genre.objects.count(),
+            'total_directors': Director.objects.count(),
+            'total_actors': Actor.objects.count(),
+            'total_reviews': Review.objects.count(),
+            'total_users': User.objects.count(),
+        }
+        return context
+
+class AdminMovieListView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/admin_movies.html'
+    context_object_name = 'movies'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        from movies.models import Movie
+        return Movie.objects.all().order_by('-release_year', 'title')
+
+class AdminGenreListView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/admin_genres.html'
+    context_object_name = 'genres'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        from movies.models import Genre
+        return Genre.objects.all().order_by('name')
+
+class AdminDirectorListView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/admin_directors.html'
+    context_object_name = 'directors'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        from movies.models import Director
+        return Director.objects.all().order_by('name')
+
+class AdminActorListView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/admin_actors.html'
+    context_object_name = 'actors'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        from movies.models import Actor
+        return Actor.objects.all().order_by('name')
