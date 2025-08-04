@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, api_views
+from . import views
 
 app_name = 'movies'
 
@@ -14,8 +14,4 @@ urlpatterns = [
     path('genres/<int:pk>/', views.GenreDetailView.as_view(), name='genre_detail'),
     path('movies/<int:movie_id>/add-to-watchlist/', views.add_to_watchlist, name='add_to_watchlist'),
     path('movies/<int:movie_id>/remove-from-watchlist/', views.remove_from_watchlist, name='remove_from_watchlist'),
-    
-    # API endpoints
-    path('api/movies/', api_views.list_movies_api, name='api_movies_list'),
-    path('api/movies/add/', api_views.add_movie_api, name='api_movies_add'),
 ]
