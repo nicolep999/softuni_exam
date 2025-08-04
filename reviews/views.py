@@ -63,7 +63,7 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == review.user or self.request.user.is_staff
 
     def get_success_url(self):
-        messages.success(self.request, "Your review has been deleted successfully.")
+        messages.success(self.request, "Review has been deleted successfully.")
         return reverse('movies:movie_detail', kwargs={'pk': self.get_object().movie.id})
 
 class MovieReviewsListView(ListView):
