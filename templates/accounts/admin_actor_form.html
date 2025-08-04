@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Edit Actor{% else %}Create Actor{% endif %} - Admin - Moodie
+{% endblock %}
+
+{% block content %}
+<!-- Modern Hero Section -->
+<div class="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <!-- Subtle Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);"></div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="relative z-10 container mx-auto px-6 py-16">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-slate-800 mb-2">
+                        {% if object %}Edit Actor{% else %}Create New Actor{% endif %}
+                    </h1>
+                    <p class="text-slate-600">
+                        {% if object %}Update the actor information below{% else %}Add a new actor to the database{% endif %}
+                    </p>
+                </div>
+                <a href="{% url 'accounts:admin_actors' %}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Actors
+                </a>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Name Field -->
+                    <div>
+                        <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-2">
+                            Actor Name *
+                        </label>
+                        <input type="text" 
+                               name="{{ form.name.name }}" 
+                               id="{{ form.name.id_for_label }}"
+                               value="{{ form.name.value|default:'' }}"
+                               class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+                               placeholder="Enter actor's full name"
+                               required>
+                        {% if form.name.errors %}
+                            <div class="mt-2 text-red-600 text-sm">
+                                {% for error in form.name.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Bio Field -->
+                    <div>
+                        <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-2">
+                            Biography
+                        </label>
+                        <textarea name="{{ form.bio.name }}" 
+                                  id="{{ form.bio.id_for_label }}"
+                                  rows="6"
+                                  class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors resize-none"
+                                  placeholder="Enter actor's biography and career highlights">{{ form.bio.value|default:'' }}</textarea>
+                        {% if form.bio.errors %}
+                            <div class="mt-2 text-red-600 text-sm">
+                                {% for error in form.bio.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Birth Date Field -->
+                    <div>
+                        <label for="{{ form.birth_date.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-2">
+                            Birth Date
+                        </label>
+                        <input type="date" 
+                               name="{{ form.birth_date.name }}" 
+                               id="{{ form.birth_date.id_for_label }}"
+                               value="{{ form.birth_date.value|date:'Y-m-d'|default:'' }}"
+                               class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                        {% if form.birth_date.errors %}
+                            <div class="mt-2 text-red-600 text-sm">
+                                {% for error in form.birth_date.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Photo Field -->
+                    <div>
+                        <label for="{{ form.photo.id_for_label }}" class="block text-sm font-medium text-slate-700 mb-2">
+                            Photo
+                        </label>
+                        <input type="file" 
+                               name="{{ form.photo.name }}" 
+                               id="{{ form.photo.id_for_label }}"
+                               accept="image/*"
+                               class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors">
+                        {% if form.photo.errors %}
+                            <div class="mt-2 text-red-600 text-sm">
+                                {% for error in form.photo.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if form.photo.value %}
+                            <div class="mt-2 text-sm text-slate-600">
+                                Current photo: {{ form.photo.value }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-end space-x-4 pt-6 border-t border-slate-200">
+                        <a href="{% url 'accounts:admin_actors' %}" 
+                           class="px-6 py-3 bg-slate-200 text-slate-700 font-semibold rounded-xl hover:bg-slate-300 transition-colors duration-200">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                            {% if object %}Update Actor{% else %}Create Actor{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
