@@ -22,12 +22,19 @@ class MovieAdmin(admin.ModelAdmin):
     display_poster.short_description = 'Poster'
 
 class GenreAdmin(admin.ModelAdmin):
-    list_display = ('name', 'movie_count')
+    list_display = ('name', 'movie_count', 'display_poster')
     search_fields = ('name', 'description')
+    fields = ('name', 'description', 'poster')
 
     def movie_count(self, obj):
         return obj.movies.count()
     movie_count.short_description = 'Number of Movies'
+
+    def display_poster(self, obj):
+        if obj.poster:
+            return format_html('<img src="{}" width="60" height="40" style="object-fit: cover; border-radius: 4px;" />', obj.poster)
+        return "No Poster"
+    display_poster.short_description = 'Poster'
 
 class DirectorAdmin(admin.ModelAdmin):
     list_display = ('name', 'birth_date', 'movie_count', 'display_photo')

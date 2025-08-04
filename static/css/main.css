@@ -29,7 +29,28 @@
 }
 
 .form-input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.75rem !important;
+    outline: none !important;
+    transition: all 0.3s ease !important;
+    background-color: white !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+    font-size: 0.875rem !important;
+    color: #374151 !important;
+}
+
+.form-input:focus {
+    outline: none !important;
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+.form-input:hover {
+    border-color: #c7d2fe !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
 .form-label {
@@ -53,10 +74,7 @@
     @apply px-6 py-3 border-2 border-indigo-600 text-indigo-600 font-semibold rounded-full hover:bg-indigo-600 hover:text-white transition-all duration-300;
 }
 
-/* Enhanced form styles */
-.form-input-modern {
-    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white shadow-sm;
-}
+
 
 /* Modern card styles */
 .card-modern {
@@ -104,4 +122,53 @@ html {
     width: 50%;
     overflow: hidden;
     color: #fbbf24; /* yellow-400 - filled star color */
-} 
+}
+
+/* File input styling */
+input[type="file"] {
+    @apply w-full px-4 py-3 border-2 border-dashed border-slate-400 rounded-xl text-slate-900 bg-slate-50 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200;
+}
+
+/* Multi-select styling */
+select[multiple] {
+    @apply min-h-[120px];
+}
+
+/* Checkbox styling for genres */
+.genre-checkboxes {
+    @apply space-y-2;
+}
+
+.genre-checkboxes ul {
+    @apply list-none p-0 m-0;
+}
+
+.genre-checkboxes li {
+    @apply flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors;
+}
+
+.genre-checkboxes input[type="checkbox"] {
+    @apply w-5 h-5 text-purple-600 border-2 border-slate-400 rounded focus:ring-purple-500 focus:ring-2;
+}
+
+.genre-checkboxes label {
+    @apply text-sm font-medium text-slate-700 cursor-pointer flex-1;
+}
+
+/* Error state styling */
+input[type="text"].error, input[type="number"].error, input[type="url"].error, textarea.error, select.error {
+    @apply border-red-300 focus:ring-red-500 focus:border-red-500;
+}
+
+/* Success state styling */
+input[type="text"]:valid, input[type="number"]:valid, input[type="url"]:valid, textarea:valid, select:valid {
+    @apply border-green-300;
+}
+
+/* Placeholder styling */
+::placeholder {
+    color: #9ca3af !important;
+    opacity: 1 !important;
+}
+
+ 

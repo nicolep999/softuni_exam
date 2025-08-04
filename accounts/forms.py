@@ -5,7 +5,7 @@ from .models import Profile
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={
-        'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+        'class': 'form-input',
         'placeholder': 'Enter your email address'
     }))
     
@@ -14,7 +14,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2']
         widgets = {
             'username': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'placeholder': 'Choose a username'
             }),
         }
@@ -22,11 +22,11 @@ class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+            'class': 'form-input',
             'placeholder': 'Create a password'
         })
         self.fields['password2'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+            'class': 'form-input',
             'placeholder': 'Confirm your password'
         })
     
@@ -40,11 +40,11 @@ class CustomAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+            'class': 'form-input',
             'placeholder': 'Enter your username'
         })
         self.fields['password'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+            'class': 'form-input',
             'placeholder': 'Enter your password'
         })
 
@@ -52,15 +52,15 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['old_password'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm pr-10',
+            'class': 'form-input',
             'placeholder': 'Enter your current password'
         })
         self.fields['new_password1'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm pr-10',
+            'class': 'form-input',
             'placeholder': 'Enter your new password'
         })
         self.fields['new_password2'].widget.attrs.update({
-            'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm pr-10',
+            'class': 'form-input',
             'placeholder': 'Confirm your new password'
         })
     
@@ -83,17 +83,17 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['bio', 'avatar', 'birth_date', 'location', 'favorite_genres']
         widgets = {
             'bio': forms.Textarea(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm resize-none overflow-hidden',
+                'class': 'form-input',
                 'rows': 3,
                 'maxlength': 500,
                 'placeholder': 'Tell us about yourself and your movie preferences...'
             }),
             'birth_date': forms.DateInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'type': 'date'
             }),
             'location': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'placeholder': 'Enter your location'
             }),
             'avatar': forms.FileInput(attrs={
@@ -108,19 +108,19 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['username', 'email', 'first_name', 'last_name']
         widgets = {
             'username': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'placeholder': 'Enter your username'
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'placeholder': 'Enter your email address'
             }),
             'first_name': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'placeholder': 'Enter your first name'
             }),
             'last_name': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm',
+                'class': 'form-input',
                 'placeholder': 'Enter your last name'
             }),
         }
