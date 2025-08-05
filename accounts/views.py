@@ -12,6 +12,61 @@ from .forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm, Cu
 from .models import Profile
 from movies.models import Watchlist, Genre, Director, Actor
 
+# Base Mixins for Admin Views
+class AdminPermissionMixin:
+    """Mixin to check admin permissions for all admin views"""
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "You don't have permission to access this page.")
+            return redirect('movies:home')
+        return super().dispatch(request, *args, **kwargs)
+
+class AdminListView(AdminPermissionMixin, LoginRequiredMixin, ListView):
+    """Base class for admin list views"""
+    paginate_by = 20
+
+class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
+    """Base class for admin create views"""
+    def form_valid(self, form):
+        model_name = self.model.__name__.lower()
+        messages.success(self.request, f"{self.model.__name__} created successfully.")
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['model_name'] = self.model.__name__
+        context['model_name_plural'] = self.model.__name__ + 's'
+        context['back_url'] = self.success_url
+        return context
+
+class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
+    """Base class for admin update views"""
+    def form_valid(self, form):
+        model_name = self.model.__name__.lower()
+        messages.success(self.request, f"{self.model.__name__} updated successfully.")
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['model_name'] = self.model.__name__
+        context['model_name_plural'] = self.model.__name__ + 's'
+        context['back_url'] = self.success_url
+        return context
+
+class AdminDeleteView(AdminPermissionMixin, LoginRequiredMixin, DeleteView):
+    """Base class for admin delete views"""
+    def delete(self, request, *args, **kwargs):
+        model_name = self.model.__name__.lower()
+        messages.success(request, f"{self.model.__name__} deleted successfully.")
+        return super().delete(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['model_name'] = self.model.__name__
+        context['model_name_plural'] = self.model.__name__ + 's'
+        context['back_url'] = self.success_url
+        return context
+
 class RegisterView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'accounts/register.html'
@@ -139,76 +194,41 @@ class AdminDashboardView(LoginRequiredMixin, TemplateView):
         }
         return context
 
-class AdminMovieListView(LoginRequiredMixin, ListView):
+class AdminMovieListView(AdminListView):
     template_name = 'accounts/admin_movies.html'
     context_object_name = 'movies'
-    paginate_by = 20
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         from movies.models import Movie
         return Movie.objects.all().order_by('-release_year', 'title')
 
-class AdminGenreListView(LoginRequiredMixin, ListView):
+class AdminGenreListView(AdminListView):
     template_name = 'accounts/admin_genres.html'
     context_object_name = 'genres'
-    paginate_by = 20
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         from movies.models import Genre
         return Genre.objects.all().order_by('name')
 
-class AdminDirectorListView(LoginRequiredMixin, ListView):
+class AdminDirectorListView(AdminListView):
     template_name = 'accounts/admin_directors.html'
     context_object_name = 'directors'
-    paginate_by = 20
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         from movies.models import Director
         return Director.objects.all().order_by('name')
 
-class AdminActorListView(LoginRequiredMixin, ListView):
+class AdminActorListView(AdminListView):
     template_name = 'accounts/admin_actors.html'
     context_object_name = 'actors'
-    paginate_by = 20
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         from movies.models import Actor
         return Actor.objects.all().order_by('name')
 
-class AdminReviewListView(LoginRequiredMixin, ListView):
+class AdminReviewListView(AdminListView):
     template_name = 'accounts/admin_reviews.html'
     context_object_name = 'reviews'
-    paginate_by = 20
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         from reviews.models import Review
@@ -226,16 +246,9 @@ class AdminReviewListView(LoginRequiredMixin, ListView):
         }
         return context
 
-class AdminUserListView(LoginRequiredMixin, ListView):
+class AdminUserListView(AdminListView):
     template_name = 'accounts/admin_users.html'
     context_object_name = 'users'
-    paginate_by = 20
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
         return User.objects.all().select_related('profile').order_by('-date_joined')
@@ -253,145 +266,55 @@ class AdminUserListView(LoginRequiredMixin, ListView):
         return context
 
 # Genre CRUD Views
-class AdminGenreCreateView(LoginRequiredMixin, CreateView):
+class AdminGenreCreateView(AdminCreateView):
     model = Genre
     fields = ['name', 'description']
     template_name = 'accounts/admin_genre_form.html'
     success_url = reverse_lazy('accounts:admin_genres')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Genre created successfully.")
-        return super().form_valid(form)
 
-class AdminGenreUpdateView(LoginRequiredMixin, UpdateView):
+class AdminGenreUpdateView(AdminUpdateView):
     model = Genre
     fields = ['name', 'description']
     template_name = 'accounts/admin_genre_form.html'
     success_url = reverse_lazy('accounts:admin_genres')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Genre updated successfully.")
-        return super().form_valid(form)
 
-class AdminGenreDeleteView(LoginRequiredMixin, DeleteView):
+class AdminGenreDeleteView(AdminDeleteView):
     model = Genre
     template_name = 'accounts/admin_genre_confirm_delete.html'
     success_url = reverse_lazy('accounts:admin_genres')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def delete(self, request, *args, **kwargs):
-        messages.success(request, "Genre deleted successfully.")
-        return super().delete(request, *args, **kwargs)
 
 # Director CRUD Views
-class AdminDirectorCreateView(LoginRequiredMixin, CreateView):
+class AdminDirectorCreateView(AdminCreateView):
     model = Director
     fields = ['name', 'bio', 'birth_date', 'photo']
     template_name = 'accounts/admin_director_form.html'
     success_url = reverse_lazy('accounts:admin_directors')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Director created successfully.")
-        return super().form_valid(form)
 
-class AdminDirectorUpdateView(LoginRequiredMixin, UpdateView):
+class AdminDirectorUpdateView(AdminUpdateView):
     model = Director
     fields = ['name', 'bio', 'birth_date', 'photo']
     template_name = 'accounts/admin_director_form.html'
     success_url = reverse_lazy('accounts:admin_directors')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Director updated successfully.")
-        return super().form_valid(form)
 
-class AdminDirectorDeleteView(LoginRequiredMixin, DeleteView):
+class AdminDirectorDeleteView(AdminDeleteView):
     model = Director
     template_name = 'accounts/admin_director_confirm_delete.html'
     success_url = reverse_lazy('accounts:admin_directors')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def delete(self, request, *args, **kwargs):
-        messages.success(request, "Director deleted successfully.")
-        return super().delete(request, *args, **kwargs)
 
 # Actor CRUD Views
-class AdminActorCreateView(LoginRequiredMixin, CreateView):
+class AdminActorCreateView(AdminCreateView):
     model = Actor
     fields = ['name', 'bio', 'birth_date', 'photo']
     template_name = 'accounts/admin_actor_form.html'
     success_url = reverse_lazy('accounts:admin_actors')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Actor created successfully.")
-        return super().form_valid(form)
 
-class AdminActorUpdateView(LoginRequiredMixin, UpdateView):
+class AdminActorUpdateView(AdminUpdateView):
     model = Actor
     fields = ['name', 'bio', 'birth_date', 'photo']
     template_name = 'accounts/admin_actor_form.html'
     success_url = reverse_lazy('accounts:admin_actors')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        messages.success(self.request, "Actor updated successfully.")
-        return super().form_valid(form)
 
-class AdminActorDeleteView(LoginRequiredMixin, DeleteView):
+class AdminActorDeleteView(AdminDeleteView):
     model = Actor
     template_name = 'accounts/admin_actor_confirm_delete.html'
     success_url = reverse_lazy('accounts:admin_actors')
-    
-    def dispatch(self, request, *args, **kwargs):
-        if not (request.user.is_superuser or request.user.is_staff):
-            messages.error(request, "You don't have permission to access this page.")
-            return redirect('movies:home')
-        return super().dispatch(request, *args, **kwargs)
-    
-    def delete(self, request, *args, **kwargs):
-        messages.success(request, "Actor deleted successfully.")
-        return super().delete(request, *args, **kwargs)

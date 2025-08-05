@@ -1,0 +1,13 @@
+{% load movie_filters %}
+
+<div class="star-rating{% if size %}-{{ size }}{% endif %}">
+    {% for i in "12345" %}
+        {% if rating|star_class:forloop.counter == "text-yellow-400 half-star" %}
+            <span class="half-star">★</span>
+        {% elif rating|star_class:forloop.counter == "text-yellow-400" %}
+            <span class="text-yellow-400">★</span>
+        {% else %}
+            <span class="text-slate-600">★</span>
+        {% endif %}
+    {% endfor %}
+</div> 

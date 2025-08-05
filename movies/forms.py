@@ -1,35 +1,55 @@
 from django import forms
 from .models import Movie, Genre, Director, Actor, Watchlist
 
+# Utility functions for common form widgets
+def get_text_input_widget(placeholder, **kwargs):
+    """Get a standardized text input widget"""
+    attrs = {
+        'class': 'form-input',
+        'placeholder': placeholder,
+        **kwargs
+    }
+    return forms.TextInput(attrs=attrs)
+
+def get_textarea_widget(placeholder, rows=3, **kwargs):
+    """Get a standardized textarea widget"""
+    attrs = {
+        'class': 'form-input',
+        'placeholder': placeholder,
+        'rows': rows,
+        **kwargs
+    }
+    return forms.Textarea(attrs=attrs)
+
+def get_date_input_widget(**kwargs):
+    """Get a standardized date input widget"""
+    attrs = {
+        'class': 'form-input',
+        'type': 'date',
+        **kwargs
+    }
+    return forms.DateInput(attrs=attrs)
+
 class MovieForm(forms.ModelForm):
     # Fields for creating new entities if they don't exist
     new_genre_name = forms.CharField(
         required=False,
         max_length=100,
-        widget=forms.TextInput(attrs={
-            'class': 'form-input',
-            'placeholder': 'Enter new genre name'
-        }),
+        widget=get_text_input_widget('Enter new genre name'),
         help_text="Add a new genre if it doesn't exist"
     )
     
     new_director_name = forms.CharField(
         required=False,
         max_length=200,
-        widget=forms.TextInput(attrs={
-            'class': 'form-input',
-            'placeholder': 'Enter new director name'
-        }),
+        widget=get_text_input_widget('Enter new director name'),
         help_text="Add a new director if they don't exist"
     )
     
     new_actor_name = forms.CharField(
         required=False,
         max_length=200,
-        widget=forms.TextInput(attrs={
-            'class': 'form-input',
-            'placeholder': 'Enter new actor name'
-        }),
+        widget=get_text_input_widget('Enter new actor name'),
         help_text="Add a new actor if they don't exist"
     )
     
@@ -118,15 +138,8 @@ class GenreForm(forms.ModelForm):
         model = Genre
         fields = ['name', 'description']
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-input',
-                'placeholder': 'Enter genre name'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-input',
-                'rows': 3,
-                'placeholder': 'Enter genre description...'
-            }),
+            'name': get_text_input_widget('Enter genre name'),
+            'description': get_textarea_widget('Enter genre description...'),
         }
 
 class DirectorForm(forms.ModelForm):
@@ -134,19 +147,9 @@ class DirectorForm(forms.ModelForm):
         model = Director
         fields = ['name', 'bio', 'birth_date', 'photo']
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-input',
-                'placeholder': 'Enter director name'
-            }),
-            'bio': forms.Textarea(attrs={
-                'class': 'form-input',
-                'rows': 3,
-                'placeholder': 'Enter director biography...'
-            }),
-            'birth_date': forms.DateInput(attrs={
-                'class': 'form-input',
-                'type': 'date'
-            }),
+            'name': get_text_input_widget('Enter director name'),
+            'bio': get_textarea_widget('Enter director biography...'),
+            'birth_date': get_date_input_widget(),
         }
 
 class ActorForm(forms.ModelForm):
@@ -154,28 +157,15 @@ class ActorForm(forms.ModelForm):
         model = Actor
         fields = ['name', 'bio', 'birth_date', 'photo']
         widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-input',
-                'placeholder': 'Enter actor name'
-            }),
-            'bio': forms.Textarea(attrs={
-                'class': 'form-input',
-                'rows': 3,
-                'placeholder': 'Enter actor biography...'
-            }),
-            'birth_date': forms.DateInput(attrs={
-                'class': 'form-input',
-                'type': 'date'
-            }),
+            'name': get_text_input_widget('Enter actor name'),
+            'bio': get_textarea_widget('Enter actor biography...'),
+            'birth_date': get_date_input_widget(),
         }
 
 class MovieSearchForm(forms.Form):
     query = forms.CharField(
         required=False, 
-        widget=forms.TextInput(attrs={
-            'class': 'form-input',
-            'placeholder': 'Search movies...'
-        }),
+        widget=get_text_input_widget('Search movies...'),
     )
     genre = forms.ModelChoiceField(
         queryset=Genre.objects.all(),

@@ -1,0 +1,8 @@
+{% if user.profile.avatar %}
+    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" 
+         class="w-{{ size|default:'8' }} h-{{ size|default:'8' }} rounded-{{ rounded|default:'full' }} object-cover shadow-lg border-2 border-white">
+{% else %}
+    <div class="avatar-placeholder-{{ size|default:'sm' }}">
+        <span class="text-white font-bold text-{{ text_size|default:'sm' }}">{{ user.username|first|upper }}</span>
+    </div>
+{% endif %} 
