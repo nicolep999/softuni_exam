@@ -9,43 +9,43 @@
     <div class="absolute inset-0 bg-black opacity-20"></div>
     <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
     
-    <div class="relative container mx-auto px-4 py-24 lg:py-32">
+    <div class="relative container mx-auto px-4 py-12 lg:py-24">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-7xl font-bold mb-4 lg:mb-6 leading-tight">
                 Discover Your Next
                 <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Favorite Movie</span>
             </h1>
-            <p class="text-xl lg:text-2xl mb-8 text-gray-200 leading-relaxed">
+            <p class="text-lg sm:text-xl lg:text-2xl mb-6 lg:mb-8 text-gray-200 leading-relaxed px-4">
                 Explore thousands of movies, read authentic reviews, and build your personal watchlist. 
                 Your cinematic journey starts here.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
                 <a href="{% url 'movies:movie_list' %}" 
-                   class="group relative px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                   class="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 font-semibold rounded-full text-base sm:text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 w-full sm:w-auto">
                     <span class="relative z-10">Explore Movies</span>
                     <div class="absolute inset-0 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
                 {% if not user.is_authenticated %}
                     <a href="{% url 'accounts:register' %}" 
-                       class="group px-8 py-4 border-2 border-white text-white font-semibold rounded-full text-lg hover:bg-white hover:text-gray-900 transition-all duration-300">
+                       class="group px-6 sm:px-8 py-3 sm:py-4 border-2 border-white text-white font-semibold rounded-full text-base sm:text-lg hover:bg-white hover:text-gray-900 transition-all duration-300 w-full sm:w-auto">
                         Join the Community
                     </a>
                 {% endif %}
             </div>
             
             <!-- Stats Section -->
-            <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="mt-12 lg:mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 px-4">
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-yellow-400 mb-2">Discover</div>
-                    <div class="text-gray-300">Amazing Movies</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-yellow-400 mb-2">Discover</div>
+                    <div class="text-gray-300 text-sm sm:text-base">Amazing Movies</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-yellow-400 mb-2">Share</div>
-                    <div class="text-gray-300">Your Reviews</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-yellow-400 mb-2">Share</div>
+                    <div class="text-gray-300 text-sm sm:text-base">Your Reviews</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-yellow-400 mb-2">Connect</div>
-                    <div class="text-gray-300">With Others</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-yellow-400 mb-2">Connect</div>
+                    <div class="text-gray-300 text-sm sm:text-base">With Others</div>
                 </div>
             </div>
         </div>
@@ -69,21 +69,21 @@
             </a>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 lg:gap-8">
             {% for movie in latest_movies %}
                 <div class="group movie-card-modern">
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
                         <div class="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
                             {% if movie.poster %}
                                 <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" 
-                                     class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                     class="w-full h-48 sm:h-64 md:h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
                             {% else %}
-                                <div class="w-full h-80 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
+                                <div class="w-full h-48 sm:h-64 md:h-80 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
                                     <div class="text-center">
-                                        <svg class="w-16 h-16 text-gray-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M6 20h12M6 4h12"></path>
                                         </svg>
-                                        <span class="text-gray-500 text-sm">No Image</span>
+                                        <span class="text-gray-500 text-xs sm:text-sm">No Image</span>
                                     </div>
                                 </div>
                             {% endif %}
