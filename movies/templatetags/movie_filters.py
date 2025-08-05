@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter
 def star_class(value, star_position):
     """
@@ -11,14 +12,14 @@ def star_class(value, star_position):
     """
     if value is None:
         return "text-slate-600"
-    
+
     try:
         rating = float(value)
         star_pos = int(star_position)
-        
+
         # Convert 10-point rating to 5-point scale
         five_star_rating = (rating * 5) / 10
-        
+
         # Full star
         if five_star_rating >= star_pos:
             return "text-yellow-400"
@@ -29,4 +30,4 @@ def star_class(value, star_position):
         else:
             return "text-slate-600"
     except (ValueError, TypeError):
-        return "text-slate-600" 
+        return "text-slate-600"
