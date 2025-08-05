@@ -14,6 +14,9 @@ from django.views import View
 from django.contrib.auth.views import PasswordChangeView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
+from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 from .forms import (
     CustomUserCreationForm,
@@ -46,8 +49,21 @@ class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
     """Base class for admin create views"""
 
     def form_valid(self, form):
-        messages.success(self.request, f"{self.model.__name__} created successfully.")
-        return super().form_valid(form)
+        try:
+            with transaction.atomic():
+                response = super().form_valid(form)
+                messages.success(self.request, f"{self.model.__name__} created successfully.")
+                return response
+        except (ValidationError, IntegrityError) as e:
+            messages.error(self.request, f"Error creating {self.model.__name__.lower()}: {e}")
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f"An unexpected error occurred: {e}")
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -61,8 +77,21 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
     """Base class for admin update views"""
 
     def form_valid(self, form):
-        messages.success(self.request, f"{self.model.__name__} updated successfully.")
-        return super().form_valid(form)
+        try:
+            with transaction.atomic():
+                response = super().form_valid(form)
+                messages.success(self.request, f"{self.model.__name__} updated successfully.")
+                return response
+        except (ValidationError, IntegrityError) as e:
+            messages.error(self.request, f"Error updating {self.model.__name__.lower()}: {e}")
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f"An unexpected error occurred: {e}")
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -76,8 +105,17 @@ class AdminDeleteView(AdminPermissionMixin, LoginRequiredMixin, DeleteView):
     """Base class for admin delete views"""
 
     def delete(self, request, *args, **kwargs):
-        messages.success(request, f"{self.model.__name__} deleted successfully.")
-        return super().delete(request, *args, **kwargs)
+        try:
+            with transaction.atomic():
+                response = super().delete(request, *args, **kwargs)
+                messages.success(request, f"{self.model.__name__} deleted successfully.")
+                return response
+        except (ValidationError, IntegrityError) as e:
+            messages.error(request, f"Error deleting {self.model.__name__.lower()}: {e}")
+            return redirect(self.success_url)
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {e}")
+            return redirect(self.success_url)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,14 +131,26 @@ class RegisterView(CreateView):
     success_url = reverse_lazy("movies:home")
 
     def form_valid(self, form):
-        response = super().form_valid(form)
-        # Log the user in after registration
-        login(self.request, self.object)
-        messages.success(
-            self.request,
-            f"Welcome to Moodie, {self.object.username}! Your account has been created.",
-        )
-        return response
+        try:
+            with transaction.atomic():
+                response = super().form_valid(form)
+                # Log the user in after registration
+                login(self.request, self.object)
+                messages.success(
+                    self.request,
+                    f"Welcome to Moodie, {self.object.username}! Your account has been created.",
+                )
+                return response
+        except (ValidationError, IntegrityError) as e:
+            messages.error(self.request, f"Error creating account: {e}")
+            return self.form_invalid(form)
+        except Exception as e:
+            messages.error(self.request, f"An unexpected error occurred: {e}")
+            return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -151,18 +201,31 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        try:
+            user_form = UserUpdateForm(request.POST, instance=request.user)
+            profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
 
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            messages.success(request, "Your profile has been updated successfully.")
-            return redirect("accounts:profile")
-
-        return self.render_to_response(
-            self.get_context_data(user_form=user_form, profile_form=profile_form)
-        )
+            if user_form.is_valid() and profile_form.is_valid():
+                with transaction.atomic():
+                    user_form.save()
+                    profile_form.save()
+                messages.success(request, "Your profile has been updated successfully.")
+                return redirect("accounts:profile")
+            else:
+                messages.error(request, "Please correct the errors below.")
+                return self.render_to_response(
+                    self.get_context_data(user_form=user_form, profile_form=profile_form)
+                )
+        except (ValidationError, IntegrityError) as e:
+            messages.error(request, f"Error updating profile: {e}")
+            return self.render_to_response(
+                self.get_context_data(user_form=user_form, profile_form=profile_form)
+            )
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {e}")
+            return self.render_to_response(
+                self.get_context_data(user_form=user_form, profile_form=profile_form)
+            )
 
 
 class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
