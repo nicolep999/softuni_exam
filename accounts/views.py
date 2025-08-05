@@ -1,36 +1,55 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
     DetailView,
-    UpdateView,
-    TemplateView,
     ListView,
+    UpdateView,
     DeleteView,
+    TemplateView,
+    View,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import login, logout
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordChangeView
-from django.urls import reverse_lazy
-from django.shortcuts import redirect, render
-from django.db import transaction
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.contrib import messages
+from django.contrib.auth import get_user_model, logout
+from django.core.exceptions import ValidationError, PermissionDenied
+from django.db import transaction, IntegrityError
+from django.http import Http404
+from django.utils.html import strip_tags
+import re
 
-from .forms import (
-    CustomUserCreationForm,
-    ProfileUpdateForm,
-    UserUpdateForm,
-    CustomPasswordChangeForm,
-)
+from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CustomPasswordChangeForm
 from .models import Profile
 from movies.models import Watchlist, Genre, Director, Actor
 
+User = get_user_model()
 
-# Base Mixins for Admin Views
+
+def sanitize_input(value):
+    """Sanitize user input to prevent XSS and injection attacks"""
+    if not value:
+        return value
+    # Remove HTML tags
+    value = strip_tags(str(value))
+    # Remove potentially dangerous characters
+    value = re.sub(r'[<>"\']', '', value)
+    return value.strip()
+
+
+def validate_pk(pk):
+    """Validate primary key parameter"""
+    try:
+        pk = int(pk)
+        if pk <= 0:
+            raise ValueError("Primary key must be a positive integer")
+        return pk
+    except (ValueError, TypeError):
+        raise ValidationError("Invalid primary key provided")
+
+
 class AdminPermissionMixin:
-    """Mixin to check admin permissions for all admin views"""
+    """Mixin to ensure only staff/superusers can access admin views"""
 
     def dispatch(self, request, *args, **kwargs):
         if not (request.user.is_superuser or request.user.is_staff):
@@ -50,10 +69,15 @@ class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         try:
+            # Sanitize form data
+            for field_name, field_value in form.cleaned_data.items():
+                if isinstance(field_value, str):
+                    form.instance.__dict__[field_name] = sanitize_input(field_value)
+            
             with transaction.atomic():
-                response = super().form_valid(form)
-                messages.success(self.request, f"{self.model.__name__} created successfully.")
-                return response
+                obj = form.save()
+            messages.success(self.request, f"{self.model.__name__} was created successfully.")
+            return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             messages.error(self.request, f"Error creating {self.model.__name__.lower()}: {e}")
             return self.form_invalid(form)
@@ -67,9 +91,7 @@ class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["model_name"] = self.model.__name__
-        context["model_name_plural"] = self.model.__name__ + "s"
-        context["back_url"] = self.success_url
+        context["is_create"] = True
         return context
 
 
@@ -78,10 +100,15 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         try:
+            # Sanitize form data
+            for field_name, field_value in form.cleaned_data.items():
+                if isinstance(field_value, str):
+                    form.instance.__dict__[field_name] = sanitize_input(field_value)
+            
             with transaction.atomic():
-                response = super().form_valid(form)
-                messages.success(self.request, f"{self.model.__name__} updated successfully.")
-                return response
+                obj = form.save()
+            messages.success(self.request, f"{self.model.__name__} was updated successfully.")
+            return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             messages.error(self.request, f"Error updating {self.model.__name__.lower()}: {e}")
             return self.form_invalid(form)
@@ -95,9 +122,7 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["model_name"] = self.model.__name__
-        context["model_name_plural"] = self.model.__name__ + "s"
-        context["back_url"] = self.success_url
+        context["is_update"] = True
         return context
 
 
@@ -106,10 +131,12 @@ class AdminDeleteView(AdminPermissionMixin, LoginRequiredMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         try:
+            obj = self.get_object()
+            obj_name = str(obj)
             with transaction.atomic():
-                response = super().delete(request, *args, **kwargs)
-                messages.success(request, f"{self.model.__name__} deleted successfully.")
-                return response
+                obj.delete()
+            messages.success(request, f"{self.model.__name__} '{obj_name}' was deleted successfully.")
+            return super().delete(request, *args, **kwargs)
         except (ValidationError, IntegrityError) as e:
             messages.error(request, f"Error deleting {self.model.__name__.lower()}: {e}")
             return redirect(self.success_url)
@@ -119,9 +146,7 @@ class AdminDeleteView(AdminPermissionMixin, LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["model_name"] = self.model.__name__
-        context["model_name_plural"] = self.model.__name__ + "s"
-        context["back_url"] = self.success_url
+        context["is_delete"] = True
         return context
 
 
@@ -132,15 +157,18 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         try:
+            # Sanitize form data
+            form.instance.username = sanitize_input(form.cleaned_data.get('username'))
+            form.instance.email = sanitize_input(form.cleaned_data.get('email'))
+            form.instance.first_name = sanitize_input(form.cleaned_data.get('first_name'))
+            form.instance.last_name = sanitize_input(form.cleaned_data.get('last_name'))
+            
             with transaction.atomic():
-                response = super().form_valid(form)
-                # Log the user in after registration
-                login(self.request, self.object)
-                messages.success(
-                    self.request,
-                    f"Welcome to Moodie, {self.object.username}! Your account has been created.",
-                )
-                return response
+                user = form.save()
+                # Create profile for the user
+                Profile.objects.create(user=user)
+            messages.success(self.request, "Account created successfully! You can now log in.")
+            return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             messages.error(self.request, f"Error creating account: {e}")
             return self.form_invalid(form)
@@ -154,6 +182,7 @@ class RegisterView(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+            messages.info(request, "You are already logged in.")
             return redirect("movies:home")
         return super().dispatch(request, *args, **kwargs)
 
@@ -166,7 +195,7 @@ class LogoutView(View):
     def post(self, request):
         # Perform logout
         logout(request)
-        messages.success(request, "You have been successfully logged out.")
+        messages.success(request, "You have been logged out successfully.")
         return redirect("movies:home")
 
 
@@ -179,26 +208,36 @@ class ProfileView(LoginRequiredMixin, DetailView):
         return self.request.user.profile
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["watchlist"] = Watchlist.objects.filter(user=self.request.user)
-        context["reviews"] = self.request.user.reviews.all()
-        return context
+        try:
+            context = super().get_context_data(**kwargs)
+            context["watchlist_items"] = Watchlist.objects.filter(
+                user=self.request.user
+            ).select_related("movie")[:6]
+            context["total_watchlist"] = Watchlist.objects.filter(user=self.request.user).count()
+            return context
+        except Exception as e:
+            messages.error(self.request, f"Error loading profile data: {e}")
+            context = super().get_context_data(**kwargs)
+            context["watchlist_items"] = []
+            context["total_watchlist"] = 0
+            return context
 
 
 class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/profile_edit.html"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.method == "POST":
-            context["user_form"] = UserUpdateForm(self.request.POST, instance=self.request.user)
-            context["profile_form"] = ProfileUpdateForm(
-                self.request.POST, self.request.FILES, instance=self.request.user.profile
-            )
-        else:
+        try:
+            context = super().get_context_data(**kwargs)
             context["user_form"] = UserUpdateForm(instance=self.request.user)
             context["profile_form"] = ProfileUpdateForm(instance=self.request.user.profile)
-        return context
+            return context
+        except Exception as e:
+            messages.error(self.request, f"Error loading profile forms: {e}")
+            context = super().get_context_data(**kwargs)
+            context["user_form"] = UserUpdateForm()
+            context["profile_form"] = ProfileUpdateForm()
+            return context
 
     def post(self, request, *args, **kwargs):
         try:
@@ -206,6 +245,12 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
             profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
 
             if user_form.is_valid() and profile_form.is_valid():
+                # Sanitize form data
+                user_form.instance.username = sanitize_input(user_form.cleaned_data.get('username'))
+                user_form.instance.email = sanitize_input(user_form.cleaned_data.get('email'))
+                user_form.instance.first_name = sanitize_input(user_form.cleaned_data.get('first_name'))
+                user_form.instance.last_name = sanitize_input(user_form.cleaned_data.get('last_name'))
+                
                 with transaction.atomic():
                     user_form.save()
                     profile_form.save()
@@ -263,19 +308,32 @@ class AdminDashboardView(LoginRequiredMixin, TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        from movies.models import Movie, Genre, Director, Actor
-        from reviews.models import Review
+        try:
+            context = super().get_context_data(**kwargs)
+            from movies.models import Movie, Genre, Director, Actor
+            from reviews.models import Review
 
-        context["stats"] = {
-            "total_movies": Movie.objects.count(),
-            "total_genres": Genre.objects.count(),
-            "total_directors": Director.objects.count(),
-            "total_actors": Actor.objects.count(),
-            "total_reviews": Review.objects.count(),
-            "total_users": User.objects.count(),
-        }
-        return context
+            context["stats"] = {
+                "total_movies": Movie.objects.count(),
+                "total_genres": Genre.objects.count(),
+                "total_directors": Director.objects.count(),
+                "total_actors": Actor.objects.count(),
+                "total_reviews": Review.objects.count(),
+                "total_users": User.objects.count(),
+            }
+            return context
+        except Exception as e:
+            messages.error(self.request, f"Error loading admin dashboard: {e}")
+            context = super().get_context_data(**kwargs)
+            context["stats"] = {
+                "total_movies": 0,
+                "total_genres": 0,
+                "total_directors": 0,
+                "total_actors": 0,
+                "total_reviews": 0,
+                "total_users": 0,
+            }
+            return context
 
 
 class AdminMovieListView(AdminListView):
@@ -284,7 +342,6 @@ class AdminMovieListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Movie
-
         return Movie.objects.all().order_by("-release_year", "title")
 
 
@@ -294,7 +351,6 @@ class AdminGenreListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Genre
-
         return Genre.objects.all().order_by("name")
 
 
@@ -304,7 +360,6 @@ class AdminDirectorListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Director
-
         return Director.objects.all().order_by("name")
 
 
@@ -314,7 +369,6 @@ class AdminActorListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Actor
-
         return Actor.objects.all().order_by("name")
 
 
@@ -324,20 +378,18 @@ class AdminReviewListView(AdminListView):
 
     def get_queryset(self):
         from reviews.models import Review
-
         return Review.objects.all().select_related("user", "movie").order_by("-created_at")
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        from reviews.models import Review
-        from django.contrib.auth.models import User
-
-        context["stats"] = {
-            "total_reviews": Review.objects.count(),
-            "active_users": User.objects.filter(is_active=True).count(),
-            "movies_reviewed": Review.objects.values("movie").distinct().count(),
-        }
-        return context
+        try:
+            context = super().get_context_data(**kwargs)
+            context["total_reviews"] = self.get_queryset().count()
+            return context
+        except Exception as e:
+            messages.error(self.request, f"Error loading review statistics: {e}")
+            context = super().get_context_data(**kwargs)
+            context["total_reviews"] = 0
+            return context
 
 
 class AdminUserListView(AdminListView):
@@ -348,19 +400,22 @@ class AdminUserListView(AdminListView):
         return User.objects.all().select_related("profile").order_by("-date_joined")
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        from django.contrib.auth.models import User
+        try:
+            context = super().get_context_data(**kwargs)
+            context["total_users"] = self.get_queryset().count()
+            context["staff_users"] = User.objects.filter(is_staff=True).count()
+            context["superusers"] = User.objects.filter(is_superuser=True).count()
+            return context
+        except Exception as e:
+            messages.error(self.request, f"Error loading user statistics: {e}")
+            context = super().get_context_data(**kwargs)
+            context["total_users"] = 0
+            context["staff_users"] = 0
+            context["superusers"] = 0
+            return context
 
-        context["stats"] = {
-            "total_users": User.objects.count(),
-            "active_users": User.objects.filter(is_active=True).count(),
-            "staff_users": User.objects.filter(is_staff=True).count(),
-            "superusers": User.objects.filter(is_superuser=True).count(),
-        }
-        return context
 
-
-# Genre CRUD Views
+# Admin CRUD Views for Genres
 class AdminGenreCreateView(AdminCreateView):
     model = Genre
     fields = ["name", "description"]
@@ -381,7 +436,7 @@ class AdminGenreDeleteView(AdminDeleteView):
     success_url = reverse_lazy("accounts:admin_genres")
 
 
-# Director CRUD Views
+# Admin CRUD Views for Directors
 class AdminDirectorCreateView(AdminCreateView):
     model = Director
     fields = ["name", "bio", "birth_date", "photo"]
@@ -402,7 +457,7 @@ class AdminDirectorDeleteView(AdminDeleteView):
     success_url = reverse_lazy("accounts:admin_directors")
 
 
-# Actor CRUD Views
+# Admin CRUD Views for Actors
 class AdminActorCreateView(AdminCreateView):
     model = Actor
     fields = ["name", "bio", "birth_date", "photo"]

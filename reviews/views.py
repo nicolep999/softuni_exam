@@ -1,16 +1,53 @@
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError, PermissionDenied
-from django.db import IntegrityError, transaction
+from django.db import transaction, IntegrityError
 from django.http import Http404
+from django.utils.html import strip_tags
+import re
 
-from .forms import ReviewForm, CommentForm
 from .models import Review, Comment
+from .forms import ReviewForm, CommentForm
 from movies.models import Movie
+
+User = get_user_model()
+
+
+def sanitize_input(value):
+    """Sanitize user input to prevent XSS and injection attacks"""
+    if not value:
+        return value
+    # Remove HTML tags
+    value = strip_tags(str(value))
+    # Remove potentially dangerous characters
+    value = re.sub(r'[<>"\']', '', value)
+    return value.strip()
+
+
+def validate_movie_id(movie_id):
+    """Validate movie_id parameter"""
+    try:
+        movie_id = int(movie_id)
+        if movie_id <= 0:
+            raise ValueError("Movie ID must be a positive integer")
+        return movie_id
+    except (ValueError, TypeError):
+        raise ValidationError("Invalid movie ID provided")
+
+
+def validate_user_id(user_id):
+    """Validate user_id parameter"""
+    try:
+        user_id = int(user_id)
+        if user_id <= 0:
+            raise ValueError("User ID must be a positive integer")
+        return user_id
+    except (ValueError, TypeError):
+        raise ValidationError("Invalid user ID provided")
 
 
 class ReviewCreateView(LoginRequiredMixin, CreateView):
@@ -20,38 +57,55 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         try:
+            # Validate and sanitize movie_id
+            movie_id = validate_movie_id(self.kwargs.get("movie_id"))
+            movie = get_object_or_404(Movie, id=movie_id)
+            
             kwargs = super().get_form_kwargs()
+            kwargs["movie"] = movie
             kwargs["user"] = self.request.user
-            kwargs["movie"] = get_object_or_404(Movie, id=self.kwargs["movie_id"])
             return kwargs
-        except Http404:
-            messages.error(self.request, "Movie not found.")
-            raise
+        except (ValidationError, Http404) as e:
+            messages.error(self.request, f"Invalid request: {e}")
+            raise Http404("Movie not found")
         except Exception as e:
             messages.error(self.request, f"Error loading review form: {e}")
-            raise Http404("Movie not found or error occurred")
+            raise Http404("Error occurred")
 
     def get_context_data(self, **kwargs):
         try:
             context = super().get_context_data(**kwargs)
-            context["movie"] = get_object_or_404(Movie, id=self.kwargs["movie_id"])
+            movie_id = validate_movie_id(self.kwargs.get("movie_id"))
+            context["movie"] = get_object_or_404(Movie, id=movie_id)
             return context
-        except Http404:
-            messages.error(self.request, "Movie not found.")
-            raise
+        except (ValidationError, Http404) as e:
+            messages.error(self.request, f"Invalid request: {e}")
+            raise Http404("Movie not found")
         except Exception as e:
-            messages.error(self.request, f"Error loading review form: {e}")
-            raise Http404("Movie not found or error occurred")
+            messages.error(self.request, f"Error loading review context: {e}")
+            raise Http404("Error occurred")
 
     def form_valid(self, form):
         try:
+            # Validate movie_id again
+            movie_id = validate_movie_id(self.kwargs.get("movie_id"))
+            movie = get_object_or_404(Movie, id=movie_id)
+            
+            # Check if user already reviewed this movie
+            if Review.objects.filter(user=self.request.user, movie=movie).exists():
+                messages.error(self.request, "You have already reviewed this movie.")
+                return self.form_invalid(form)
+            
+            # Sanitize form data
+            form.instance.user = self.request.user
+            form.instance.movie = movie
+            form.instance.title = sanitize_input(form.cleaned_data.get('title'))
+            form.instance.content = sanitize_input(form.cleaned_data.get('content'))
+            
             with transaction.atomic():
-                review = form.save(commit=False)
-                review.user = self.request.user
-                review.movie = get_object_or_404(Movie, id=self.kwargs["movie_id"])
-                review.save()
-                messages.success(self.request, "Your review has been posted successfully.")
-                return super().form_valid(form)
+                review = form.save()
+            messages.success(self.request, "Your review has been posted successfully.")
+            return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             messages.error(self.request, f"Error creating review: {e}")
             return self.form_invalid(form)
@@ -64,8 +118,11 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        messages.success(self.request, "Your review has been posted successfully.")
-        return reverse("movies:movie_detail", kwargs={"pk": self.kwargs["movie_id"]})
+        try:
+            movie_id = validate_movie_id(self.kwargs.get("movie_id"))
+            return reverse("movies:movie_detail", kwargs={"pk": movie_id})
+        except ValidationError:
+            return reverse("movies:movie_list")
 
 
 class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -74,30 +131,42 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = "reviews/review_form.html"
 
     def test_func(self):
-        review = self.get_object()
-        return self.request.user == review.user
+        try:
+            review = self.get_object()
+            # Only review owner can edit (not admins)
+            return self.request.user == review.user
+        except Exception:
+            return False
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["user"] = self.request.user
-        kwargs["movie"] = self.get_object().movie
-        return kwargs
+        try:
+            kwargs = super().get_form_kwargs()
+            kwargs["user"] = self.request.user
+            kwargs["movie"] = self.get_object().movie
+            return kwargs
+        except Exception as e:
+            messages.error(self.request, f"Error loading review form: {e}")
+            raise Http404("Review not found")
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["movie"] = self.get_object().movie
-        context["is_update"] = True
-        return context
+        try:
+            context = super().get_context_data(**kwargs)
+            context["movie"] = self.get_object().movie
+            return context
+        except Exception as e:
+            messages.error(self.request, f"Error loading review context: {e}")
+            raise Http404("Review not found")
 
     def form_valid(self, form):
         try:
+            # Sanitize form data
+            form.instance.title = sanitize_input(form.cleaned_data.get('title'))
+            form.instance.content = sanitize_input(form.cleaned_data.get('content'))
+            
             with transaction.atomic():
-                review = form.save(commit=False)
-                review.user = self.request.user
-                review.movie = self.get_object().movie
-                review.save()
-                messages.success(self.request, "Your review has been updated successfully.")
-                return super().form_valid(form)
+                review = form.save()
+            messages.success(self.request, "Your review has been updated successfully.")
+            return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             messages.error(self.request, f"Error updating review: {e}")
             return self.form_invalid(form)
@@ -110,8 +179,10 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        messages.success(self.request, "Your review has been updated successfully.")
-        return reverse("movies:movie_detail", kwargs={"pk": self.get_object().movie.id})
+        try:
+            return reverse("movies:movie_detail", kwargs={"pk": self.get_object().movie.id})
+        except Exception:
+            return reverse("movies:movie_list")
 
 
 class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -119,8 +190,12 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = "reviews/review_confirm_delete.html"
 
     def test_func(self):
-        review = self.get_object()
-        return self.request.user == review.user or self.request.user.is_staff
+        try:
+            review = self.get_object()
+            # Review owner or staff can delete
+            return self.request.user == review.user or self.request.user.is_staff
+        except Exception:
+            return False
 
     def delete(self, request, *args, **kwargs):
         try:
@@ -146,11 +221,13 @@ class MovieReviewsListView(ListView):
 
     def get_queryset(self):
         try:
-            self.movie = get_object_or_404(Movie, id=self.kwargs["movie_id"])
-            return Review.objects.filter(movie=self.movie)
-        except Http404:
-            messages.error(self.request, "Movie not found.")
-            raise
+            # Validate and sanitize movie_id
+            movie_id = validate_movie_id(self.kwargs.get("movie_id"))
+            self.movie = get_object_or_404(Movie, id=movie_id)
+            return Review.objects.filter(movie=self.movie).select_related('user')
+        except (ValidationError, Http404) as e:
+            messages.error(self.request, f"Invalid movie ID: {e}")
+            raise Http404("Movie not found")
         except Exception as e:
             messages.error(self.request, f"Error loading reviews: {e}")
             raise Http404("Movie not found or error occurred")
@@ -181,11 +258,13 @@ class UserReviewsListView(ListView):
 
     def get_queryset(self):
         try:
-            self.user = get_object_or_404(User, id=self.kwargs["user_id"])
-            return Review.objects.filter(user=self.user)
-        except Http404:
-            messages.error(self.request, "User not found.")
-            raise
+            # Validate and sanitize user_id
+            user_id = validate_user_id(self.kwargs.get("user_id"))
+            self.user = get_object_or_404(User, id=user_id)
+            return Review.objects.filter(user=self.user).select_related('movie')
+        except (ValidationError, Http404) as e:
+            messages.error(self.request, f"Invalid user ID: {e}")
+            raise Http404("User not found")
         except Exception as e:
             messages.error(self.request, f"Error loading user reviews: {e}")
             raise Http404("User not found or error occurred")
