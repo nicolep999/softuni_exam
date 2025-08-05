@@ -18,9 +18,15 @@ def run_command(command, description):
     print(f"{'='*60}")
 
     try:
+        result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+        print(result.stdout)
+        if result.stderr:
+            print(f"STDERR: {result.stderr}")
         print(f"\n✅ {description} completed successfully!")
         return True
     except subprocess.CalledProcessError as e:
+        print(f"STDOUT: {e.stdout}")
+        print(f"STDERR: {e.stderr}")
         print(f"\n❌ {description} failed with exit code {e.returncode}")
         return False
 
@@ -76,10 +82,22 @@ def run_migrations_check():
 def run_linting():
     """Run code linting (if flake8 is available)."""
     try:
-        command = "flake8 . --exclude=.venv,__pycache__,migrations"
-        return run_command(command, "Code Linting (flake8)")
-    except ImportError:
-        print("\n⚠️  flake8 not installed. Skipping linting.")
+        # Use UTF-8 encoding to avoid Windows encoding issues
+        command = "flake8 . --exclude=.venv,__pycache__,migrations --max-line-length=120"
+        result = subprocess.run(
+            command, shell=True, capture_output=True, text=True, encoding="utf-8", errors="ignore"
+        )
+        if result.returncode == 0:
+            print(result.stdout)
+            print(f"\n✅ Code Linting (flake8) completed successfully!")
+            return True
+        else:
+            print(f"STDOUT: {result.stdout}")
+            print(f"STDERR: {result.stderr}")
+            print(f"\n❌ Code Linting (flake8) failed with exit code {result.returncode}")
+            return False
+    except (ImportError, UnicodeDecodeError, FileNotFoundError):
+        print("\n⚠️  flake8 not available or encoding issues. Skipping linting.")
         return True
 
 

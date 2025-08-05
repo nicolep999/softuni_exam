@@ -1,6 +1,7 @@
 """
 Security middleware and utilities for parameter tampering protection
 """
+
 import re
 import logging
 from django.http import HttpResponseForbidden, HttpResponseBadRequest
@@ -18,7 +19,7 @@ def sanitize_input(value):
     # Remove HTML tags
     value = strip_tags(str(value))
     # Remove potentially dangerous characters
-    value = re.sub(r'[<>"\']', '', value)
+    value = re.sub(r'[<>"\']', "", value)
     return value.strip()
 
 
@@ -72,20 +73,20 @@ class SecurityMiddleware:
     """
     Middleware to add security headers and validate parameters
     """
-    
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
         # Add security headers
         response = self.get_response(request)
-        
+
         # Security headers
-        response['X-Content-Type-Options'] = 'nosniff'
-        response['X-Frame-Options'] = 'DENY'
-        response['X-XSS-Protection'] = '1; mode=block'
-        response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-        
+        response["X-Content-Type-Options"] = "nosniff"
+        response["X-Frame-Options"] = "DENY"
+        response["X-XSS-Protection"] = "1; mode=block"
+        response["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
         # Content Security Policy
         csp_policy = (
             "default-src 'self'; "
@@ -96,8 +97,8 @@ class SecurityMiddleware:
             "connect-src 'self'; "
             "frame-ancestors 'none';"
         )
-        response['Content-Security-Policy'] = csp_policy
-        
+        response["Content-Security-Policy"] = csp_policy
+
         return response
 
     def process_request(self, request):
@@ -105,32 +106,34 @@ class SecurityMiddleware:
         try:
             # Log suspicious requests
             if self._is_suspicious_request(request):
-                logger.warning(f"Suspicious request detected: {request.path} from {request.META.get('REMOTE_ADDR')}")
-            
+                logger.warning(
+                    f"Suspicious request detected: {request.path} from {request.META.get('REMOTE_ADDR')}"
+                )
+
             # Validate GET parameters
-            if request.method == 'GET':
+            if request.method == "GET":
                 self._validate_get_params(request)
-                
+
         except Exception as e:
             logger.error(f"Security middleware error: {e}")
             return HttpResponseBadRequest("Invalid request parameters")
-        
+
         return None
 
     def _is_suspicious_request(self, request):
         """Check if request appears suspicious"""
         suspicious_patterns = [
-            r'<script',
-            r'javascript:',
-            r'data:text/html',
-            r'vbscript:',
-            r'onload=',
-            r'onerror=',
-            r'<iframe',
-            r'<object',
-            r'<embed',
+            r"<script",
+            r"javascript:",
+            r"data:text/html",
+            r"vbscript:",
+            r"onload=",
+            r"onerror=",
+            r"<iframe",
+            r"<object",
+            r"<embed",
         ]
-        
+
         path = request.path.lower()
         for pattern in suspicious_patterns:
             if re.search(pattern, path, re.IGNORECASE):
@@ -141,17 +144,17 @@ class SecurityMiddleware:
         """Validate GET parameters for common attacks"""
         for key, value in request.GET.items():
             # Check for potential XSS
-            if any(char in value for char in ['<', '>', '"', "'"]):
+            if any(char in value for char in ["<", ">", '"', "'"]):
                 # Log but don't block - let the sanitization functions handle it
                 logger.info(f"Potential XSS attempt in parameter {key}: {value}")
-            
+
             # Check for SQL injection patterns
             sql_patterns = [
-                r'(\b(union|select|insert|update|delete|drop|create|alter)\b)',
-                r'(\b(or|and)\b\s+\d+\s*=\s*\d+)',
-                r'(\b(union|select|insert|update|delete|drop|create|alter)\b.*\b(union|select|insert|update|delete|drop|create|alter)\b)',
+                r"(\b(union|select|insert|update|delete|drop|create|alter)\b)",
+                r"(\b(or|and)\b\s+\d+\s*=\s*\d+)",
+                r"(\b(union|select|insert|update|delete|drop|create|alter)\b.*\b(union|select|insert|update|delete|drop|create|alter)\b)",
             ]
-            
+
             for pattern in sql_patterns:
                 if re.search(pattern, value, re.IGNORECASE):
                     logger.warning(f"Potential SQL injection attempt in parameter {key}: {value}")
@@ -170,4 +173,4 @@ def check_rate_limit(request, max_requests=10, window_seconds=60):
     In production, use Redis or similar for proper rate limiting
     """
     # This is a simplified version - in production use proper rate limiting
-    return True 
+    return True

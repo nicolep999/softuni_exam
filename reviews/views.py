@@ -24,7 +24,7 @@ def sanitize_input(value):
     # Remove HTML tags
     value = strip_tags(str(value))
     # Remove potentially dangerous characters
-    value = re.sub(r'[<>"\']', '', value)
+    value = re.sub(r'[<>"\']', "", value)
     return value.strip()
 
 
@@ -60,7 +60,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
             # Validate and sanitize movie_id
             movie_id = validate_movie_id(self.kwargs.get("movie_id"))
             movie = get_object_or_404(Movie, id=movie_id)
-            
+
             kwargs = super().get_form_kwargs()
             kwargs["movie"] = movie
             kwargs["user"] = self.request.user
@@ -90,18 +90,18 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
             # Validate movie_id again
             movie_id = validate_movie_id(self.kwargs.get("movie_id"))
             movie = get_object_or_404(Movie, id=movie_id)
-            
+
             # Check if user already reviewed this movie
             if Review.objects.filter(user=self.request.user, movie=movie).exists():
                 messages.error(self.request, "You have already reviewed this movie.")
                 return self.form_invalid(form)
-            
+
             # Sanitize form data
             form.instance.user = self.request.user
             form.instance.movie = movie
-            form.instance.title = sanitize_input(form.cleaned_data.get('title'))
-            form.instance.content = sanitize_input(form.cleaned_data.get('content'))
-            
+            form.instance.title = sanitize_input(form.cleaned_data.get("title"))
+            form.instance.content = sanitize_input(form.cleaned_data.get("content"))
+
             with transaction.atomic():
                 review = form.save()
             messages.success(self.request, "Your review has been posted successfully.")
@@ -140,6 +140,7 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def handle_no_permission(self):
         from django.http import HttpResponseForbidden
+
         return HttpResponseForbidden("You don't have permission to edit this review.")
 
     def get_form_kwargs(self):
@@ -164,9 +165,9 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def form_valid(self, form):
         try:
             # Sanitize form data
-            form.instance.title = sanitize_input(form.cleaned_data.get('title'))
-            form.instance.content = sanitize_input(form.cleaned_data.get('content'))
-            
+            form.instance.title = sanitize_input(form.cleaned_data.get("title"))
+            form.instance.content = sanitize_input(form.cleaned_data.get("content"))
+
             with transaction.atomic():
                 review = form.save()
             messages.success(self.request, "Your review has been updated successfully.")
@@ -203,6 +204,7 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def handle_no_permission(self):
         from django.http import HttpResponseForbidden
+
         return HttpResponseForbidden("You don't have permission to delete this review.")
 
     def delete(self, request, *args, **kwargs):
@@ -232,7 +234,7 @@ class MovieReviewsListView(ListView):
             # Validate and sanitize movie_id
             movie_id = validate_movie_id(self.kwargs.get("movie_id"))
             self.movie = get_object_or_404(Movie, id=movie_id)
-            return Review.objects.filter(movie=self.movie).select_related('user')
+            return Review.objects.filter(movie=self.movie).select_related("user")
         except (ValidationError, Http404) as e:
             messages.error(self.request, f"Invalid movie ID: {e}")
             raise Http404("Movie not found")
@@ -269,7 +271,7 @@ class UserReviewsListView(ListView):
             # Validate and sanitize user_id
             user_id = validate_user_id(self.kwargs.get("user_id"))
             self.user = get_object_or_404(User, id=user_id)
-            return Review.objects.filter(user=self.user).select_related('movie')
+            return Review.objects.filter(user=self.user).select_related("movie")
         except (ValidationError, Http404) as e:
             messages.error(self.request, f"Invalid user ID: {e}")
             raise Http404("User not found")

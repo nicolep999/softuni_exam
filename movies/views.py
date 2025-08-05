@@ -28,7 +28,7 @@ def sanitize_input(value):
     # Remove HTML tags
     value = strip_tags(str(value))
     # Remove potentially dangerous characters
-    value = re.sub(r'[<>"\']', '', value)
+    value = re.sub(r'[<>"\']', "", value)
     return value.strip()
 
 
@@ -60,40 +60,45 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         try:
             context = super().get_context_data(**kwargs)
-            
+
             # Get latest movies - use release_date for accurate sorting
             latest_movies = Movie.objects.order_by("-release_date")[:6]
-            
+
             # Get top rated movies - use IMDB rating instead of user reviews
-            top_rated_movies = Movie.objects.exclude(
-                imdb_rating__isnull=True
-            ).order_by("-imdb_rating")[:6]
-            
+            top_rated_movies = Movie.objects.exclude(imdb_rating__isnull=True).order_by(
+                "-imdb_rating"
+            )[:6]
+
             # Get movie statistics - optimized queries
             from reviews.models import Review
+
             total_movies = Movie.objects.count()
             total_genres = Genre.objects.count()
             total_reviews = Review.objects.count()
-            
-            context.update({
-                "latest_movies": latest_movies,
-                "top_rated_movies": top_rated_movies,
-                "total_movies": total_movies,
-                "total_genres": total_genres,
-                "total_reviews": total_reviews,
-            })
+
+            context.update(
+                {
+                    "latest_movies": latest_movies,
+                    "top_rated_movies": top_rated_movies,
+                    "total_movies": total_movies,
+                    "total_genres": total_genres,
+                    "total_reviews": total_reviews,
+                }
+            )
             return context
         except Exception as e:
             messages.error(self.request, f"Error loading home page data: {e}")
             # Return empty context to prevent crashes
             context = super().get_context_data(**kwargs)
-            context.update({
-                "latest_movies": [],
-                "top_rated_movies": [],
-                "total_movies": 0,
-                "total_genres": 0,
-                "total_reviews": 0,
-            })
+            context.update(
+                {
+                    "latest_movies": [],
+                    "top_rated_movies": [],
+                    "total_movies": 0,
+                    "total_genres": 0,
+                    "total_reviews": 0,
+                }
+            )
             return context
 
 
@@ -106,7 +111,7 @@ class MovieListView(ListView):
     def get_queryset(self):
         try:
             queryset = Movie.objects.all()
-            
+
             # Get search parameters and sanitize them
             title = sanitize_input(self.request.GET.get("title", ""))
             genre = sanitize_input(self.request.GET.get("genre", ""))
@@ -114,17 +119,17 @@ class MovieListView(ListView):
             rating_min = self.request.GET.get("rating_min", "")
             year_min = self.request.GET.get("year_min", "")
             year_max = self.request.GET.get("year_max", "")
-            
+
             # Apply filters
             if title:
                 queryset = queryset.filter(title__icontains=title)
-            
+
             if genre:
                 queryset = queryset.filter(genres__name__icontains=genre)
-            
+
             if director:
                 queryset = queryset.filter(director__name__icontains=director)
-            
+
             if rating_min:
                 try:
                     rating = validate_rating(rating_min)
@@ -132,7 +137,7 @@ class MovieListView(ListView):
                 except ValidationError:
                     # If rating is invalid, ignore the filter
                     pass
-            
+
             if year_min:
                 try:
                     year = int(year_min)
@@ -141,7 +146,7 @@ class MovieListView(ListView):
                 except (ValueError, TypeError):
                     # If year is invalid, ignore the filter
                     pass
-            
+
             if year_max:
                 try:
                     year = int(year_max)
@@ -150,7 +155,7 @@ class MovieListView(ListView):
                 except (ValueError, TypeError):
                     # If year is invalid, ignore the filter
                     pass
-            
+
             return queryset.order_by("-release_year", "title")
         except Exception as e:
             messages.error(self.request, f"Error filtering movies: {e}")
@@ -159,7 +164,7 @@ class MovieListView(ListView):
     def get_context_data(self, **kwargs):
         try:
             context = super().get_context_data(**kwargs)
-            
+
             # Create search form with sanitized data
             search_data = {
                 "title": sanitize_input(self.request.GET.get("title", "")),
@@ -169,7 +174,7 @@ class MovieListView(ListView):
                 "year_min": self.request.GET.get("year_min", ""),
                 "year_max": self.request.GET.get("year_max", ""),
             }
-            
+
             context["search_form"] = MovieSearchForm(data=search_data)
             return context
         except Exception as e:
@@ -188,29 +193,33 @@ class MovieDetailView(DetailView):
         try:
             context = super().get_context_data(**kwargs)
             movie = self.get_object()
-            
+
             # Get related movies (same genre or director)
-            related_movies = Movie.objects.filter(
-                Q(genres__in=movie.genres.all()) | Q(director=movie.director)
-            ).exclude(id=movie.id).distinct()[:6]
-            
+            related_movies = (
+                Movie.objects.filter(Q(genres__in=movie.genres.all()) | Q(director=movie.director))
+                .exclude(id=movie.id)
+                .distinct()[:6]
+            )
+
             # Check if movie is in user's watchlist
             in_watchlist = False
             if self.request.user.is_authenticated:
                 in_watchlist = Watchlist.objects.filter(
                     user=self.request.user, movie=movie
                 ).exists()
-            
+
             # Get user's review if exists
             user_review = None
             if self.request.user.is_authenticated:
                 user_review = movie.reviews.filter(user=self.request.user).first()
-            
-            context.update({
-                "related_movies": related_movies,
-                "in_watchlist": in_watchlist,
-                "user_review": user_review,
-            })
+
+            context.update(
+                {
+                    "related_movies": related_movies,
+                    "in_watchlist": in_watchlist,
+                    "user_review": user_review,
+                }
+            )
             return context
         except Exception as e:
             messages.error(self.request, f"Error loading movie details: {e}")
@@ -231,9 +240,9 @@ class MovieCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def form_valid(self, form):
         try:
             # Sanitize form data
-            form.instance.title = sanitize_input(form.cleaned_data.get('title'))
-            form.instance.plot = sanitize_input(form.cleaned_data.get('plot'))
-            
+            form.instance.title = sanitize_input(form.cleaned_data.get("title"))
+            form.instance.plot = sanitize_input(form.cleaned_data.get("plot"))
+
             with transaction.atomic():
                 movie = form.save(commit=False)
                 movie.save()
@@ -266,9 +275,9 @@ class MovieUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def form_valid(self, form):
         try:
             # Sanitize form data
-            form.instance.title = sanitize_input(form.cleaned_data.get('title'))
-            form.instance.plot = sanitize_input(form.cleaned_data.get('plot'))
-            
+            form.instance.title = sanitize_input(form.cleaned_data.get("title"))
+            form.instance.plot = sanitize_input(form.cleaned_data.get("plot"))
+
             with transaction.atomic():
                 movie = form.save(commit=False)
                 movie.save()
@@ -369,10 +378,10 @@ def remove_from_watchlist(request, movie_id):
         # Validate movie_id parameter
         movie_id = validate_movie_id(movie_id)
         movie = get_object_or_404(Movie, id=movie_id)
-        
+
         # Ensure user can only remove from their own watchlist
         watchlist_item = get_object_or_404(Watchlist, user=request.user, movie=movie)
-        
+
         with transaction.atomic():
             watchlist_item.delete()
 
@@ -387,5 +396,7 @@ def remove_from_watchlist(request, movie_id):
         messages.error(request, f"Invalid movie ID: {e}")
         return redirect("movies:movie_list")
     except Exception as e:
-        messages.error(request, f"An error occurred while removing the movie from your watchlist: {e}")
+        messages.error(
+            request, f"An error occurred while removing the movie from your watchlist: {e}"
+        )
         return redirect("movies:movie_list")

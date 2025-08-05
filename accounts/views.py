@@ -19,7 +19,12 @@ from django.http import Http404
 from django.utils.html import strip_tags
 import re
 
-from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm, CustomPasswordChangeForm
+from .forms import (
+    CustomUserCreationForm,
+    UserUpdateForm,
+    ProfileUpdateForm,
+    CustomPasswordChangeForm,
+)
 from .models import Profile
 from movies.models import Watchlist, Genre, Director, Actor
 
@@ -33,7 +38,7 @@ def sanitize_input(value):
     # Remove HTML tags
     value = strip_tags(str(value))
     # Remove potentially dangerous characters
-    value = re.sub(r'[<>"\']', '', value)
+    value = re.sub(r'[<>"\']', "", value)
     return value.strip()
 
 
@@ -73,7 +78,7 @@ class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
             for field_name, field_value in form.cleaned_data.items():
                 if isinstance(field_value, str):
                     form.instance.__dict__[field_name] = sanitize_input(field_value)
-            
+
             with transaction.atomic():
                 obj = form.save()
             messages.success(self.request, f"{self.model.__name__} was created successfully.")
@@ -104,7 +109,7 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
             for field_name, field_value in form.cleaned_data.items():
                 if isinstance(field_value, str):
                     form.instance.__dict__[field_name] = sanitize_input(field_value)
-            
+
             with transaction.atomic():
                 obj = form.save()
             messages.success(self.request, f"{self.model.__name__} was updated successfully.")
@@ -135,7 +140,9 @@ class AdminDeleteView(AdminPermissionMixin, LoginRequiredMixin, DeleteView):
             obj_name = str(obj)
             with transaction.atomic():
                 obj.delete()
-            messages.success(request, f"{self.model.__name__} '{obj_name}' was deleted successfully.")
+            messages.success(
+                request, f"{self.model.__name__} '{obj_name}' was deleted successfully."
+            )
             return super().delete(request, *args, **kwargs)
         except (ValidationError, IntegrityError) as e:
             messages.error(request, f"Error deleting {self.model.__name__.lower()}: {e}")
@@ -159,15 +166,15 @@ class RegisterView(CreateView):
         try:
             # Sanitize form data before saving (only non-None values)
             cleaned_data = form.cleaned_data
-            if cleaned_data.get('username'):
-                form.instance.username = sanitize_input(cleaned_data.get('username'))
-            if cleaned_data.get('email'):
-                form.instance.email = sanitize_input(cleaned_data.get('email'))
-            if cleaned_data.get('first_name'):
-                form.instance.first_name = sanitize_input(cleaned_data.get('first_name'))
-            if cleaned_data.get('last_name'):
-                form.instance.last_name = sanitize_input(cleaned_data.get('last_name'))
-            
+            if cleaned_data.get("username"):
+                form.instance.username = sanitize_input(cleaned_data.get("username"))
+            if cleaned_data.get("email"):
+                form.instance.email = sanitize_input(cleaned_data.get("email"))
+            if cleaned_data.get("first_name"):
+                form.instance.first_name = sanitize_input(cleaned_data.get("first_name"))
+            if cleaned_data.get("last_name"):
+                form.instance.last_name = sanitize_input(cleaned_data.get("last_name"))
+
             with transaction.atomic():
                 user = form.save()
                 # Profile is automatically created by signal
@@ -246,15 +253,21 @@ class ProfileUpdateView(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         try:
             user_form = UserUpdateForm(request.POST, instance=request.user)
-            profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+            profile_form = ProfileUpdateForm(
+                request.POST, request.FILES, instance=request.user.profile
+            )
 
             if user_form.is_valid() and profile_form.is_valid():
                 # Sanitize form data
-                user_form.instance.username = sanitize_input(user_form.cleaned_data.get('username'))
-                user_form.instance.email = sanitize_input(user_form.cleaned_data.get('email'))
-                user_form.instance.first_name = sanitize_input(user_form.cleaned_data.get('first_name'))
-                user_form.instance.last_name = sanitize_input(user_form.cleaned_data.get('last_name'))
-                
+                user_form.instance.username = sanitize_input(user_form.cleaned_data.get("username"))
+                user_form.instance.email = sanitize_input(user_form.cleaned_data.get("email"))
+                user_form.instance.first_name = sanitize_input(
+                    user_form.cleaned_data.get("first_name")
+                )
+                user_form.instance.last_name = sanitize_input(
+                    user_form.cleaned_data.get("last_name")
+                )
+
                 with transaction.atomic():
                     user_form.save()
                     profile_form.save()
@@ -346,6 +359,7 @@ class AdminMovieListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Movie
+
         return Movie.objects.all().order_by("-release_year", "title")
 
 
@@ -355,6 +369,7 @@ class AdminGenreListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Genre
+
         return Genre.objects.all().order_by("name")
 
 
@@ -364,6 +379,7 @@ class AdminDirectorListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Director
+
         return Director.objects.all().order_by("name")
 
 
@@ -373,6 +389,7 @@ class AdminActorListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Actor
+
         return Actor.objects.all().order_by("name")
 
 
@@ -382,6 +399,7 @@ class AdminReviewListView(AdminListView):
 
     def get_queryset(self):
         from reviews.models import Review
+
         return Review.objects.all().select_related("user", "movie").order_by("-created_at")
 
     def get_context_data(self, **kwargs):
