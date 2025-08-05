@@ -64,17 +64,18 @@ class HomeView(TemplateView):
             # Get latest movies
             latest_movies = Movie.objects.all().order_by("-release_year")[:6]
             
-            # Get top rated movies
+            # Get top rated movies - improved query
+            from reviews.models import Review
             top_rated_movies = Movie.objects.filter(
                 reviews__isnull=False
             ).annotate(
                 avg_rating=F("reviews__rating")
-            ).order_by("-avg_rating")[:6]
+            ).distinct().order_by("-avg_rating")[:6]
             
-            # Get movie statistics
+            # Get movie statistics - optimized queries
             total_movies = Movie.objects.count()
             total_genres = Genre.objects.count()
-            total_reviews = sum(movie.reviews.count() for movie in Movie.objects.all())
+            total_reviews = Review.objects.count()
             
             context.update({
                 "latest_movies": latest_movies,
