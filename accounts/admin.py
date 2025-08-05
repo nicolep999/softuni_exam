@@ -81,7 +81,7 @@ def create_admin_groups():
                 content_type__app_label="reviews", content_type__model__in=["review", "comment"]
             )
             review_managers.permissions.add(*review_permissions)
-    except Exception:
+    except Exception as e:
         print(f"Error creating admin groups: {e}")
 
 
@@ -89,5 +89,5 @@ admin.site.register(User, CustomUserAdmin)
 
 try:
     create_admin_groups()
-except Exception:
+except Exception as e:
     print(f"Error in admin groups creation: {e}")
