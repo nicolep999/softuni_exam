@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from accounts.forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm
+from accounts.models import Profile
 from movies.models import Genre
 
 

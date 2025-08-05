@@ -157,16 +157,20 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         try:
-            # Sanitize form data
-            form.instance.username = sanitize_input(form.cleaned_data.get('username'))
-            form.instance.email = sanitize_input(form.cleaned_data.get('email'))
-            form.instance.first_name = sanitize_input(form.cleaned_data.get('first_name'))
-            form.instance.last_name = sanitize_input(form.cleaned_data.get('last_name'))
+            # Sanitize form data before saving (only non-None values)
+            cleaned_data = form.cleaned_data
+            if cleaned_data.get('username'):
+                form.instance.username = sanitize_input(cleaned_data.get('username'))
+            if cleaned_data.get('email'):
+                form.instance.email = sanitize_input(cleaned_data.get('email'))
+            if cleaned_data.get('first_name'):
+                form.instance.first_name = sanitize_input(cleaned_data.get('first_name'))
+            if cleaned_data.get('last_name'):
+                form.instance.last_name = sanitize_input(cleaned_data.get('last_name'))
             
             with transaction.atomic():
                 user = form.save()
-                # Create profile for the user
-                Profile.objects.create(user=user)
+                # Profile is automatically created by signal
             messages.success(self.request, "Account created successfully! You can now log in.")
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:

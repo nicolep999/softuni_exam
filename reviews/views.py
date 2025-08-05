@@ -138,6 +138,10 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         except Exception:
             return False
 
+    def handle_no_permission(self):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You don't have permission to edit this review.")
+
     def get_form_kwargs(self):
         try:
             kwargs = super().get_form_kwargs()
@@ -196,6 +200,10 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return self.request.user == review.user or self.request.user.is_staff
         except Exception:
             return False
+
+    def handle_no_permission(self):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You don't have permission to delete this review.")
 
     def delete(self, request, *args, **kwargs):
         try:
