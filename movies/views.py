@@ -61,18 +61,16 @@ class HomeView(TemplateView):
         try:
             context = super().get_context_data(**kwargs)
             
-            # Get latest movies
-            latest_movies = Movie.objects.all().order_by("-release_year")[:6]
+            # Get latest movies - use release_date for accurate sorting
+            latest_movies = Movie.objects.order_by("-release_date")[:6]
             
-            # Get top rated movies - improved query
-            from reviews.models import Review
-            top_rated_movies = Movie.objects.filter(
-                reviews__isnull=False
-            ).annotate(
-                avg_rating=F("reviews__rating")
-            ).distinct().order_by("-avg_rating")[:6]
+            # Get top rated movies - use IMDB rating instead of user reviews
+            top_rated_movies = Movie.objects.exclude(
+                imdb_rating__isnull=True
+            ).order_by("-imdb_rating")[:6]
             
             # Get movie statistics - optimized queries
+            from reviews.models import Review
             total_movies = Movie.objects.count()
             total_genres = Genre.objects.count()
             total_reviews = Review.objects.count()
