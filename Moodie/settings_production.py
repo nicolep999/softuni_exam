@@ -27,6 +27,19 @@ DATABASES = {
 # Allow Railway to set the allowed hosts
 ALLOWED_HOSTS = ['*']  # Railway will set this automatically
 
+# CSRF Configuration for Railway
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
+# Add your specific Railway domain if you know it
+RAILWAY_DOMAIN = os.environ.get('RAILWAY_DOMAIN')
+if RAILWAY_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_DOMAIN}')
+
 # Application definition
 CUSTOM_APPS = ["movies", "reviews", "accounts"]
 
@@ -111,14 +124,14 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
 # HTTPS settings (Railway provides HTTPS)
-SECURE_SSL_REDIRECT = False  # Temporarily disabled for health check
+SECURE_SSL_REDIRECT = False  # Railway handles this
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 # Session security
-SESSION_COOKIE_SECURE = False  # Temporarily disabled for health check
-CSRF_COOKIE_SECURE = False  # Temporarily disabled for health check
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Logging
 LOGGING = {

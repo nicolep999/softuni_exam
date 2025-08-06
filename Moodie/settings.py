@@ -25,13 +25,33 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#3jtonur%m%5*^5g#ci-n$dtf#x"
+SECRET_KEY = env("SECRET_KEY", default="django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#3jtonur%m%5*^5g#ci-n$dtf#x")
 
 # TMDB API Configuration
 TMDB_API_KEY = env("TMDB_API_KEY", default=None)
 
-ALLOWED_HOSTS = []
-DEBUG = True
+# Environment-based configuration
+DEBUG = env("DEBUG", default=False)
+
+# ALLOWED_HOSTS configuration
+if DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+else:
+    # In production, Railway will set the domain
+    ALLOWED_HOSTS = ['*']  # Railway handles this automatically
+
+# CSRF Configuration for Railway
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
+# Add your specific Railway domain if you know it
+RAILWAY_DOMAIN = env("RAILWAY_DOMAIN", default=None)
+if RAILWAY_DOMAIN:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RAILWAY_DOMAIN}')
 
 # Application definition
 CUSTOM_APPS = ["movies", "reviews", "accounts"]
@@ -180,3 +200,23 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Authentication settings
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Security settings for production
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # HTTPS settings (Railway provides HTTPS)
+    SECURE_SSL_REDIRECT = False  # Railway handles this
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Session security
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
