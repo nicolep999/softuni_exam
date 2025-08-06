@@ -7,16 +7,16 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         /* Smooth scrolling for all pages */
         html {
             scroll-behavior: smooth;
         }
         
-        body { 
-            font-family: 'Inter', sans-serif; 
-        }
+                 body { 
+             font-family: 'Roboto', sans-serif; 
+         }
         
         /* Line clamp utilities */
         .line-clamp-3 {
@@ -54,7 +54,7 @@
                     <a href="{% url 'movies:home' %}" class="flex items-center space-x-2 group">
                         <div class="relative">
                             <!-- Main gradient text -->
-                            <span class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-yellow-500 bg-clip-text text-transparent group-hover:from-purple-600 group-hover:via-yellow-500 group-hover:to-indigo-600 transition-all duration-500 transform group-hover:scale-105">
+                                                         <span class="text-2xl sm:text-3xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-yellow-500 bg-clip-text text-transparent group-hover:from-purple-600 group-hover:via-yellow-500 group-hover:to-indigo-600 transition-all duration-500 transform group-hover:scale-105">
                                 Moodie
                             </span>
                             <!-- Subtle glow effect on hover -->
@@ -67,13 +67,13 @@
 
                 <!-- Center: Navigation Links -->
                 <nav class="hidden md:flex items-center space-x-6 lg:space-x-8">
-                    <a href="{% url 'movies:movie_list' %}" 
-                       class="text-gray-700 hover:text-indigo-600 font-medium transition-all duration-300 relative group">
+                                         <a href="{% url 'movies:movie_list' %}" 
+                        class="text-gray-700 hover:text-indigo-600 font-bold transition-all duration-300 relative group">
                         Movies
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300"></span>
                     </a>
                     <a href="{% url 'movies:genre_list' %}" 
-                       class="text-gray-700 hover:text-indigo-600 font-medium transition-all duration-300 relative group">
+                       class="text-gray-700 hover:text-indigo-600 font-bold transition-all duration-300 relative group">
                         Genres
                         <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-600 group-hover:w-full transition-all duration-300"></span>
                     </a>
