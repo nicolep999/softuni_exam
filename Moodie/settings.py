@@ -205,6 +205,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+# Session configuration
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_SAVE_EVERY_REQUEST = False
+
 # Security settings for production
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
@@ -217,6 +224,15 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     
-    # Session security
+    # Session security - check if we're on Railway
+    # Railway provides HTTPS, but let's be more flexible
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    
+    # If you're still having issues, temporarily disable secure cookies:
+    # SESSION_COOKIE_SECURE = False
+    # CSRF_COOKIE_SECURE = False
+else:
+    # In development, don't require secure cookies
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
