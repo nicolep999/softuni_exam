@@ -236,6 +236,280 @@
     @apply transition-all duration-300 hover:shadow-xl hover:scale-105;
 }
 
+/* ===== UNIFIED CARD SYSTEM ===== */
+.card-modern {
+    @apply bg-white rounded-2xl overflow-hidden transition-all duration-500;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.card-modern:hover {
+    @apply transform scale-105;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Movie Cards */
+.movie-card {
+    @apply card-modern;
+}
+
+.movie-card-modern {
+    @apply card-modern;
+}
+
+.movie-card-image {
+    @apply relative overflow-hidden;
+    aspect-ratio: 2/3;
+}
+
+.movie-card-image img {
+    @apply w-full h-full object-cover transition-transform duration-500;
+}
+
+.movie-card:hover .movie-card-image img {
+    @apply scale-110;
+}
+
+.movie-card-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300;
+}
+
+.movie-card:hover .movie-card-overlay {
+    @apply opacity-100;
+}
+
+.movie-card-content {
+    @apply p-4 space-y-2;
+}
+
+.movie-card-title {
+    @apply font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors text-base;
+}
+
+.movie-card-meta {
+    @apply flex items-center justify-between text-sm;
+}
+
+.movie-card-year {
+    @apply text-gray-600;
+}
+
+.movie-card-rating {
+    @apply flex items-center bg-gray-100 px-2 py-1 rounded-full;
+}
+
+.movie-card-rating-star {
+    @apply text-yellow-500 text-xs mr-1;
+}
+
+.movie-card-rating-score {
+    @apply text-xs font-semibold text-gray-700;
+}
+
+.movie-card-director {
+    @apply text-gray-500 text-xs truncate;
+}
+
+.movie-card-badge {
+    @apply absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center;
+}
+
+/* Genre Cards */
+.genre-card {
+    @apply card-modern;
+}
+
+.genre-card-header {
+    @apply relative h-32 flex items-center justify-center overflow-hidden;
+}
+
+.genre-card-poster {
+    @apply w-full h-full object-cover transition-transform duration-500;
+}
+
+.genre-card:hover .genre-card-poster {
+    @apply scale-110;
+}
+
+.genre-card-fallback {
+    @apply w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center;
+}
+
+.genre-card-content {
+    @apply p-6;
+}
+
+.genre-card-title {
+    @apply text-xl font-bold text-gray-900 mb-2;
+}
+
+.genre-card-description {
+    @apply text-gray-600 text-sm mb-4;
+}
+
+.genre-card-meta {
+    @apply flex items-center justify-between text-sm text-gray-500;
+}
+
+/* Profile Cards */
+.profile-card {
+    @apply card-modern;
+}
+
+.profile-card-header {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white;
+}
+
+.profile-card-avatar {
+    @apply w-20 h-20 rounded-full border-4 border-white shadow-lg mx-auto mb-4;
+}
+
+.profile-card-name {
+    @apply text-2xl font-bold text-center mb-2;
+}
+
+.profile-card-username {
+    @apply text-indigo-100 text-center;
+}
+
+.profile-card-content {
+    @apply p-6;
+}
+
+.profile-card-section {
+    @apply mb-6;
+}
+
+.profile-card-section-title {
+    @apply text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2;
+}
+
+.profile-card-section-icon {
+    @apply w-5 h-5 text-indigo-600;
+}
+
+/* Review Cards */
+.review-card {
+    @apply card-modern;
+}
+
+.review-card-header {
+    @apply p-6 border-b border-gray-100;
+}
+
+.review-card-title {
+    @apply text-xl font-bold text-gray-900 mb-2;
+}
+
+.review-card-meta {
+    @apply flex items-center justify-between text-sm text-gray-600;
+}
+
+.review-card-rating {
+    @apply flex items-center;
+}
+
+.review-card-rating-stars {
+    @apply text-yellow-500 mr-2;
+}
+
+.review-card-content {
+    @apply p-6;
+}
+
+.review-card-text {
+    @apply text-gray-700 leading-relaxed;
+}
+
+.review-card-footer {
+    @apply p-6 bg-gray-50 border-t border-gray-100;
+}
+
+.review-card-actions {
+    @apply flex items-center justify-between;
+}
+
+/* Admin Cards */
+.admin-card {
+    @apply card-modern;
+}
+
+.admin-card-header {
+    @apply bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white;
+}
+
+.admin-card-title {
+    @apply text-xl font-bold mb-2;
+}
+
+.admin-card-subtitle {
+    @apply text-purple-100;
+}
+
+.admin-card-content {
+    @apply p-6;
+}
+
+.admin-card-stats {
+    @apply grid grid-cols-2 gap-4;
+}
+
+.admin-card-stat {
+    @apply text-center p-4 bg-gray-50 rounded-xl;
+}
+
+.admin-card-stat-number {
+    @apply text-2xl font-bold text-gray-900;
+}
+
+.admin-card-stat-label {
+    @apply text-sm text-gray-600;
+}
+
+/* Form Cards */
+.form-card {
+    @apply card-modern;
+}
+
+.form-card-header {
+    @apply bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 px-6 py-4 relative overflow-hidden;
+}
+
+.form-card-header::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-white/10 to-transparent;
+}
+
+.form-card-title {
+    @apply text-xl font-bold text-white flex items-center gap-2 relative z-10;
+}
+
+.form-card-content {
+    @apply p-6;
+}
+
+/* Search Cards */
+.search-card {
+    @apply bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100 p-8 backdrop-blur-sm;
+}
+
+.search-card-header {
+    @apply flex items-center mb-8;
+}
+
+.search-card-icon {
+    @apply w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg;
+}
+
+.search-card-title {
+    @apply text-3xl font-bold text-gray-900 mb-1;
+}
+
+.search-card-subtitle {
+    @apply text-gray-600;
+}
+
 /* ===== BADGE STYLES ===== */
 .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
@@ -357,6 +631,26 @@
     .btn-danger,
     .btn-success {
         @apply w-full;
+    }
+
+    .card-modern {
+        @apply rounded-xl;
+    }
+    
+    .movie-card-image {
+        aspect-ratio: 3/4;
+    }
+    
+    .search-card {
+        @apply p-6 rounded-2xl;
+    }
+    
+    .search-card-header {
+        @apply flex-col text-center mb-6;
+    }
+    
+    .search-card-icon {
+        @apply mr-0 mb-4;
     }
 }
 

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Movie Genres - Moodie{% endblock %}
 
@@ -29,72 +30,33 @@
     <div class="container mx-auto px-4 py-8">
         {% if genres %}
             <!-- Genres Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {% for genre in genres %}
                     <div class="group">
-                        <a href="{% url 'movies:genre_detail' genre.id %}" 
-                           class="block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        <a href="{% url 'movies:genre_detail' genre.id %}" class="block rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 overflow-hidden">
                             
-                            <!-- Genre Header with Poster or Gradient Fallback -->
-                            <div class="relative h-32 flex items-center justify-center overflow-hidden">
+                            <!-- Full Card with Gradient Background -->
+                            <div class="relative h-48 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
                                 {% if genre.poster %}
-                                    <img src="{{ genre.poster }}" 
+                                    <img src="{% static genre.poster %}" 
                                          alt="{{ genre.name }}" 
-                                         class="absolute inset-0 w-full h-full object-cover">
-                                    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
-                                {% else %}
-                                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600"></div>
-                                    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-20">
                                 {% endif %}
                                 
-                                <!-- Default Content -->
-                                <div class="relative z-10 text-center transition-all duration-300 group-hover:opacity-0">
-                                    <h2 class="text-2xl font-bold text-white mb-1">{{ genre.name }}</h2>
-                                    <div class="flex items-center justify-center space-x-1">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <!-- Content Overlay -->
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                                    <h2 class="text-2xl font-bold text-white mb-3">{{ genre.name }}</h2>
+                                    <div class="flex items-center justify-center space-x-2 mb-4">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M6 20h12M6 4h12"></path>
                                         </svg>
-                                        <span class="text-white text-sm font-medium">{{ genre.movies.count }} movies</span>
+                                        <span class="text-white text-lg font-medium">{{ genre.movies.count }} movies</span>
                                     </div>
+                                    <div class="text-white text-sm opacity-90 font-medium">Browse Genre →</div>
                                 </div>
                                 
-                                <!-- Hover Content -->
-                                <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                    <div class="text-center">
-                                        <div class="text-white font-semibold text-lg mb-2">Explore Genre</div>
-                                        <div class="text-white text-sm opacity-90">{{ genre.movies.count }} movies</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Genre Content -->
-                            <div class="p-6">
-                                <!-- Description -->
-                                <div class="mb-4">
-                                    {% if genre.description %}
-                                        <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
-                                            {{ genre.description }}
-                                        </p>
-                                    {% else %}
-                                        <p class="text-gray-500 text-sm italic">
-                                            Discover amazing {{ genre.name|lower }} movies in our collection.
-                                        </p>
-                                    {% endif %}
-                                </div>
-
-                                <!-- Action Button -->
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                                        <span class="text-sm text-gray-500">Active Genre</span>
-                                    </div>
-                                    <div class="flex items-center text-indigo-600 font-medium text-sm group-hover:text-indigo-700 transition-colors">
-                                        <span>Browse</span>
-                                        <svg class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
+                                <!-- Hover Effect Overlay -->
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
                             </div>
                         </a>
                     </div>

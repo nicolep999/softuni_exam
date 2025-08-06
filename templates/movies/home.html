@@ -87,23 +87,17 @@
     }
     
     /* Stagger animations for cards */
-    .movie-card-modern {
+    .movie-card {
         opacity: 0;
         animation: fadeInUp 0.6s ease-out forwards;
     }
     
-    .movie-card-modern:nth-child(1) { animation-delay: 0.1s; }
-    .movie-card-modern:nth-child(2) { animation-delay: 0.2s; }
-    .movie-card-modern:nth-child(3) { animation-delay: 0.3s; }
-    .movie-card-modern:nth-child(4) { animation-delay: 0.4s; }
-    .movie-card-modern:nth-child(5) { animation-delay: 0.5s; }
-    .movie-card-modern:nth-child(6) { animation-delay: 0.6s; }
-    
-    /* Hover effects */
-    .movie-card-modern:hover {
-        transform: translateY(-8px);
-        transition: transform 0.3s ease;
-    }
+    .movie-card:nth-child(1) { animation-delay: 0.1s; }
+    .movie-card:nth-child(2) { animation-delay: 0.2s; }
+    .movie-card:nth-child(3) { animation-delay: 0.3s; }
+    .movie-card:nth-child(4) { animation-delay: 0.4s; }
+    .movie-card:nth-child(5) { animation-delay: 0.5s; }
+    .movie-card:nth-child(6) { animation-delay: 0.6s; }
     
     /* Hero section animations */
     .hero-title {
@@ -159,7 +153,7 @@
         });
 
         // Add some interactive hover effects
-        document.querySelectorAll('.movie-card-modern').forEach(card => {
+        document.querySelectorAll('.movie-card').forEach(card => {
             card.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-8px) scale(1.02)';
             });
@@ -245,24 +239,35 @@
             </a>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 lg:gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {% for movie in latest_movies %}
-                <div class="group movie-card-modern">
+                <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 overflow-hidden movie-card">
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
-                        <div class="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                        <!-- Movie Poster -->
+                        <div class="relative overflow-hidden">
                             {% if movie.poster %}
                                 <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
-                                     class="w-full h-48 sm:h-64 md:h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                     class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700">
                             {% else %}
-                                <div class="w-full h-48 sm:h-64 md:h-80 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                                    <div class="text-center">
-                                        <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M6 20h12M6 4h12"></path>
-                                        </svg>
-                                        <span class="text-gray-500 text-xs sm:text-sm">No Image</span>
-                                    </div>
+                                <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                                    </svg>
                                 </div>
                             {% endif %}
+                            
+                            <!-- Rating Badge -->
+                            {% if movie.imdb_rating %}
+                                <div class="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center">
+                                    <span class="mr-1">★</span>
+                                    {{ movie.imdb_rating }}/10
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Year Badge -->
+                            <div class="absolute top-3 left-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-lg">
+                                {{ movie.release_year }}
+                            </div>
                             
                             <!-- Overlay with movie info -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -274,19 +279,12 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            
-                            <!-- Rating badge -->
-                            {% if movie.imdb_rating %}
-                                <div class="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center">
-                                    <span class="mr-1">★</span>
-                                    {{ movie.imdb_rating }}/10
-                                </div>
-                            {% endif %}
                         </div>
                         
-                        <div class="mt-4 space-y-2">
+                        <!-- Movie Info -->
+                        <div class="p-4 space-y-3">
                             <h3 class="font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors text-base">{{ movie.title }}</h3>
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between pt-1">
                                 <p class="text-gray-600 text-sm">{{ movie.release_year }}</p>
                                 {% if movie.imdb_rating %}
                                     <div class="flex items-center bg-gray-100 px-2 py-1 rounded-full">
@@ -296,7 +294,7 @@
                                 {% endif %}
                             </div>
                             {% if movie.director %}
-                                <p class="text-gray-500 text-xs truncate">Dir. {{ movie.director.name }}</p>
+                                <p class="text-gray-500 text-xs leading-relaxed min-h-[2rem] flex items-start pt-1">Dir. {{ movie.director.name }}</p>
                             {% endif %}
                         </div>
                     </a>
@@ -333,24 +331,35 @@
             </a>
         </div>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
             {% for movie in top_rated_movies %}
-                <div class="group movie-card-modern">
+                <div class="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:scale-105 overflow-hidden movie-card">
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
-                        <div class="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                        <!-- Movie Poster -->
+                        <div class="relative overflow-hidden">
                             {% if movie.poster %}
                                 <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
-                                     class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                     class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700">
                             {% else %}
-                                <div class="w-full h-80 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                                    <div class="text-center">
-                                        <svg class="w-16 h-16 text-gray-500 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M6 20h12M6 4h12"></path>
-                                        </svg>
-                                        <span class="text-gray-500 text-sm">No Image</span>
-                                    </div>
+                                <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                                    </svg>
                                 </div>
                             {% endif %}
+                            
+                            <!-- Rating Badge -->
+                            {% if movie.imdb_rating %}
+                                <div class="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center">
+                                    <span class="mr-1">★</span>
+                                    {{ movie.imdb_rating }}/10
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Year Badge -->
+                            <div class="absolute top-3 left-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1.5 rounded-xl text-sm font-bold shadow-lg">
+                                {{ movie.release_year }}
+                            </div>
                             
                             <!-- Overlay with movie info -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -362,19 +371,12 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            
-                            <!-- Rating badge -->
-                            {% if movie.imdb_rating %}
-                                <div class="absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center">
-                                    <span class="mr-1">★</span>
-                                    {{ movie.imdb_rating }}/10
-                                </div>
-                            {% endif %}
                         </div>
                         
-                        <div class="mt-4 space-y-2">
+                        <!-- Movie Info -->
+                        <div class="p-4 space-y-3">
                             <h3 class="font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors text-base">{{ movie.title }}</h3>
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center justify-between pt-1">
                                 <p class="text-gray-600 text-sm">{{ movie.release_year }}</p>
                                 {% if movie.imdb_rating %}
                                     <div class="flex items-center bg-gray-100 px-2 py-1 rounded-full">
@@ -384,7 +386,7 @@
                                 {% endif %}
                             </div>
                             {% if movie.director %}
-                                <p class="text-gray-500 text-xs truncate">Dir. {{ movie.director.name }}</p>
+                                <p class="text-gray-500 text-xs leading-relaxed min-h-[2rem] flex items-start pt-1">Dir. {{ movie.director.name }}</p>
                             {% endif %}
                         </div>
                     </a>
