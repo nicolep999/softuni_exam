@@ -2,7 +2,154 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
+/* ===== BRAND COLOR SYSTEM ===== */
+:root {
+    /* Primary Brand Colors */
+    --color-primary-50: #eef2ff;
+    --color-primary-100: #e0e7ff;
+    --color-primary-200: #c7d2fe;
+    --color-primary-300: #a5b4fc;
+    --color-primary-400: #818cf8;
+    --color-primary-500: #6366f1;
+    --color-primary-600: #4f46e5;
+    --color-primary-700: #4338ca;
+    --color-primary-800: #3730a3;
+    --color-primary-900: #312e81;
+    
+    /* Secondary Brand Colors */
+    --color-secondary-50: #faf5ff;
+    --color-secondary-100: #f3e8ff;
+    --color-secondary-200: #e9d5ff;
+    --color-secondary-300: #d8b4fe;
+    --color-secondary-400: #c084fc;
+    --color-secondary-500: #a855f7;
+    --color-secondary-600: #9333ea;
+    --color-secondary-700: #7c3aed;
+    --color-secondary-800: #6b21a8;
+    --color-secondary-900: #581c87;
+    
+    /* Accent Colors */
+    --color-accent-50: #fefce8;
+    --color-accent-100: #fef9c3;
+    --color-accent-200: #fef08a;
+    --color-accent-300: #fde047;
+    --color-accent-400: #facc15;
+    --color-accent-500: #eab308;
+    --color-accent-600: #ca8a04;
+    --color-accent-700: #a16207;
+    --color-accent-800: #854d0e;
+    --color-accent-900: #713f12;
+    
+    /* Semantic Colors */
+    --color-success-50: #f0fdf4;
+    --color-success-500: #22c55e;
+    --color-success-600: #16a34a;
+    --color-success-700: #15803d;
+    
+    --color-warning-50: #fffbeb;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+    
+    --color-error-50: #fef2f2;
+    --color-error-500: #ef4444;
+    --color-error-600: #dc2626;
+    --color-error-700: #b91c1c;
+    
+    --color-info-50: #eff6ff;
+    --color-info-500: #3b82f6;
+    --color-info-600: #2563eb;
+    --color-info-700: #1d4ed8;
+    
+    /* Neutral Colors */
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+    
+    /* Brand Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-secondary-600) 100%);
+    --gradient-primary-hover: linear-gradient(135deg, var(--color-primary-700) 0%, var(--color-secondary-700) 100%);
+    --gradient-accent: linear-gradient(135deg, var(--color-accent-400) 0%, var(--color-accent-600) 100%);
+    --gradient-accent-hover: linear-gradient(135deg, var(--color-accent-500) 0%, var(--color-accent-700) 100%);
+    --gradient-hero: linear-gradient(135deg, var(--color-primary-900) 0%, var(--color-secondary-800) 50%, var(--color-primary-800) 100%);
+    --gradient-card: linear-gradient(135deg, #ffffff 0%, var(--color-gray-50) 100%);
+    --gradient-dark: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-gray-800) 100%);
+}
+
+/* ===== BRAND UTILITY CLASSES ===== */
+.bg-brand-primary {
+    background: var(--gradient-primary);
+}
+
+.bg-brand-primary-hover:hover {
+    background: var(--gradient-primary-hover);
+}
+
+.bg-brand-accent {
+    background: var(--gradient-accent);
+}
+
+.bg-brand-accent-hover:hover {
+    background: var(--gradient-accent-hover);
+}
+
+.bg-brand-hero {
+    background: var(--gradient-hero);
+}
+
+.bg-brand-card {
+    background: var(--gradient-card);
+}
+
+.bg-brand-dark {
+    background: var(--gradient-dark);
+}
+
+.text-brand-primary {
+    color: var(--color-primary-600);
+}
+
+.text-brand-secondary {
+    color: var(--color-secondary-600);
+}
+
+.text-brand-accent {
+    color: var(--color-accent-500);
+}
+
+/* ===== SEMANTIC COLOR CLASSES ===== */
+.bg-success {
+    background-color: var(--color-success-50);
+    color: var(--color-success-700);
+    border-color: var(--color-success-500);
+}
+
+.bg-warning {
+    background-color: var(--color-warning-50);
+    color: var(--color-warning-700);
+    border-color: var(--color-warning-500);
+}
+
+.bg-error {
+    background-color: var(--color-error-50);
+    color: var(--color-error-700);
+    border-color: var(--color-error-500);
+}
+
+.bg-info {
+    background-color: var(--color-info-50);
+    color: var(--color-info-700);
+    border-color: var(--color-info-500);
+}
+
+/* ===== COMPONENT STYLES ===== */
 .movie-card {
     @apply bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-xl hover:scale-105;
 }
@@ -16,159 +163,495 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
+/* ===== BUTTON SYSTEM ===== */
 .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors;
+    @apply px-4 py-2 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105;
+    background: var(--gradient-primary);
+}
+
+.btn-primary:hover {
+    background: var(--gradient-primary-hover);
 }
 
 .btn-secondary {
-    @apply px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors;
+    @apply px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200;
+}
+
+.btn-accent {
+    @apply px-4 py-2 text-white font-semibold rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105;
+    background: var(--gradient-accent);
+}
+
+.btn-accent:hover {
+    background: var(--gradient-accent-hover);
 }
 
 .btn-danger {
-    @apply px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors;
+    @apply px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200;
 }
 
+.btn-success {
+    @apply px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200;
+}
+
+.btn-outline {
+    @apply px-4 py-2 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-all duration-200;
+}
+
+.btn-outline-primary {
+    @apply px-4 py-2 border-2 border-transparent text-white font-semibold rounded-lg transition-all duration-200;
+    background: var(--gradient-primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--gradient-primary-hover);
+}
+
+/* ===== FORM STYLES ===== */
 .form-input {
     width: 100% !important;
     padding: 0.75rem 1rem !important;
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid var(--color-gray-200) !important;
     border-radius: 0.75rem !important;
-    outline: none !important;
-    transition: all 0.3s ease !important;
-    background-color: white !important;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
-    font-size: 0.875rem !important;
-    color: #374151 !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
 .form-input:focus {
     outline: none !important;
-    border-color: #8b5cf6 !important;
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1), 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
-    transform: translateY(-1px) !important;
+    border-color: var(--color-primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
 }
 
 .form-input:hover {
-    border-color: #c7d2fe !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-color: var(--color-primary-400) !important;
 }
 
-.form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+/* ===== CARD STYLES ===== */
+.card {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden;
+    background: var(--gradient-card);
+}
+
+.card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:scale-105;
+}
+
+/* ===== UNIFIED CARD SYSTEM ===== */
+.card-modern {
+    @apply bg-white rounded-2xl overflow-hidden transition-all duration-500;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.card-modern:hover {
+    @apply transform scale-105;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Movie Cards */
+.movie-card {
+    @apply card-modern;
+}
+
+.movie-card-modern {
+    @apply card-modern;
+}
+
+.movie-card-image {
+    @apply relative overflow-hidden;
+    aspect-ratio: 2/3;
+}
+
+.movie-card-image img {
+    @apply w-full h-full object-cover transition-transform duration-500;
+}
+
+.movie-card:hover .movie-card-image img {
+    @apply scale-110;
+}
+
+.movie-card-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300;
+}
+
+.movie-card:hover .movie-card-overlay {
+    @apply opacity-100;
+}
+
+.movie-card-content {
+    @apply p-4 space-y-2;
+}
+
+.movie-card-title {
+    @apply font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors text-base;
+}
+
+.movie-card-meta {
+    @apply flex items-center justify-between text-sm;
+}
+
+.movie-card-year {
+    @apply text-gray-600;
+}
+
+.movie-card-rating {
+    @apply flex items-center bg-gray-100 px-2 py-1 rounded-full;
+}
+
+.movie-card-rating-star {
+    @apply text-yellow-500 text-xs mr-1;
+}
+
+.movie-card-rating-score {
+    @apply text-xs font-semibold text-gray-700;
+}
+
+.movie-card-director {
+    @apply text-gray-500 text-xs truncate;
+}
+
+.movie-card-badge {
+    @apply absolute top-3 right-3 bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-sm font-bold flex items-center;
+}
+
+/* Genre Cards */
+.genre-card {
+    @apply card-modern;
+}
+
+.genre-card-header {
+    @apply relative h-32 flex items-center justify-center overflow-hidden;
+}
+
+.genre-card-poster {
+    @apply w-full h-full object-cover transition-transform duration-500;
+}
+
+.genre-card:hover .genre-card-poster {
+    @apply scale-110;
+}
+
+.genre-card-fallback {
+    @apply w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center;
+}
+
+.genre-card-content {
+    @apply p-6;
+}
+
+.genre-card-title {
+    @apply text-xl font-bold text-gray-900 mb-2;
+}
+
+.genre-card-description {
+    @apply text-gray-600 text-sm mb-4;
+}
+
+.genre-card-meta {
+    @apply flex items-center justify-between text-sm text-gray-500;
+}
+
+/* Profile Cards */
+.profile-card {
+    @apply card-modern;
+}
+
+.profile-card-header {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white;
+}
+
+.profile-card-avatar {
+    @apply w-20 h-20 rounded-full border-4 border-white shadow-lg mx-auto mb-4;
+}
+
+.profile-card-name {
+    @apply text-2xl font-bold text-center mb-2;
+}
+
+.profile-card-username {
+    @apply text-indigo-100 text-center;
+}
+
+.profile-card-content {
+    @apply p-6;
+}
+
+.profile-card-section {
+    @apply mb-6;
+}
+
+.profile-card-section-title {
+    @apply text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2;
+}
+
+.profile-card-section-icon {
+    @apply w-5 h-5 text-indigo-600;
+}
+
+/* Review Cards */
+.review-card {
+    @apply card-modern;
+}
+
+.review-card-header {
+    @apply p-6 border-b border-gray-100;
+}
+
+.review-card-title {
+    @apply text-xl font-bold text-gray-900 mb-2;
+}
+
+.review-card-meta {
+    @apply flex items-center justify-between text-sm text-gray-600;
+}
+
+.review-card-rating {
+    @apply flex items-center;
+}
+
+.review-card-rating-stars {
+    @apply text-yellow-500 mr-2;
+}
+
+.review-card-content {
+    @apply p-6;
+}
+
+.review-card-text {
+    @apply text-gray-700 leading-relaxed;
+}
+
+.review-card-footer {
+    @apply p-6 bg-gray-50 border-t border-gray-100;
+}
+
+.review-card-actions {
+    @apply flex items-center justify-between;
+}
+
+/* Admin Cards */
+.admin-card {
+    @apply card-modern;
+}
+
+.admin-card-header {
+    @apply bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white;
+}
+
+.admin-card-title {
+    @apply text-xl font-bold mb-2;
+}
+
+.admin-card-subtitle {
+    @apply text-purple-100;
+}
+
+.admin-card-content {
+    @apply p-6;
+}
+
+.admin-card-stats {
+    @apply grid grid-cols-2 gap-4;
+}
+
+.admin-card-stat {
+    @apply text-center p-4 bg-gray-50 rounded-xl;
+}
+
+.admin-card-stat-number {
+    @apply text-2xl font-bold text-gray-900;
+}
+
+.admin-card-stat-label {
+    @apply text-sm text-gray-600;
+}
+
+/* Form Cards */
+.form-card {
+    @apply card-modern;
+}
+
+.form-card-header {
+    @apply bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 px-6 py-4 relative overflow-hidden;
+}
+
+.form-card-header::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-white/10 to-transparent;
+}
+
+.form-card-title {
+    @apply text-xl font-bold text-white flex items-center gap-2 relative z-10;
+}
+
+.form-card-content {
+    @apply p-6;
+}
+
+/* Search Cards */
+.search-card {
+    @apply bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100 p-8 backdrop-blur-sm;
+}
+
+.search-card-header {
+    @apply flex items-center mb-8;
+}
+
+.search-card-icon {
+    @apply w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-5 shadow-lg;
+}
+
+.search-card-title {
+    @apply text-3xl font-bold text-gray-900 mb-1;
+}
+
+.search-card-subtitle {
+    @apply text-gray-600;
+}
+
+/* ===== BADGE STYLES ===== */
+.badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-800);
+}
+
+.badge-secondary {
+    background-color: var(--color-secondary-100);
+    color: var(--color-secondary-800);
+}
+
+.badge-accent {
+    background-color: var(--color-accent-100);
+    color: var(--color-accent-800);
+}
+
+.badge-success {
+    background-color: var(--color-success-50);
+    color: var(--color-success-700);
+}
+
+.badge-warning {
+    background-color: var(--color-warning-50);
+    color: var(--color-warning-700);
+}
+
+.badge-error {
+    background-color: var(--color-error-50);
+    color: var(--color-error-700);
+}
+
+/* ===== ALERT STYLES ===== */
+.alert {
+    @apply p-4 rounded-lg border-l-4;
 }
 
 .alert-success {
-    @apply p-4 mb-4 bg-green-100 text-green-800 rounded-md;
+    background-color: var(--color-success-50);
+    color: var(--color-success-700);
+    border-color: var(--color-success-500);
+}
+
+.alert-warning {
+    background-color: var(--color-warning-50);
+    color: var(--color-warning-700);
+    border-color: var(--color-warning-500);
 }
 
 .alert-error {
-    @apply p-4 mb-4 bg-red-100 text-red-800 rounded-md;
+    background-color: var(--color-error-50);
+    color: var(--color-error-700);
+    border-color: var(--color-error-500);
 }
 
-/* Modern button styles */
-.btn-modern-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300;
+.alert-info {
+    background-color: var(--color-info-50);
+    color: var(--color-info-700);
+    border-color: var(--color-info-500);
 }
 
-.btn-modern-secondary {
-    @apply px-6 py-3 border-2 border-indigo-600 text-indigo-600 font-semibold rounded-full hover:bg-indigo-600 hover:text-white transition-all duration-300;
+/* ===== RATING STYLES ===== */
+.rating-star {
+    @apply text-yellow-400;
 }
 
-
-
-/* Modern card styles */
-.card-modern {
-    @apply bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100;
+.rating-star-empty {
+    @apply text-gray-300;
 }
 
-/* Gradient text utility */
-.gradient-text {
-    @apply bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent;
-}
-
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    @apply bg-gray-100;
-}
-
-::-webkit-scrollbar-thumb {
-    @apply bg-gray-400 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-500;
-}
-
-/* Half-star effect - True half star */
-.half-star {
+.rating-star-half {
+    @apply text-yellow-400;
     position: relative;
-    color: #6b7280; /* slate-600 - empty star color */
 }
 
-.half-star::before {
-    content: "★";
+.rating-star-half::after {
+    content: '★';
     position: absolute;
     left: 0;
     top: 0;
     width: 50%;
     overflow: hidden;
-    color: #fbbf24; /* yellow-400 - filled star color */
+    color: var(--color-gray-300);
 }
 
-/* File input styling */
-input[type="file"] {
-    @apply w-full px-4 py-3 border-2 border-dashed border-slate-400 rounded-xl text-slate-900 bg-slate-50 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200;
+/* ===== ANIMATION UTILITIES ===== */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Multi-select styling */
-select[multiple] {
-    @apply min-h-[120px];
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out;
 }
 
-/* Checkbox styling for genres */
-.genre-checkboxes {
-    @apply space-y-2;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.genre-checkboxes ul {
-    @apply list-none p-0 m-0;
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.genre-checkboxes li {
-    @apply flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 transition-colors;
-}
+/* ===== RESPONSIVE UTILITIES ===== */
+@media (max-width: 640px) {
+    .btn-primary,
+    .btn-secondary,
+    .btn-accent,
+    .btn-danger,
+    .btn-success {
+        @apply w-full;
+    }
 
-.genre-checkboxes input[type="checkbox"] {
-    @apply w-5 h-5 text-purple-600 border-2 border-slate-400 rounded focus:ring-purple-500 focus:ring-2;
-}
-
-.genre-checkboxes label {
-    @apply text-sm font-medium text-slate-700 cursor-pointer flex-1;
-}
-
-/* Error state styling */
-input[type="text"].error, input[type="number"].error, input[type="url"].error, textarea.error, select.error {
-    @apply border-red-300 focus:ring-red-500 focus:border-red-500;
-}
-
-/* Success state styling */
-input[type="text"]:valid, input[type="number"]:valid, input[type="url"]:valid, textarea:valid, select:valid {
-    @apply border-green-300;
-}
-
-/* Placeholder styling */
-::placeholder {
-    color: #9ca3af !important;
-    opacity: 1 !important;
+    .card-modern {
+        @apply rounded-xl;
+    }
+    
+    .movie-card-image {
+        aspect-ratio: 3/4;
+    }
+    
+    .search-card {
+        @apply p-6 rounded-2xl;
+    }
+    
+    .search-card-header {
+        @apply flex-col text-center mb-6;
+    }
+    
+    .search-card-icon {
+        @apply mr-0 mb-4;
+    }
 }
 
  
