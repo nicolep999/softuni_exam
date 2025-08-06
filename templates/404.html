@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Page Not Found - Moodie{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+    <div class="max-w-4xl mx-auto px-6 py-12 text-center">
+        <!-- 404 Number with Movie Theme -->
+        <div class="relative mb-8">
+            <div class="text-9xl md:text-[12rem] font-black text-gray-200 select-none">404</div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-6xl md:text-8xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    404
+                </div>
+            </div>
+        </div>
+
+        <!-- Movie Reel Icon -->
+        <div class="mb-8">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full shadow-2xl animate-pulse">
+                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M6 20h12M6 4h12"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Main Message -->
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Oops! This Scene Got Cut
+        </h1>
+        
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Looks like this page wandered off set and got lost in the editing room. 
+            Don't worry, even the best movies have deleted scenes!
+        </p>
+
+        <!-- Fun Movie References -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🎬 Famous Movie Bloopers</h2>
+            <div class="grid md:grid-cols-3 gap-6 text-left">
+                <div class="bg-gradient-to-br from-red-50 to-pink-50 p-4 rounded-lg border border-red-100">
+                    <div class="text-red-600 font-semibold mb-2">The Matrix (1999)</div>
+                    <p class="text-sm text-gray-600">Keanu Reeves accidentally broke his neck during a stunt, but the scene was so good they kept it!</p>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100">
+                    <div class="text-blue-600 font-semibold mb-2">Star Wars (1977)</div>
+                    <p class="text-sm text-gray-600">Mark Hamill accidentally called Princess Leia "Carrie" instead of "Leia" in one take.</p>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg border border-green-100">
+                    <div class="text-green-600 font-semibold mb-2">Titanic (1997)</div>
+                    <p class="text-sm text-gray-600">Leonardo DiCaprio's famous "I'm the king of the world!" line was completely improvised.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a href="{% url 'movies:home' %}" 
+               class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Back to Home
+            </a>
+            
+            <a href="{% url 'movies:movie_list' %}" 
+               class="inline-flex items-center px-8 py-4 bg-white text-gray-700 font-semibold rounded-lg border-2 border-gray-200 shadow-lg hover:shadow-xl hover:border-indigo-300 transform hover:scale-105 transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M6 20h12M6 4h12"></path>
+                </svg>
+                Browse Movies
+            </a>
+        </div>
+
+        <!-- Fun Stats -->
+        <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-indigo-600">99.9%</div>
+                <div class="text-sm text-gray-600">Pages Found</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">0.1%</div>
+                <div class="text-sm text-gray-600">Pages Lost</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-pink-600">∞</div>
+                <div class="text-sm text-gray-600">Movie Possibilities</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600">🎬</div>
+                <div class="text-sm text-gray-600">Fun Factor</div>
+            </div>
+        </div>
+
+        <!-- Hidden Easter Egg -->
+        <div class="mt-8 text-xs text-gray-400">
+            <p>💡 Pro tip: Even the best directors have deleted scenes. This one just got cut from the final edit!</p>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Movie Elements -->
+<div class="fixed top-20 left-10 opacity-10 animate-bounce">
+    <svg class="w-8 h-8 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
+    </svg>
+</div>
+
+<div class="fixed bottom-20 right-10 opacity-10 animate-pulse">
+    <svg class="w-8 h-8 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+    </svg>
+</div>
+
+<style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+</style>
+{% endblock %} 
