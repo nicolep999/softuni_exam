@@ -19,6 +19,7 @@ import re
 
 from .models import Movie, Genre, Director, Actor, Watchlist
 from .forms import MovieForm, MovieSearchForm
+from reviews.models import Review
 
 
 def sanitize_input(value):
@@ -60,10 +61,15 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get featured movies (latest releases)
-        context["featured_movies"] = Movie.objects.filter(
-            release_year__isnull=False
-        ).order_by("-release_year", "title")[:6]
+        # Get latest movies (most recent releases)
+        context["latest_movies"] = Movie.objects.filter(
+            release_date__isnull=False
+        ).order_by("-release_date", "title")[:5]
+        
+        # Get top rated movies (highest IMDB ratings)
+        context["top_rated_movies"] = Movie.objects.filter(
+            imdb_rating__isnull=False
+        ).order_by("-imdb_rating", "title")[:5]
         
         # Get popular genres
         context["popular_genres"] = Genre.objects.all()[:8]
