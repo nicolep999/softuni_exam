@@ -24,15 +24,10 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#x"
+SECRET_KEY = "django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#3jtonur%m%5*^5g#ci-n$dtf#x"
 
 # TMDB API Configuration
 TMDB_API_KEY = env("TMDB_API_KEY", default=None)
-
-# Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME = env("CLOUDINARY_CLOUD_NAME", default=None)
-CLOUDINARY_API_KEY = env("CLOUDINARY_API_KEY", default=None)
-CLOUDINARY_API_SECRET = env("CLOUDINARY_API_SECRET", default=None)
 
 ALLOWED_HOSTS = []
 DEBUG = True
@@ -49,10 +44,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ] + CUSTOM_APPS
-
-# Add Cloudinary storage if credentials are provided
-if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
-    INSTALLED_APPS.append("cloudinary_storage")
 
 
 MIDDLEWARE = [
@@ -93,14 +84,24 @@ WSGI_APPLICATION = "Moodie.wsgi.application"
 import dj_database_url
 
 # Check if we're in production (Railway provides DATABASE_URL)
-if env("DATABASE_URL", default=None):
-    DATABASES = {
-        "default": dj_database_url.config(
-            default=env("DATABASE_URL"),
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+database_url = env("DATABASE_URL", default=None)
+if database_url:
+    try:
+        DATABASES = {
+            "default": dj_database_url.config(
+                default=database_url,
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+    except Exception:
+        # Fallback to SQLite if DATABASE_URL is invalid
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
 else:
     # Local development with individual database variables
     DATABASES = {
@@ -166,16 +167,14 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media files configuration
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
-# Cloudinary storage configuration (if credentials are provided)
-if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
-        'API_KEY': CLOUDINARY_API_KEY,
-        'API_SECRET': CLOUDINARY_API_SECRET,
-    }
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Use Railway volume for media in production, local media for development
+if env("DATABASE_URL", default=None):
+    # Production: Use Railway volume
+    MEDIA_ROOT = Path("/app/media")
+else:
+    # Development: Use local media directory
+    MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
