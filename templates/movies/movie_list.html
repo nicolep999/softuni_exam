@@ -62,175 +62,23 @@
                     <select name="genre" id="id_genre" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="">All Genres</option>
                         {% for value, label in search_form.genre.field.choices %}
-                            {% if value %}
-                                <option value="{{ value }}" {% if search_form.genre.value == value %}selected{% endif %}>{{ label }}</option>
-                            {% endif %}
+                            <option value="{{ value }}" {% if value in search_form.genre.value %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 
                 <div>
                     <label for="id_year_from" class="block text-sm font-semibold text-gray-700 mb-3">Year From</label>
-                    <select name="year_from" id="id_year_from" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
-                        <option value="">Any Year</option>
-                        <option value="2024" {% if search_form.year_from.value == "2024" %}selected{% endif %}>2024</option>
-                        <option value="2023" {% if search_form.year_from.value == "2023" %}selected{% endif %}>2023</option>
-                        <option value="2022" {% if search_form.year_from.value == "2022" %}selected{% endif %}>2022</option>
-                        <option value="2021" {% if search_form.year_from.value == "2021" %}selected{% endif %}>2021</option>
-                        <option value="2020" {% if search_form.year_from.value == "2020" %}selected{% endif %}>2020</option>
-                        <option value="2019" {% if search_form.year_from.value == "2019" %}selected{% endif %}>2019</option>
-                        <option value="2018" {% if search_form.year_from.value == "2018" %}selected{% endif %}>2018</option>
-                        <option value="2017" {% if search_form.year_from.value == "2017" %}selected{% endif %}>2017</option>
-                        <option value="2016" {% if search_form.year_from.value == "2016" %}selected{% endif %}>2016</option>
-                        <option value="2015" {% if search_form.year_from.value == "2015" %}selected{% endif %}>2015</option>
-                        <option value="2014" {% if search_form.year_from.value == "2014" %}selected{% endif %}>2014</option>
-                        <option value="2013" {% if search_form.year_from.value == "2013" %}selected{% endif %}>2013</option>
-                        <option value="2012" {% if search_form.year_from.value == "2012" %}selected{% endif %}>2012</option>
-                        <option value="2011" {% if search_form.year_from.value == "2011" %}selected{% endif %}>2011</option>
-                        <option value="2010" {% if search_form.year_from.value == "2010" %}selected{% endif %}>2010</option>
-                        <option value="2009" {% if search_form.year_from.value == "2009" %}selected{% endif %}>2009</option>
-                        <option value="2008" {% if search_form.year_from.value == "2008" %}selected{% endif %}>2008</option>
-                        <option value="2007" {% if search_form.year_from.value == "2007" %}selected{% endif %}>2007</option>
-                        <option value="2006" {% if search_form.year_from.value == "2006" %}selected{% endif %}>2006</option>
-                        <option value="2005" {% if search_form.year_from.value == "2005" %}selected{% endif %}>2005</option>
-                        <option value="2004" {% if search_form.year_from.value == "2004" %}selected{% endif %}>2004</option>
-                        <option value="2003" {% if search_form.year_from.value == "2003" %}selected{% endif %}>2003</option>
-                        <option value="2002" {% if search_form.year_from.value == "2002" %}selected{% endif %}>2002</option>
-                        <option value="2001" {% if search_form.year_from.value == "2001" %}selected{% endif %}>2001</option>
-                        <option value="2000" {% if search_form.year_from.value == "2000" %}selected{% endif %}>2000</option>
-                        <option value="1999" {% if search_form.year_from.value == "1999" %}selected{% endif %}>1999</option>
-                        <option value="1998" {% if search_form.year_from.value == "1998" %}selected{% endif %}>1998</option>
-                        <option value="1997" {% if search_form.year_from.value == "1997" %}selected{% endif %}>1997</option>
-                        <option value="1996" {% if search_form.year_from.value == "1996" %}selected{% endif %}>1996</option>
-                        <option value="1995" {% if search_form.year_from.value == "1995" %}selected{% endif %}>1995</option>
-                        <option value="1994" {% if search_form.year_from.value == "1994" %}selected{% endif %}>1994</option>
-                        <option value="1993" {% if search_form.year_from.value == "1993" %}selected{% endif %}>1993</option>
-                        <option value="1992" {% if search_form.year_from.value == "1992" %}selected{% endif %}>1992</option>
-                        <option value="1991" {% if search_form.year_from.value == "1991" %}selected{% endif %}>1991</option>
-                        <option value="1990" {% if search_form.year_from.value == "1990" %}selected{% endif %}>1990</option>
-                        <option value="1989" {% if search_form.year_from.value == "1989" %}selected{% endif %}>1989</option>
-                        <option value="1988" {% if search_form.year_from.value == "1988" %}selected{% endif %}>1988</option>
-                        <option value="1987" {% if search_form.year_from.value == "1987" %}selected{% endif %}>1987</option>
-                        <option value="1986" {% if search_form.year_from.value == "1986" %}selected{% endif %}>1986</option>
-                        <option value="1985" {% if search_form.year_from.value == "1985" %}selected{% endif %}>1985</option>
-                        <option value="1984" {% if search_form.year_from.value == "1984" %}selected{% endif %}>1984</option>
-                        <option value="1983" {% if search_form.year_from.value == "1983" %}selected{% endif %}>1983</option>
-                        <option value="1982" {% if search_form.year_from.value == "1982" %}selected{% endif %}>1982</option>
-                        <option value="1981" {% if search_form.year_from.value == "1981" %}selected{% endif %}>1981</option>
-                        <option value="1980" {% if search_form.year_from.value == "1980" %}selected{% endif %}>1980</option>
-                        <option value="1979" {% if search_form.year_from.value == "1979" %}selected{% endif %}>1979</option>
-                        <option value="1978" {% if search_form.year_from.value == "1978" %}selected{% endif %}>1978</option>
-                        <option value="1977" {% if search_form.year_from.value == "1977" %}selected{% endif %}>1977</option>
-                        <option value="1976" {% if search_form.year_from.value == "1976" %}selected{% endif %}>1976</option>
-                        <option value="1975" {% if search_form.year_from.value == "1975" %}selected{% endif %}>1975</option>
-                        <option value="1974" {% if search_form.year_from.value == "1974" %}selected{% endif %}>1974</option>
-                        <option value="1973" {% if search_form.year_from.value == "1973" %}selected{% endif %}>1973</option>
-                        <option value="1972" {% if search_form.year_from.value == "1972" %}selected{% endif %}>1972</option>
-                        <option value="1971" {% if search_form.year_from.value == "1971" %}selected{% endif %}>1971</option>
-                        <option value="1970" {% if search_form.year_from.value == "1970" %}selected{% endif %}>1970</option>
-                        <option value="1969" {% if search_form.year_from.value == "1969" %}selected{% endif %}>1969</option>
-                        <option value="1968" {% if search_form.year_from.value == "1968" %}selected{% endif %}>1968</option>
-                        <option value="1967" {% if search_form.year_from.value == "1967" %}selected{% endif %}>1967</option>
-                        <option value="1966" {% if search_form.year_from.value == "1966" %}selected{% endif %}>1966</option>
-                        <option value="1965" {% if search_form.year_from.value == "1965" %}selected{% endif %}>1965</option>
-                        <option value="1964" {% if search_form.year_from.value == "1964" %}selected{% endif %}>1964</option>
-                        <option value="1963" {% if search_form.year_from.value == "1963" %}selected{% endif %}>1963</option>
-                        <option value="1962" {% if search_form.year_from.value == "1962" %}selected{% endif %}>1962</option>
-                        <option value="1961" {% if search_form.year_from.value == "1961" %}selected{% endif %}>1961</option>
-                        <option value="1960" {% if search_form.year_from.value == "1960" %}selected{% endif %}>1960</option>
-                        <option value="1959" {% if search_form.year_from.value == "1959" %}selected{% endif %}>1959</option>
-                        <option value="1958" {% if search_form.year_from.value == "1958" %}selected{% endif %}>1958</option>
-                        <option value="1957" {% if search_form.year_from.value == "1957" %}selected{% endif %}>1957</option>
-                        <option value="1956" {% if search_form.year_from.value == "1956" %}selected{% endif %}>1956</option>
-                        <option value="1955" {% if search_form.year_from.value == "1955" %}selected{% endif %}>1955</option>
-                        <option value="1954" {% if search_form.year_from.value == "1954" %}selected{% endif %}>1954</option>
-                        <option value="1953" {% if search_form.year_from.value == "1953" %}selected{% endif %}>1953</option>
-                        <option value="1952" {% if search_form.year_from.value == "1952" %}selected{% endif %}>1952</option>
-                        <option value="1951" {% if search_form.year_from.value == "1951" %}selected{% endif %}>1951</option>
-                        <option value="1950" {% if search_form.year_from.value == "1950" %}selected{% endif %}>1950</option>
-                    </select>
+                    <input type="number" name="year_from" id="id_year_from" value="{{ search_form.year_from.value|default:'' }}" 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300" 
+                           placeholder="From year" min="1888" max="2030">
                 </div>
                 
                 <div>
                     <label for="id_year_to" class="block text-sm font-semibold text-gray-700 mb-3">Year To</label>
-                    <select name="year_to" id="id_year_to" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
-                        <option value="">Any Year</option>
-                        <option value="2024" {% if search_form.year_to.value == "2024" %}selected{% endif %}>2024</option>
-                        <option value="2023" {% if search_form.year_to.value == "2023" %}selected{% endif %}>2023</option>
-                        <option value="2022" {% if search_form.year_to.value == "2022" %}selected{% endif %}>2022</option>
-                        <option value="2021" {% if search_form.year_to.value == "2021" %}selected{% endif %}>2021</option>
-                        <option value="2020" {% if search_form.year_to.value == "2020" %}selected{% endif %}>2020</option>
-                        <option value="2019" {% if search_form.year_to.value == "2019" %}selected{% endif %}>2019</option>
-                        <option value="2018" {% if search_form.year_to.value == "2018" %}selected{% endif %}>2018</option>
-                        <option value="2017" {% if search_form.year_to.value == "2017" %}selected{% endif %}>2017</option>
-                        <option value="2016" {% if search_form.year_to.value == "2016" %}selected{% endif %}>2016</option>
-                        <option value="2015" {% if search_form.year_to.value == "2015" %}selected{% endif %}>2015</option>
-                        <option value="2014" {% if search_form.year_to.value == "2014" %}selected{% endif %}>2014</option>
-                        <option value="2013" {% if search_form.year_to.value == "2013" %}selected{% endif %}>2013</option>
-                        <option value="2012" {% if search_form.year_to.value == "2012" %}selected{% endif %}>2012</option>
-                        <option value="2011" {% if search_form.year_to.value == "2011" %}selected{% endif %}>2011</option>
-                        <option value="2010" {% if search_form.year_to.value == "2010" %}selected{% endif %}>2010</option>
-                        <option value="2009" {% if search_form.year_to.value == "2009" %}selected{% endif %}>2009</option>
-                        <option value="2008" {% if search_form.year_to.value == "2008" %}selected{% endif %}>2008</option>
-                        <option value="2007" {% if search_form.year_to.value == "2007" %}selected{% endif %}>2007</option>
-                        <option value="2006" {% if search_form.year_to.value == "2006" %}selected{% endif %}>2006</option>
-                        <option value="2005" {% if search_form.year_to.value == "2005" %}selected{% endif %}>2005</option>
-                        <option value="2004" {% if search_form.year_to.value == "2004" %}selected{% endif %}>2004</option>
-                        <option value="2003" {% if search_form.year_to.value == "2003" %}selected{% endif %}>2003</option>
-                        <option value="2002" {% if search_form.year_to.value == "2002" %}selected{% endif %}>2002</option>
-                        <option value="2001" {% if search_form.year_to.value == "2001" %}selected{% endif %}>2001</option>
-                        <option value="2000" {% if search_form.year_to.value == "2000" %}selected{% endif %}>2000</option>
-                        <option value="1999" {% if search_form.year_to.value == "1999" %}selected{% endif %}>1999</option>
-                        <option value="1998" {% if search_form.year_to.value == "1998" %}selected{% endif %}>1998</option>
-                        <option value="1997" {% if search_form.year_to.value == "1997" %}selected{% endif %}>1997</option>
-                        <option value="1996" {% if search_form.year_to.value == "1996" %}selected{% endif %}>1996</option>
-                        <option value="1995" {% if search_form.year_to.value == "1995" %}selected{% endif %}>1995</option>
-                        <option value="1994" {% if search_form.year_to.value == "1994" %}selected{% endif %}>1994</option>
-                        <option value="1993" {% if search_form.year_to.value == "1993" %}selected{% endif %}>1993</option>
-                        <option value="1992" {% if search_form.year_to.value == "1992" %}selected{% endif %}>1992</option>
-                        <option value="1991" {% if search_form.year_to.value == "1991" %}selected{% endif %}>1991</option>
-                        <option value="1990" {% if search_form.year_to.value == "1990" %}selected{% endif %}>1990</option>
-                        <option value="1989" {% if search_form.year_to.value == "1989" %}selected{% endif %}>1989</option>
-                        <option value="1988" {% if search_form.year_to.value == "1988" %}selected{% endif %}>1988</option>
-                        <option value="1987" {% if search_form.year_to.value == "1987" %}selected{% endif %}>1987</option>
-                        <option value="1986" {% if search_form.year_to.value == "1986" %}selected{% endif %}>1986</option>
-                        <option value="1985" {% if search_form.year_to.value == "1985" %}selected{% endif %}>1985</option>
-                        <option value="1984" {% if search_form.year_to.value == "1984" %}selected{% endif %}>1984</option>
-                        <option value="1983" {% if search_form.year_to.value == "1983" %}selected{% endif %}>1983</option>
-                        <option value="1982" {% if search_form.year_to.value == "1982" %}selected{% endif %}>1982</option>
-                        <option value="1981" {% if search_form.year_to.value == "1981" %}selected{% endif %}>1981</option>
-                        <option value="1980" {% if search_form.year_to.value == "1980" %}selected{% endif %}>1980</option>
-                        <option value="1979" {% if search_form.year_to.value == "1979" %}selected{% endif %}>1979</option>
-                        <option value="1978" {% if search_form.year_to.value == "1978" %}selected{% endif %}>1978</option>
-                        <option value="1977" {% if search_form.year_to.value == "1977" %}selected{% endif %}>1977</option>
-                        <option value="1976" {% if search_form.year_to.value == "1976" %}selected{% endif %}>1976</option>
-                        <option value="1975" {% if search_form.year_to.value == "1975" %}selected{% endif %}>1975</option>
-                        <option value="1974" {% if search_form.year_to.value == "1974" %}selected{% endif %}>1974</option>
-                        <option value="1973" {% if search_form.year_to.value == "1973" %}selected{% endif %}>1973</option>
-                        <option value="1972" {% if search_form.year_to.value == "1972" %}selected{% endif %}>1972</option>
-                        <option value="1971" {% if search_form.year_to.value == "1971" %}selected{% endif %}>1971</option>
-                        <option value="1970" {% if search_form.year_to.value == "1970" %}selected{% endif %}>1970</option>
-                        <option value="1969" {% if search_form.year_to.value == "1969" %}selected{% endif %}>1969</option>
-                        <option value="1968" {% if search_form.year_to.value == "1968" %}selected{% endif %}>1968</option>
-                        <option value="1967" {% if search_form.year_to.value == "1967" %}selected{% endif %}>1967</option>
-                        <option value="1966" {% if search_form.year_to.value == "1966" %}selected{% endif %}>1966</option>
-                        <option value="1965" {% if search_form.year_to.value == "1965" %}selected{% endif %}>1965</option>
-                        <option value="1964" {% if search_form.year_to.value == "1964" %}selected{% endif %}>1964</option>
-                        <option value="1963" {% if search_form.year_to.value == "1963" %}selected{% endif %}>1963</option>
-                        <option value="1962" {% if search_form.year_to.value == "1962" %}selected{% endif %}>1962</option>
-                        <option value="1961" {% if search_form.year_to.value == "1961" %}selected{% endif %}>1961</option>
-                        <option value="1960" {% if search_form.year_to.value == "1960" %}selected{% endif %}>1960</option>
-                        <option value="1959" {% if search_form.year_to.value == "1959" %}selected{% endif %}>1959</option>
-                        <option value="1958" {% if search_form.year_to.value == "1958" %}selected{% endif %}>1958</option>
-                        <option value="1957" {% if search_form.year_to.value == "1957" %}selected{% endif %}>1957</option>
-                        <option value="1956" {% if search_form.year_to.value == "1956" %}selected{% endif %}>1956</option>
-                        <option value="1955" {% if search_form.year_to.value == "1955" %}selected{% endif %}>1955</option>
-                        <option value="1954" {% if search_form.year_to.value == "1954" %}selected{% endif %}>1954</option>
-                        <option value="1953" {% if search_form.year_to.value == "1953" %}selected{% endif %}>1953</option>
-                        <option value="1952" {% if search_form.year_to.value == "1952" %}selected{% endif %}>1952</option>
-                        <option value="1951" {% if search_form.year_to.value == "1951" %}selected{% endif %}>1951</option>
-                        <option value="1950" {% if search_form.year_to.value == "1950" %}selected{% endif %}>1950</option>
-                    </select>
+                    <input type="number" name="year_to" id="id_year_to" value="{{ search_form.year_to.value|default:'' }}" 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300" 
+                           placeholder="To year" min="1888" max="2030">
                 </div>
             </div>
             
@@ -239,42 +87,36 @@
                 <div>
                     <label for="id_rating_min" class="block text-sm font-semibold text-gray-700 mb-3">Min IMDB Rating</label>
                     <select name="rating_min" id="id_rating_min" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
-                        <option value="">Any Rating</option>
-                        <option value="9.0" {% if request.GET.rating_min == "9.0" %}selected{% endif %}>9.0+ (Excellent)</option>
-                        <option value="8.0" {% if request.GET.rating_min == "8.0" %}selected{% endif %}>8.0+ (Very Good)</option>
-                        <option value="7.0" {% if request.GET.rating_min == "7.0" %}selected{% endif %}>7.0+ (Good)</option>
-                        <option value="6.0" {% if request.GET.rating_min == "6.0" %}selected{% endif %}>6.0+ (Above Average)</option>
-                        <option value="5.0" {% if request.GET.rating_min == "5.0" %}selected{% endif %}>5.0+ (Average)</option>
+                        {% for value, label in search_form.rating_min.field.choices %}
+                            <option value="{{ value }}" {% if search_form.rating_min.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 
                 <div>
                     <label for="id_sort_by" class="block text-sm font-semibold text-gray-700 mb-3">Sort By</label>
                     <select name="sort_by" id="id_sort_by" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
-                        <option value="title" {% if request.GET.sort_by == "title" %}selected{% endif %}>Title (A-Z)</option>
-                        <option value="-title" {% if request.GET.sort_by == "-title" %}selected{% endif %}>Title (Z-A)</option>
-                        <option value="-release_year" {% if request.GET.sort_by == "-release_year" %}selected{% endif %}>Newest First</option>
-                        <option value="release_year" {% if request.GET.sort_by == "release_year" %}selected{% endif %}>Oldest First</option>
-                        <option value="-imdb_rating" {% if request.GET.sort_by == "-imdb_rating" %}selected{% endif %}>Highest Rated</option>
-                        <option value="imdb_rating" {% if request.GET.sort_by == "imdb_rating" %}selected{% endif %}>Lowest Rated</option>
+                        {% for value, label in search_form.sort_by.field.choices %}
+                            <option value="{{ value }}" {% if search_form.sort_by.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 
                 <div>
                     <label for="id_has_rating" class="block text-sm font-semibold text-gray-700 mb-3">Rating Filter</label>
                     <select name="has_rating" id="id_has_rating" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
-                        <option value="" {% if request.GET.has_rating == "" %}selected{% endif %}>All Movies</option>
-                        <option value="yes" {% if request.GET.has_rating == "yes" %}selected{% endif %}>Has IMDB Rating</option>
-                        <option value="no" {% if request.GET.has_rating == "no" %}selected{% endif %}>No IMDB Rating</option>
+                        {% for value, label in search_form.has_rating.field.choices %}
+                            <option value="{{ value }}" {% if search_form.has_rating.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 
                 <div>
                     <label for="id_has_poster" class="block text-sm font-semibold text-gray-700 mb-3">Poster Filter</label>
                     <select name="has_poster" id="id_has_poster" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
-                        <option value="" {% if request.GET.has_poster == "" %}selected{% endif %}>All Movies</option>
-                        <option value="yes" {% if request.GET.has_poster == "yes" %}selected{% endif %}>Has Poster</option>
-                        <option value="no" {% if request.GET.has_poster == "no" %}selected{% endif %}>No Poster</option>
+                        {% for value, label in search_form.has_poster.field.choices %}
+                            <option value="{{ value }}" {% if search_form.has_poster.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
@@ -306,12 +148,12 @@
                                     {{ request.GET.query }}
                                 </span>
                             {% endif %}
-                            {% if request.GET.genre %}
+                            {% if selected_genre_name %}
                                 <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                     </svg>
-                                    {{ request.GET.genre }}
+                                    {{ selected_genre_name }}
                                 </span>
                             {% endif %}
                             {% if request.GET.year_from or request.GET.year_to %}

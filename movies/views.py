@@ -113,50 +113,78 @@ class MovieListView(ListView):
             queryset = Movie.objects.all()
 
             # Get search parameters and sanitize them
-            title = sanitize_input(self.request.GET.get("title", ""))
-            genre = sanitize_input(self.request.GET.get("genre", ""))
-            director = sanitize_input(self.request.GET.get("director", ""))
+            query = sanitize_input(self.request.GET.get("query", ""))
+            genre = self.request.GET.get("genre", "")  # Changed to single genre selection
+            year_from = self.request.GET.get("year_from", "")
+            year_to = self.request.GET.get("year_to", "")
             rating_min = self.request.GET.get("rating_min", "")
-            year_min = self.request.GET.get("year_min", "")
-            year_max = self.request.GET.get("year_max", "")
+            sort_by = self.request.GET.get("sort_by", "")
+            has_rating = self.request.GET.get("has_rating", "")
+            has_poster = self.request.GET.get("has_poster", "")
 
             # Apply filters
-            if title:
-                queryset = queryset.filter(title__icontains=title)
+            if query:
+                queryset = queryset.filter(
+                    Q(title__icontains=query) |
+                    Q(director__name__icontains=query) |
+                    Q(actors__name__icontains=query)
+                ).distinct()
 
             if genre:
-                queryset = queryset.filter(genres__name__icontains=genre)
+                queryset = queryset.filter(genres__id=genre).distinct()
 
-            if director:
-                queryset = queryset.filter(director__name__icontains=director)
-
-            if rating_min:
+            if year_from:
                 try:
-                    rating = validate_rating(rating_min)
-                    queryset = queryset.filter(reviews__rating__gte=rating).distinct()
-                except ValidationError:
-                    # If rating is invalid, ignore the filter
-                    pass
-
-            if year_min:
-                try:
-                    year = int(year_min)
+                    year = int(year_from)
                     if 1888 <= year <= 2030:  # Reasonable year range
                         queryset = queryset.filter(release_year__gte=year)
                 except (ValueError, TypeError):
                     # If year is invalid, ignore the filter
                     pass
 
-            if year_max:
+            if year_to:
                 try:
-                    year = int(year_max)
+                    year = int(year_to)
                     if 1888 <= year <= 2030:  # Reasonable year range
                         queryset = queryset.filter(release_year__lte=year)
                 except (ValueError, TypeError):
                     # If year is invalid, ignore the filter
                     pass
 
-            return queryset.order_by("-release_year", "title")
+            if rating_min:
+                try:
+                    rating = float(rating_min)
+                    if 0 <= rating <= 10:
+                        queryset = queryset.filter(imdb_rating__gte=rating)
+                except (ValueError, TypeError):
+                    # If rating is invalid, ignore the filter
+                    pass
+
+            if has_rating == "yes":
+                queryset = queryset.filter(imdb_rating__isnull=False)
+            elif has_rating == "no":
+                queryset = queryset.filter(imdb_rating__isnull=True)
+
+            if has_poster == "yes":
+                queryset = queryset.exclude(poster="")
+            elif has_poster == "no":
+                queryset = queryset.filter(poster="")
+
+            # Apply sorting with proper NULL handling
+            if sort_by:
+                if sort_by in ['-imdb_rating', 'imdb_rating']:
+                    # For rating sorting, put NULL values last
+                    if sort_by == '-imdb_rating':
+                        queryset = queryset.order_by(F('imdb_rating').desc(nulls_last=True))
+                    else:
+                        queryset = queryset.order_by(F('imdb_rating').asc(nulls_last=True))
+                else:
+                    queryset = queryset.order_by(sort_by)
+            else:
+                # Default sorting
+                queryset = queryset.order_by("-release_year", "title")
+
+            return queryset
         except Exception as e:
             messages.error(self.request, f"Error filtering movies: {e}")
             return Movie.objects.none()
@@ -167,20 +195,36 @@ class MovieListView(ListView):
 
             # Create search form with sanitized data
             search_data = {
-                "title": sanitize_input(self.request.GET.get("title", "")),
-                "genre": sanitize_input(self.request.GET.get("genre", "")),
-                "director": sanitize_input(self.request.GET.get("director", "")),
+                "query": sanitize_input(self.request.GET.get("query", "")),
+                "genre": self.request.GET.get("genre", ""),  # Changed to single genre selection
+                "year_from": self.request.GET.get("year_from", ""),
+                "year_to": self.request.GET.get("year_to", ""),
                 "rating_min": self.request.GET.get("rating_min", ""),
-                "year_min": self.request.GET.get("year_min", ""),
-                "year_max": self.request.GET.get("year_max", ""),
+                "sort_by": self.request.GET.get("sort_by", ""),
+                "has_rating": self.request.GET.get("has_rating", ""),
+                "has_poster": self.request.GET.get("has_poster", ""),
             }
 
             context["search_form"] = MovieSearchForm(data=search_data)
+            
+            # Get genre name for active filters display
+            genre_id = self.request.GET.get("genre")
+            if genre_id:
+                from .models import Genre
+                try:
+                    genre = Genre.objects.get(id=genre_id)
+                    context["selected_genre_name"] = genre.name
+                except Genre.DoesNotExist:
+                    context["selected_genre_name"] = None
+            else:
+                context["selected_genre_name"] = None
+                
             return context
         except Exception as e:
             messages.error(self.request, f"Error loading search form: {e}")
             context = super().get_context_data(**kwargs)
             context["search_form"] = MovieSearchForm()
+            context["selected_genre_name"] = None
             return context
 
 

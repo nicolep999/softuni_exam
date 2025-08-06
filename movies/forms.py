@@ -177,3 +177,45 @@ class MovieSearchForm(forms.Form):
         required=False,
         widget=forms.NumberInput(attrs={"class": "form-input", "placeholder": "To year"}),
     )
+    rating_min = forms.ChoiceField(
+        choices=[
+            ('', 'Any Rating'),
+            ('9.0', '9.0+ (Excellent)'),
+            ('8.0', '8.0+ (Very Good)'),
+            ('7.0', '7.0+ (Good)'),
+            ('6.0', '6.0+ (Above Average)'),
+            ('5.0', '5.0+ (Average)'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={"class": "form-input"}),
+    )
+    sort_by = forms.ChoiceField(
+        choices=[
+            ('title', 'Title (A-Z)'),
+            ('-title', 'Title (Z-A)'),
+            ('-release_year', 'Newest First'),
+            ('release_year', 'Oldest First'),
+            ('-imdb_rating', 'Highest Rated'),
+            ('imdb_rating', 'Lowest Rated'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={"class": "form-input"}),
+    )
+    has_rating = forms.ChoiceField(
+        choices=[
+            ('', 'All Movies'),
+            ('yes', 'Has IMDB Rating'),
+            ('no', 'No IMDB Rating'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={"class": "form-input"}),
+    )
+    has_poster = forms.ChoiceField(
+        choices=[
+            ('', 'All Movies'),
+            ('yes', 'Has Poster'),
+            ('no', 'No Poster'),
+        ],
+        required=False,
+        widget=forms.Select(attrs={"class": "form-input"}),
+    )
