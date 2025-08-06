@@ -62,12 +62,12 @@ class HomeView(TemplateView):
             context = super().get_context_data(**kwargs)
 
             # Get latest movies - use release_date for accurate sorting
-            latest_movies = Movie.objects.order_by("-release_date")[:6]
+            latest_movies = Movie.objects.order_by("-release_date")[:5]
 
             # Get top rated movies - use IMDB rating instead of user reviews
             top_rated_movies = Movie.objects.exclude(imdb_rating__isnull=True).order_by(
                 "-imdb_rating"
-            )[:6]
+            )[:5]
 
             # Get movie statistics - optimized queries
             from reviews.models import Review
