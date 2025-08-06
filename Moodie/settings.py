@@ -69,7 +69,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "Moodie.security.SecurityMiddleware",  # Custom security middleware
+    # "Moodie.security.SecurityMiddleware",  # Custom security middleware - temporarily disabled
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -210,7 +210,29 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_SAVE_EVERY_REQUEST = False
+SESSION_SAVE_EVERY_REQUEST = True  # Changed to True for debugging
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Debug session issues
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.contrib.sessions': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django.contrib.auth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Security settings for production
 if not DEBUG:
@@ -226,8 +248,8 @@ if not DEBUG:
     
     # Session security - temporarily disabled to fix login issues
     # Railway provides HTTPS, but let's be more flexible
-    SESSION_COOKIE_SECURE = True  
-    CSRF_COOKIE_SECURE = True     
+    SESSION_COOKIE_SECURE = False  # Temporarily disabled for testing
+    CSRF_COOKIE_SECURE = False     # Temporarily disabled for testing
     
     # If you're still having issues, temporarily disable secure cookies:
     # SESSION_COOKIE_SECURE = False
