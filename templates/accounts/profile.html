@@ -16,8 +16,8 @@
                 <div class="flex flex-col md:flex-row items-center gap-6 relative z-10">
                     <!-- Avatar -->
                     <div class="relative group">
-                        {% if profile.avatar %}
-                            <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" 
+                                        {% if profile.avatar %}
+                    <img src="{% static profile.avatar %}" alt="{{ profile.user.username }}" 
                                  class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-xl group-hover:scale-105 transition-all duration-300">
                         {% else %}
                             <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center border-4 border-white shadow-xl group-hover:scale-105 transition-all duration-300">

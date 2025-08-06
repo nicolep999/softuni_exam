@@ -43,8 +43,8 @@
                         {% for movie in movies %}
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="px-6 py-4">
-                                {% if movie.poster %}
-                                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="w-16 h-24 object-cover rounded-lg shadow-sm">
+                                                        {% if movie.poster %}
+                            <img src="{% static movie.poster %}" alt="{{ movie.title }}" class="w-16 h-24 object-cover rounded-lg shadow-sm">
                                 {% else %}
                                     <div class="w-16 h-24 bg-slate-200 rounded-lg flex items-center justify-center">
                                         <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

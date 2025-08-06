@@ -75,7 +75,7 @@
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
                         <div class="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
                             {% if movie.poster %}
-                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" 
+                                <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
                                      class="w-full h-48 sm:h-64 md:h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
                             {% else %}
                                 <div class="w-full h-48 sm:h-64 md:h-80 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
@@ -166,7 +166,7 @@
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
                         <div class="relative overflow-hidden rounded-xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
                             {% if movie.poster %}
-                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" 
+                                <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
                                      class="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-500">
                             {% else %}
                                 <div class="w-full h-80 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">

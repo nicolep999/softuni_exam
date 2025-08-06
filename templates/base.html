@@ -64,8 +64,8 @@
                     {% if user.is_authenticated %}
                         <div class="relative group">
                             <button class="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 font-medium transition-colors duration-200">
-                                {% if user.profile.avatar %}
-                                    <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" 
+                                                        {% if user.profile.avatar %}
+                            <img src="{% static user.profile.avatar %}" alt="{{ user.username }}" 
                                          class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
                                 {% else %}
                                     <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center">

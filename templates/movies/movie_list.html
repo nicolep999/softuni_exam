@@ -388,8 +388,8 @@
                     <a href="{% url 'movies:movie_detail' movie.id %}" class="block">
                         <!-- Movie Poster -->
                         <div class="relative overflow-hidden">
-                            {% if movie.poster %}
-                                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" 
+                                                    {% if movie.poster %}
+                            <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
                                      class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700">
                             {% else %}
                                 <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
