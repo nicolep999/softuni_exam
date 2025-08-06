@@ -165,11 +165,11 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Media files configuration
-MEDIA_URL = "/media/"
+# Media files configuration - now served from static
+MEDIA_URL = "/static/media/"
 
-# Use media directory for both development and production
-MEDIA_ROOT = BASE_DIR / "media"
+# Media files are now in static directory
+MEDIA_ROOT = BASE_DIR / "staticfiles" / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
