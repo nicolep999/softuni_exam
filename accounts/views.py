@@ -12,7 +12,7 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import get_user_model, logout, login
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.db import transaction, IntegrityError
 from django.http import Http404
@@ -178,7 +178,11 @@ class RegisterView(CreateView):
             with transaction.atomic():
                 user = form.save()
                 # Profile is automatically created by signal
-            messages.success(self.request, "Account created successfully! You can now log in.")
+                
+                # Automatically log in the user after successful registration
+                login(self.request, user)
+                
+            messages.success(self.request, f"Account created successfully! Welcome, {user.username}!")
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             messages.error(self.request, f"Error creating account: {e}")

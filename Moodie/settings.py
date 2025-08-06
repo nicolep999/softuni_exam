@@ -224,10 +224,10 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     
-    # Session security - check if we're on Railway
+    # Session security - temporarily disabled to fix login issues
     # Railway provides HTTPS, but let's be more flexible
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True  
+    CSRF_COOKIE_SECURE = True     
     
     # If you're still having issues, temporarily disable secure cookies:
     # SESSION_COOKIE_SECURE = False

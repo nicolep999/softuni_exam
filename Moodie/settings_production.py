@@ -136,9 +136,9 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Session security - Railway provides HTTPS
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Session security - temporarily disabled to fix login issues
+SESSION_COOKIE_SECURE = False  # Temporarily disabled
+CSRF_COOKIE_SECURE = False     # Temporarily disabled
 
 # Logging
 LOGGING = {
