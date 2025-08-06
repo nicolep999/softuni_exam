@@ -29,6 +29,10 @@ SECRET_KEY = "django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#x
 # TMDB API Configuration
 TMDB_API_KEY = env("TMDB_API_KEY", default=None)
 
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME = env("CLOUDINARY_CLOUD_NAME", default=None)
+CLOUDINARY_API_KEY = env("CLOUDINARY_API_KEY", default=None)
+CLOUDINARY_API_SECRET = env("CLOUDINARY_API_SECRET", default=None)
 
 ALLOWED_HOSTS = []
 DEBUG = True
@@ -45,6 +49,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ] + CUSTOM_APPS
+
+# Add Cloudinary storage if credentials are provided
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    INSTALLED_APPS.append("cloudinary_storage")
 
 
 MIDDLEWARE = [
@@ -81,17 +89,39 @@ WSGI_APPLICATION = "Moodie.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Try to use PostgreSQL if available, fallback to SQLite
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": env("DB_NAME"),
-        "USER": env("DB_USER"),
-        "PASSWORD": env("DB_PASSWORD"),
-        "HOST": env("DB_HOST", default="localhost"),
-        "PORT": env("DB_PORT", default="5432"),
+# Try to use Railway's DATABASE_URL first, then fallback to individual variables
+import dj_database_url
+
+# Check if we're in production (Railway provides DATABASE_URL)
+if env("DATABASE_URL", default=None):
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=env("DATABASE_URL"),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    # Local development with individual database variables
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": env("DB_NAME", default="moodie_db"),
+            "USER": env("DB_USER", default="postgres"),
+            "PASSWORD": env("DB_PASSWORD", default=""),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="5432"),
+        }
+    }
+
+    # Fallback to SQLite if PostgreSQL credentials are not available
+    if not env("DB_NAME", default=None):
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": BASE_DIR / "db.sqlite3",
+            }
+        }
 
 
 # Password validation
@@ -134,9 +164,18 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Media files
+# Media files configuration
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Cloudinary storage configuration (if credentials are provided)
+if CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+        'API_KEY': CLOUDINARY_API_KEY,
+        'API_SECRET': CLOUDINARY_API_SECRET,
+    }
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
