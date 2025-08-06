@@ -58,55 +58,22 @@ class HomeView(TemplateView):
     template_name = "movies/home.html"
 
     def get_context_data(self, **kwargs):
-        try:
-            # Debug session and authentication
-            print(f"DEBUG: HomeView - User authenticated: {self.request.user.is_authenticated}")
-            print(f"DEBUG: HomeView - Session key: {self.request.session.session_key}")
-            print(f"DEBUG: HomeView - Session data: {dict(self.request.session.items())}")
-            print(f"DEBUG: HomeView - User ID: {self.request.user.id if self.request.user.is_authenticated else None}")
-            print(f"DEBUG: HomeView - Username: {self.request.user.username if self.request.user.is_authenticated else None}")
-            
-            context = super().get_context_data(**kwargs)
-
-            # Get latest movies - use release_date for accurate sorting
-            latest_movies = Movie.objects.order_by("-release_date")[:5]
-
-            # Get top rated movies - use IMDB rating instead of user reviews
-            top_rated_movies = Movie.objects.exclude(imdb_rating__isnull=True).order_by(
-                "-imdb_rating"
-            )[:5]
-
-            # Get movie statistics - optimized queries
-            from reviews.models import Review
-
-            total_movies = Movie.objects.count()
-            total_genres = Genre.objects.count()
-            total_reviews = Review.objects.count()
-
-            context.update(
-                {
-                    "latest_movies": latest_movies,
-                    "top_rated_movies": top_rated_movies,
-                    "total_movies": total_movies,
-                    "total_genres": total_genres,
-                    "total_reviews": total_reviews,
-                }
-            )
-            return context
-        except Exception as e:
-            messages.error(self.request, f"Error loading home page data: {e}")
-            # Return empty context to prevent crashes
-            context = super().get_context_data(**kwargs)
-            context.update(
-                {
-                    "latest_movies": [],
-                    "top_rated_movies": [],
-                    "total_movies": 0,
-                    "total_genres": 0,
-                    "total_reviews": 0,
-                }
-            )
-            return context
+        context = super().get_context_data(**kwargs)
+        
+        # Get featured movies (latest releases)
+        context["featured_movies"] = Movie.objects.filter(
+            release_year__isnull=False
+        ).order_by("-release_year", "title")[:6]
+        
+        # Get popular genres
+        context["popular_genres"] = Genre.objects.all()[:8]
+        
+        # Get latest reviews
+        context["latest_reviews"] = Review.objects.select_related(
+            "user", "movie"
+        ).order_by("-created_at")[:5]
+        
+        return context
 
 
 class MovieListView(ListView):

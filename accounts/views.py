@@ -18,7 +18,6 @@ from django.db import transaction, IntegrityError
 from django.http import Http404
 from django.utils.html import strip_tags
 import re
-from django.conf import settings
 
 from .forms import (
     CustomUserCreationForm,
@@ -165,17 +164,6 @@ class RegisterView(CreateView):
 
     def form_valid(self, form):
         try:
-            print(f"DEBUG: Starting registration process")
-            print(f"DEBUG: User authenticated before registration: {self.request.user.is_authenticated}")
-            print(f"DEBUG: Session key before registration: {self.request.session.session_key}")
-            print(f"DEBUG: Session modified flag: {self.request.session.modified}")
-            
-            # Force session creation if it doesn't exist
-            if not self.request.session.session_key:
-                print(f"DEBUG: No session key found, creating session...")
-                self.request.session.create()
-                print(f"DEBUG: New session key: {self.request.session.session_key}")
-            
             # Sanitize form data before saving (only non-None values)
             cleaned_data = form.cleaned_data
             if cleaned_data.get("username"):
@@ -189,31 +177,12 @@ class RegisterView(CreateView):
 
             with transaction.atomic():
                 user = form.save()
-                print(f"DEBUG: User created successfully: {user.username} (ID: {user.id})")
                 # Profile is automatically created by signal
                 
                 # Automatically log in the user after successful registration
-                print(f"DEBUG: Attempting to log in user {user.username}")
                 login(self.request, user)
-                print(f"DEBUG: Login successful for user {user.username}")
-                print(f"DEBUG: User authenticated after login: {self.request.user.is_authenticated}")
-                print(f"DEBUG: User ID after login: {self.request.user.id}")
-                print(f"DEBUG: Session key after login: {self.request.session.session_key}")
-                print(f"DEBUG: Session modified flag after login: {self.request.session.modified}")
-                
-                # Force session save
-                print(f"DEBUG: Forcing session save...")
-                self.request.session.save()
-                print(f"DEBUG: Session key after save: {self.request.session.session_key}")
-                print(f"DEBUG: Session data after save: {dict(self.request.session.items())}")
                 
             messages.success(self.request, f"Account created successfully! Welcome, {user.username}!")
-            
-            # Debug the redirect process
-            print(f"DEBUG: About to redirect to: {self.success_url}")
-            print(f"DEBUG: Final session key before redirect: {self.request.session.session_key}")
-            print(f"DEBUG: Final session data before redirect: {dict(self.request.session.items())}")
-            print(f"DEBUG: Final user authenticated before redirect: {self.request.user.is_authenticated}")
             
             # Force session save and ensure it's marked as modified
             self.request.session.modified = True
@@ -225,6 +194,7 @@ class RegisterView(CreateView):
             
             # Ensure the session cookie is set in the response
             if self.request.session.session_key:
+                from django.conf import settings
                 response.set_cookie(
                     settings.SESSION_COOKIE_NAME,
                     self.request.session.session_key,
@@ -234,22 +204,16 @@ class RegisterView(CreateView):
                     httponly=settings.SESSION_COOKIE_HTTPONLY,
                     samesite=settings.SESSION_COOKIE_SAMESITE,
                 )
-                print(f"DEBUG: Set session cookie in response: {self.request.session.session_key}")
             
             return response
         except (ValidationError, IntegrityError) as e:
-            print(f"DEBUG: Error during registration: {e}")
             messages.error(self.request, f"Error creating account: {e}")
             return self.form_invalid(form)
         except Exception as e:
-            print(f"DEBUG: Unexpected error during registration: {e}")
-            import traceback
-            print(f"DEBUG: Traceback: {traceback.format_exc()}")
             messages.error(self.request, f"An unexpected error occurred: {e}")
             return self.form_invalid(form)
 
     def form_invalid(self, form):
-        print(f"DEBUG: Form validation failed: {form.errors}")
         messages.error(self.request, "Please correct the errors below.")
         return super().form_invalid(form)
 
@@ -270,36 +234,6 @@ class LogoutView(View):
         logout(request)
         messages.success(request, "You have been logged out successfully.")
         return redirect("movies:home")
-
-
-class SessionTestView(View):
-    """Simple view to test session and authentication"""
-    def get(self, request):
-        print(f"DEBUG: SessionTestView - User authenticated: {request.user.is_authenticated}")
-        print(f"DEBUG: SessionTestView - Session key: {request.session.session_key}")
-        print(f"DEBUG: SessionTestView - Session data: {dict(request.session.items())}")
-        print(f"DEBUG: SessionTestView - Session modified: {request.session.modified}")
-        
-        # Try to create session if it doesn't exist
-        if not request.session.session_key:
-            print(f"DEBUG: SessionTestView - Creating new session...")
-            request.session.create()
-            print(f"DEBUG: SessionTestView - New session key: {request.session.session_key}")
-        
-        # Test session functionality
-        print(f"DEBUG: SessionTestView - Testing session write...")
-        request.session['test_key'] = 'test_value'
-        request.session.save()
-        print(f"DEBUG: SessionTestView - Session data after write: {dict(request.session.items())}")
-        
-        context = {
-            'is_authenticated': request.user.is_authenticated,
-            'user_id': request.user.id if request.user.is_authenticated else None,
-            'username': request.user.username if request.user.is_authenticated else None,
-            'session_key': request.session.session_key,
-            'session_data': dict(request.session.items()),
-        }
-        return render(request, "accounts/session_test.html", context)
 
 
 class ProfileView(LoginRequiredMixin, DetailView):

@@ -213,7 +213,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_SAVE_EVERY_REQUEST = True  # Changed to True for debugging
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# Debug session issues
+# Logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -222,15 +222,9 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
-    'loggers': {
-        'django.contrib.sessions': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
-        'django.contrib.auth': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
     },
 }
 
