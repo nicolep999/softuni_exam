@@ -1,0 +1,10 @@
+# Don't ignore media files - we need them for deployment
+# Only ignore unnecessary files
+*.pyc
+__pycache__/
+.env
+.git/
+.gitignore
+README.md
+*.log
+.DS_Store 

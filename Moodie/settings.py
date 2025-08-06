@@ -168,10 +168,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Media files configuration
 MEDIA_URL = "/media/"
 
-# Use Railway volume for media in production, local media for development
+# In production, serve media files from static directory
 if env("DATABASE_URL", default=None):
-    # Production: Use Railway volume
-    MEDIA_ROOT = Path("/app/media")
+    # Production: Use static files directory for media
+    MEDIA_ROOT = BASE_DIR / "staticfiles" / "media"
 else:
     # Development: Use local media directory
     MEDIA_ROOT = BASE_DIR / "media"
