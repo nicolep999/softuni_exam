@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 import environ
+import dj_database_url
 
 env = environ.Env(DEBUG=(bool, False))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -81,49 +82,53 @@ WSGI_APPLICATION = "Moodie.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Try to use Railway's DATABASE_URL first, then fallback to individual variables
-import dj_database_url
 
 # Check if we're in production (Railway provides DATABASE_URL)
 database_url = env("DATABASE_URL", default=None)
+
 if database_url:
+    # Try to use Railway's DATABASE_URL (production)
     try:
         DATABASES = {
-            "default": dj_database_url.config(
-                default=database_url,
+            "default": dj_database_url.parse(
+                database_url,
                 conn_max_age=600,
                 conn_health_checks=True,
             )
         }
     except Exception:
-        # Fallback to SQLite if DATABASE_URL is invalid
-        DATABASES = {
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": BASE_DIR / "db.sqlite3",
-            }
-        }
+        # If DATABASE_URL is malformed, fallback to local config
+        DATABASES = None
 else:
-    # Local development with individual database variables
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": env("DB_NAME", default="moodie_db"),
-            "USER": env("DB_USER", default="postgres"),
-            "PASSWORD": env("DB_PASSWORD", default=""),
-            "HOST": env("DB_HOST", default="localhost"),
-            "PORT": env("DB_PORT", default="5432"),
-        }
-    }
+    DATABASES = None
 
-    # Fallback to SQLite if PostgreSQL credentials are not available
-    if not env("DB_NAME", default=None):
+# If DATABASES not set by above, try local env vars
+if not DATABASES:
+    db_name = env("DB_NAME", default=None)
+    db_user = env("DB_USER", default=None)
+    db_password = env("DB_PASSWORD", default=None)
+    db_host = env("DB_HOST", default=None)
+    db_port = env("DB_PORT", default=None)
+
+    if db_name and db_user and db_password and db_host and db_port:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": db_name,
+                "USER": db_user,
+                "PASSWORD": db_password,
+                "HOST": db_host,
+                "PORT": db_port,
+            }
+        }
+    else:
+        # Fallback to SQLite if no proper DB env vars
         DATABASES = {
             "default": {
                 "ENGINE": "django.db.backends.sqlite3",
                 "NAME": BASE_DIR / "db.sqlite3",
             }
         }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
