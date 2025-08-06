@@ -18,6 +18,7 @@ from django.db import transaction, IntegrityError
 from django.http import Http404
 from django.utils.html import strip_tags
 import re
+from django.conf import settings
 
 from .forms import (
     CustomUserCreationForm,
@@ -214,7 +215,28 @@ class RegisterView(CreateView):
             print(f"DEBUG: Final session data before redirect: {dict(self.request.session.items())}")
             print(f"DEBUG: Final user authenticated before redirect: {self.request.user.is_authenticated}")
             
-            return super().form_valid(form)
+            # Force session save and ensure it's marked as modified
+            self.request.session.modified = True
+            self.request.session.save()
+            
+            # Use a custom redirect to ensure session persistence
+            from django.http import HttpResponseRedirect
+            response = HttpResponseRedirect(self.success_url)
+            
+            # Ensure the session cookie is set in the response
+            if self.request.session.session_key:
+                response.set_cookie(
+                    settings.SESSION_COOKIE_NAME,
+                    self.request.session.session_key,
+                    max_age=settings.SESSION_COOKIE_AGE,
+                    domain=settings.SESSION_COOKIE_DOMAIN,
+                    secure=settings.SESSION_COOKIE_SECURE,
+                    httponly=settings.SESSION_COOKIE_HTTPONLY,
+                    samesite=settings.SESSION_COOKIE_SAMESITE,
+                )
+                print(f"DEBUG: Set session cookie in response: {self.request.session.session_key}")
+            
+            return response
         except (ValidationError, IntegrityError) as e:
             print(f"DEBUG: Error during registration: {e}")
             messages.error(self.request, f"Error creating account: {e}")
