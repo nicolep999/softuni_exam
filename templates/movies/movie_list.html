@@ -43,36 +43,23 @@
 <div class="container mx-auto px-4 py-8">
     <!-- Modern Search Form -->
     <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden mb-12">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-white">
-            <div class="flex items-center space-x-4">
-                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-2xl font-bold mb-2">Find Your Perfect Movie</h2>
-                    <p class="text-indigo-100">Use our advanced filters to discover exactly what you're looking for</p>
-                </div>
-            </div>
-        </div>
-        
-        <form method="get" action="{% url 'movies:movie_list' %}" class="space-y-6">
+        <form method="get" action="{% url 'movies:movie_list' %}" class="p-8 space-y-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <div>
-                    <label for="id_query" class="block text-sm font-semibold text-gray-700 mb-2">Search Movies</label>
-                    <div class="relative">
+                    <label for="id_query" class="block text-sm font-semibold text-gray-700 mb-3">Search Movies</label>
+                    <div class="relative group">
                         <input type="text" name="query" id="id_query" value="{{ search_form.query.value|default:'' }}" 
-                               class="form-input pl-10" placeholder="Enter movie title...">
-                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="w-full px-4 py-3 pl-12 pr-4 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 placeholder-gray-400 text-gray-900 bg-white hover:border-gray-300" 
+                               placeholder="Enter movie title, director, or actor...">
+                        <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
                 </div>
                 
                 <div>
-                    <label for="id_genre" class="block text-sm font-semibold text-gray-700 mb-2">Genre</label>
-                    <select name="genre" id="id_genre" class="form-input">
+                    <label for="id_genre" class="block text-sm font-semibold text-gray-700 mb-3">Genre</label>
+                    <select name="genre" id="id_genre" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="">All Genres</option>
                         {% for value, label in search_form.genre.field.choices %}
                             {% if value %}
@@ -83,8 +70,8 @@
                 </div>
                 
                 <div>
-                    <label for="id_year_from" class="block text-sm font-semibold text-gray-700 mb-2">Year From</label>
-                    <select name="year_from" id="id_year_from" class="form-input">
+                    <label for="id_year_from" class="block text-sm font-semibold text-gray-700 mb-3">Year From</label>
+                    <select name="year_from" id="id_year_from" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="">Any Year</option>
                         <option value="2024" {% if search_form.year_from.value == "2024" %}selected{% endif %}>2024</option>
                         <option value="2023" {% if search_form.year_from.value == "2023" %}selected{% endif %}>2023</option>
@@ -165,8 +152,8 @@
                 </div>
                 
                 <div>
-                    <label for="id_year_to" class="block text-sm font-semibold text-gray-700 mb-2">Year To</label>
-                    <select name="year_to" id="id_year_to" class="form-input">
+                    <label for="id_year_to" class="block text-sm font-semibold text-gray-700 mb-3">Year To</label>
+                    <select name="year_to" id="id_year_to" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="">Any Year</option>
                         <option value="2024" {% if search_form.year_to.value == "2024" %}selected{% endif %}>2024</option>
                         <option value="2023" {% if search_form.year_to.value == "2023" %}selected{% endif %}>2023</option>
@@ -250,8 +237,8 @@
             <!-- Additional Filters Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
-                    <label for="id_rating_min" class="block text-sm font-semibold text-gray-700 mb-2">Min IMDB Rating</label>
-                    <select name="rating_min" id="id_rating_min" class="form-input">
+                    <label for="id_rating_min" class="block text-sm font-semibold text-gray-700 mb-3">Min IMDB Rating</label>
+                    <select name="rating_min" id="id_rating_min" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="">Any Rating</option>
                         <option value="9.0" {% if request.GET.rating_min == "9.0" %}selected{% endif %}>9.0+ (Excellent)</option>
                         <option value="8.0" {% if request.GET.rating_min == "8.0" %}selected{% endif %}>8.0+ (Very Good)</option>
@@ -262,8 +249,8 @@
                 </div>
                 
                 <div>
-                    <label for="id_sort_by" class="block text-sm font-semibold text-gray-700 mb-2">Sort By</label>
-                    <select name="sort_by" id="id_sort_by" class="form-input">
+                    <label for="id_sort_by" class="block text-sm font-semibold text-gray-700 mb-3">Sort By</label>
+                    <select name="sort_by" id="id_sort_by" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="title" {% if request.GET.sort_by == "title" %}selected{% endif %}>Title (A-Z)</option>
                         <option value="-title" {% if request.GET.sort_by == "-title" %}selected{% endif %}>Title (Z-A)</option>
                         <option value="-release_year" {% if request.GET.sort_by == "-release_year" %}selected{% endif %}>Newest First</option>
@@ -274,8 +261,8 @@
                 </div>
                 
                 <div>
-                    <label for="id_has_rating" class="block text-sm font-semibold text-gray-700 mb-2">Rating Filter</label>
-                    <select name="has_rating" id="id_has_rating" class="form-input">
+                    <label for="id_has_rating" class="block text-sm font-semibold text-gray-700 mb-3">Rating Filter</label>
+                    <select name="has_rating" id="id_has_rating" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="" {% if request.GET.has_rating == "" %}selected{% endif %}>All Movies</option>
                         <option value="yes" {% if request.GET.has_rating == "yes" %}selected{% endif %}>Has IMDB Rating</option>
                         <option value="no" {% if request.GET.has_rating == "no" %}selected{% endif %}>No IMDB Rating</option>
@@ -283,8 +270,8 @@
                 </div>
                 
                 <div>
-                    <label for="id_has_poster" class="block text-sm font-semibold text-gray-700 mb-2">Poster Filter</label>
-                    <select name="has_poster" id="id_has_poster" class="form-input">
+                    <label for="id_has_poster" class="block text-sm font-semibold text-gray-700 mb-3">Poster Filter</label>
+                    <select name="has_poster" id="id_has_poster" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-900 bg-white hover:border-gray-300">
                         <option value="" {% if request.GET.has_poster == "" %}selected{% endif %}>All Movies</option>
                         <option value="yes" {% if request.GET.has_poster == "yes" %}selected{% endif %}>Has Poster</option>
                         <option value="no" {% if request.GET.has_poster == "no" %}selected{% endif %}>No Poster</option>
@@ -364,8 +351,8 @@
                 {% endif %}
                 
                 <!-- Search Button -->
-                <div class="flex justify-center">
-                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center group relative overflow-hidden">
+                <div class="flex justify-center pt-4">
+                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-12 py-4 rounded-2xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center group relative overflow-hidden border-0 focus:outline-none focus:ring-4 focus:ring-indigo-200">
                         <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                         <svg class="w-6 h-6 mr-3 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
