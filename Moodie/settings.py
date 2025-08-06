@@ -166,7 +166,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media files configuration
-MEDIA_URL = "/media/"
+MEDIA_URL = "/static/media/"
 
 # In production, serve media files from static directory
 if env("DATABASE_URL", default=None):
