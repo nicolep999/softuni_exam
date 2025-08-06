@@ -31,7 +31,7 @@ SECRET_KEY = "django-insecure-+mqyl2zz83xe8tle31jzyy$c3jtonur%m%5*^5g#ci-n$dtf#3
 TMDB_API_KEY = env("TMDB_API_KEY", default=None)
 
 ALLOWED_HOSTS = []
-DEBUG = False
+DEBUG = True
 
 # Application definition
 CUSTOM_APPS = ["movies", "reviews", "accounts"]
