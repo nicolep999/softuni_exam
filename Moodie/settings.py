@@ -163,13 +163,13 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media files configuration - now served from static
-MEDIA_URL = "/static/media/"
+# # Media files configuration - now served from static
+# MEDIA_URL = "/static/"
 
 # Media files are now in static directory
-MEDIA_ROOT = BASE_DIR / "static" / "media"
+# MEDIA_ROOT = BASE_DIR / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
