@@ -207,6 +207,13 @@ class RegisterView(CreateView):
                 print(f"DEBUG: Session data after save: {dict(self.request.session.items())}")
                 
             messages.success(self.request, f"Account created successfully! Welcome, {user.username}!")
+            
+            # Debug the redirect process
+            print(f"DEBUG: About to redirect to: {self.success_url}")
+            print(f"DEBUG: Final session key before redirect: {self.request.session.session_key}")
+            print(f"DEBUG: Final session data before redirect: {dict(self.request.session.items())}")
+            print(f"DEBUG: Final user authenticated before redirect: {self.request.user.is_authenticated}")
+            
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
             print(f"DEBUG: Error during registration: {e}")

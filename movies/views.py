@@ -59,6 +59,13 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         try:
+            # Debug session and authentication
+            print(f"DEBUG: HomeView - User authenticated: {self.request.user.is_authenticated}")
+            print(f"DEBUG: HomeView - Session key: {self.request.session.session_key}")
+            print(f"DEBUG: HomeView - Session data: {dict(self.request.session.items())}")
+            print(f"DEBUG: HomeView - User ID: {self.request.user.id if self.request.user.is_authenticated else None}")
+            print(f"DEBUG: HomeView - Username: {self.request.user.username if self.request.user.is_authenticated else None}")
+            
             context = super().get_context_data(**kwargs)
 
             # Get latest movies - use release_date for accurate sorting
