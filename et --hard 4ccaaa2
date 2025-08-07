@@ -1,5 +1,0 @@
-[33m5a48741[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m cloudinary setup
-[33mf59dd29[m cloudinary setup
-[33m4ccaaa2[m fix health check issues - disable SSL redirect and increase timeout
-[33md68b42c[m fix NameError in admin.py exception handling
-[33m23d7bb9[m fix manage.py and asgi.py to use production settings on Railway
