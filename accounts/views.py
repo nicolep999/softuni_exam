@@ -107,6 +107,13 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         try:
+            # Handle photo deletion
+            if hasattr(self.model, 'photo') and self.request.POST.get('delete_photo') == 'true':
+                if form.instance.photo:
+                    # Delete the file from storage
+                    form.instance.photo.delete(save=False)
+                    form.instance.photo = None
+
             # Sanitize form data
             for field_name, field_value in form.cleaned_data.items():
                 if isinstance(field_value, str):
