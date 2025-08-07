@@ -609,7 +609,8 @@
                             {% if movie.poster %}
                                 <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
                                      class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-                                     loading="lazy">
+                                     loading="lazy"
+                                     onerror="this.src='{{ movie.poster.url }}'; this.onerror=null;">
                             {% else %}
                                 <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                     <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -709,7 +710,8 @@
                             {% if movie.poster %}
                                 <img src="{% static movie.poster %}" alt="{{ movie.title }}" 
                                      class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
-                                     loading="lazy">
+                                     loading="lazy"
+                                     onerror="this.src='{{ movie.poster.url }}'; this.onerror=null;">
                             {% else %}
                                 <div class="w-full h-80 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                     <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

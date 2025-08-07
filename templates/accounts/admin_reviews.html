@@ -110,8 +110,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         {% if review.movie.poster %}
-                                            <img class="w-10 h-14 object-cover rounded-lg mr-3" src="{% static review.movie.poster %}" alt="{{ review.movie.title }}"
-                                                 onerror="this.src='{{ review.movie.poster.url }}'; this.onerror=null;">
+                                                                    <img class="w-10 h-14 object-cover rounded-lg mr-3" src="{% static review.movie.poster %}" alt="{{ review.movie.title }}"
+                             onerror="this.src='{{ review.movie.poster.url }}'; this.onerror=null;">
                                         {% endif %}
                                         <div>
                                             <div class="text-sm font-medium text-slate-900">{{ review.movie.title }}</div>

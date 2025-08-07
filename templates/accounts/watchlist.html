@@ -42,7 +42,8 @@
                         <!-- Movie Poster -->
                         <div class="relative">
                             {% if watchlist_item.movie.poster %}
-                                <img src="{% static watchlist_item.movie.poster %}" 
+                                <img src="{% static watchlist_item.movie.poster %}"
+                             onerror="this.src='{{ watchlist_item.movie.poster.url }}'; this.onerror=null;" 
                                      alt="{{ watchlist_item.movie.title }}" 
                                      class="w-full h-64 object-cover"
                                      onerror="this.src='{{ watchlist_item.movie.poster.url }}'; this.onerror=null;">

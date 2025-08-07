@@ -40,7 +40,8 @@
                                 {% if genre.poster %}
                                     <img src="{% static genre.poster %}" 
                                          alt="{{ genre.name }}" 
-                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-20">
+                                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-20"
+                                         onerror="this.src='{{ genre.poster }}'; this.onerror=null;">
                                 {% endif %}
                                 
                                 <!-- Content Overlay -->
