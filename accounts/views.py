@@ -498,7 +498,22 @@ class AdminReviewListView(AdminListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["total_reviews"] = self.get_queryset().count()
+        from reviews.models import Review
+        from movies.models import Movie
+        from django.contrib.auth import get_user_model
+        
+        User = get_user_model()
+        
+        # Calculate stats
+        total_reviews = Review.objects.count()
+        active_users = User.objects.filter(reviews__isnull=False).distinct().count()
+        movies_reviewed = Movie.objects.filter(reviews__isnull=False).distinct().count()
+        
+        context["stats"] = {
+            "total_reviews": total_reviews,
+            "active_users": active_users,
+            "movies_reviewed": movies_reviewed,
+        }
         return context
 
 
