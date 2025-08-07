@@ -1,43 +1,41 @@
-{% extends 'base.html' %}
+{% extends 'accounts/admin_confirm_delete_base.html' %}
 {% load static %}
 
-{% block title %}Delete {{ movie.title }} - Moodie{% endblock %}
-
-{% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6 text-red-600">Delete Movie</h1>
-        
-        <div class="mb-6">
-            <p class="text-lg mb-4">Are you sure you want to delete the movie "{{ movie.title }}" ({{ movie.release_year }})?</p>
-            <p class="text-gray-600">This action cannot be undone. All reviews associated with this movie will also be deleted.</p>
-        </div>
-        
-        <div class="flex items-center p-4 bg-gray-100 rounded-lg mb-6">
-            {% if movie.poster %}
-                <img src="{% static movie.poster %}" alt="{{ movie.title }}" class="h-24 w-auto mr-4 rounded"
-                     onerror="this.src='{{ movie.poster.url }}'; this.onerror=null;">
+{% block object_details %}
+<div class="bg-slate-50 rounded-xl p-6 mb-6">
+    <div class="flex items-start space-x-4">
+        <div class="flex-shrink-0">
+            {% if object.poster %}
+                <img src="{% static object.poster %}" alt="{{ object.title }}" class="w-12 h-12 rounded-lg object-cover">
             {% else %}
-                <div class="h-24 w-16 bg-gray-300 flex items-center justify-center rounded mr-4">
-                    <span class="text-gray-500 text-xs">No Image</span>
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                    </svg>
                 </div>
             {% endif %}
-            <div>
-                <h2 class="font-bold">{{ movie.title }}</h2>
-                <p class="text-gray-600">{{ movie.release_year }}</p>
-                <p class="text-sm text-gray-600">
-                    {% for genre in movie.genres.all %}
-                        {% if not forloop.first %}, {% endif %}{{ genre.name }}
-                    {% endfor %}
-                </p>
+        </div>
+        <div class="flex-1 min-w-0">
+            <h3 class="text-lg font-semibold text-slate-800">{{ object.title }}</h3>
+            {% if object.description %}
+                <p class="text-slate-600 mt-1 line-clamp-2">{{ object.description|truncatewords:20 }}</p>
+            {% endif %}
+            <div class="mt-2 text-sm text-slate-500">
+                {% if object.release_year %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
+                        {{ object.release_year }}
+                    </span>
+                {% endif %}
+                {% if object.director %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+                        {{ object.director.name }}
+                    </span>
+                {% endif %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    {{ object.reviews.count }} reviews
+                </span>
             </div>
         </div>
-        
-        <form method="post" class="flex justify-end space-x-4">
-            {% csrf_token %}
-            <a href="{% url 'movies:movie_detail' movie.id %}" class="btn-secondary">Cancel</a>
-            <button type="submit" class="btn-danger">Delete Movie</button>
-        </form>
     </div>
 </div>
 {% endblock %}

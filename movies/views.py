@@ -351,6 +351,13 @@ class MovieDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user.is_staff
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["model_name"] = "Movie"
+        context["model_name_plural"] = "Movies"
+        context["back_url"] = reverse_lazy("movies:movie_detail", kwargs={"pk": self.get_object().pk})
+        return context
+
     def delete(self, request, *args, **kwargs):
         try:
             movie = self.get_object()
