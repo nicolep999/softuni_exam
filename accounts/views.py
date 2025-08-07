@@ -96,6 +96,9 @@ class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_create"] = True
+        context["model_name"] = self.model.__name__
+        context["model_name_plural"] = self.model.__name__ + "s"
+        context["back_url"] = self.success_url
         return context
 
 
@@ -127,6 +130,9 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_update"] = True
+        context["model_name"] = self.model.__name__
+        context["model_name_plural"] = self.model.__name__ + "s"
+        context["back_url"] = self.success_url
         return context
 
 
@@ -153,6 +159,9 @@ class AdminDeleteView(AdminPermissionMixin, LoginRequiredMixin, DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_delete"] = True
+        context["model_name"] = self.model.__name__
+        context["model_name_plural"] = self.model.__name__ + "s"
+        context["back_url"] = self.success_url
         return context
 
 
