@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ profile_user.username }}'s Reviews - Moodie{% endblock %}
 
@@ -68,7 +69,8 @@
                     <!-- Movie Preview -->
                     <div class="mt-6 p-4 bg-gray-100 rounded-lg flex items-center">
                         {% if review.movie.poster %}
-                            <img src="{{ review.movie.poster.url }}" alt="{{ review.movie.title }}" class="h-20 w-auto mr-4 rounded">
+                            <img src="{% static review.movie.poster %}" alt="{{ review.movie.title }}" class="h-20 w-auto mr-4 rounded"
+                                 onerror="this.src='{{ review.movie.poster.url }}'; this.onerror=null;">
                         {% else %}
                             <div class="h-20 w-14 bg-gray-300 flex items-center justify-center rounded mr-4">
                                 <span class="text-gray-500 text-xs">No Image</span>

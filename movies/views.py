@@ -237,11 +237,15 @@ class MovieDetailView(DetailView):
             if self.request.user.is_authenticated:
                 user_review = movie.reviews.filter(user=self.request.user).first()
 
+            # Get all reviews for the movie
+            reviews = movie.reviews.select_related('user').order_by('-created_at')
+
             context.update(
                 {
                     "related_movies": related_movies,
                     "in_watchlist": in_watchlist,
                     "user_review": user_review,
+                    "reviews": reviews,
                 }
             )
             return context

@@ -232,7 +232,11 @@ class MovieReviewsListView(ListView):
         try:
             # Validate and sanitize movie_id
             movie_id = validate_movie_id(self.kwargs.get("movie_id"))
-            self.movie = get_object_or_404(Movie, id=movie_id)
+            # Load movie with all related fields to ensure poster is available
+            self.movie = get_object_or_404(
+                Movie.objects.select_related('director').prefetch_related('genres', 'actors'), 
+                id=movie_id
+            )
             return Review.objects.filter(movie=self.movie).select_related("user")
         except (ValidationError, Http404) as e:
             messages.error(self.request, f"Invalid movie ID: {e}")
@@ -244,7 +248,19 @@ class MovieReviewsListView(ListView):
     def get_context_data(self, **kwargs):
         try:
             context = super().get_context_data(**kwargs)
-            context["movie"] = self.movie
+            
+            # Ensure movie is properly loaded with all fields
+            if hasattr(self, 'movie') and self.movie:
+                # Refresh the movie object to ensure all fields are loaded
+                self.movie.refresh_from_db()
+                context["movie"] = self.movie
+            else:
+                # Fallback: load movie again if not available
+                movie_id = validate_movie_id(self.kwargs.get("movie_id"))
+                context["movie"] = get_object_or_404(
+                    Movie.objects.select_related('director').prefetch_related('genres', 'actors'), 
+                    id=movie_id
+                )
 
             # Add comment form if user is authenticated
             if self.request.user.is_authenticated:

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}My Watchlist - Moodie{% endblock %}
 
@@ -41,9 +42,10 @@
                         <!-- Movie Poster -->
                         <div class="relative">
                             {% if watchlist_item.movie.poster %}
-                                <img src="{{ watchlist_item.movie.poster.url }}" 
+                                <img src="{% static watchlist_item.movie.poster %}" 
                                      alt="{{ watchlist_item.movie.title }}" 
-                                     class="w-full h-64 object-cover">
+                                     class="w-full h-64 object-cover"
+                                     onerror="this.src='{{ watchlist_item.movie.poster.url }}'; this.onerror=null;">
                             {% else %}
                                 <div class="w-full h-64 bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
                                     <svg class="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     {% if form.instance.pk %}Edit Movie: {{ form.instance.title }}{% else %}Add New Movie{% endif %} - Moodie
@@ -154,7 +155,8 @@
                             {% if form.instance.poster %}
                                 <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ form.instance.poster.url }}" alt="{{ form.instance.title }}" class="h-24 w-auto rounded-xl shadow-sm">
+                                        <img src="{% static form.instance.poster %}" alt="{{ form.instance.title }}" class="h-24 w-auto rounded-xl shadow-sm"
+                                             onerror="this.src='{{ form.instance.poster.url }}'; this.onerror=null;">
                                         <div>
                                             <p class="text-sm font-medium text-slate-900">Current poster</p>
                                             <p class="text-sm text-slate-500">Upload a new image to replace it</p>
