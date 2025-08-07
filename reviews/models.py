@@ -27,6 +27,14 @@ class Review(models.Model):
     class Meta:
         unique_together = ("movie", "user")
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=['movie', 'created_at']),
+            models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['rating']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['movie', 'rating']),
+            models.Index(fields=['user', 'rating']),
+        ]
 
 
 class Comment(models.Model):
@@ -40,3 +48,8 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ["created_at"]
+        indexes = [
+            models.Index(fields=['review', 'created_at']),
+            models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['created_at']),
+        ]

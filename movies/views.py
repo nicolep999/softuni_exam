@@ -61,22 +61,28 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get latest movies (most recent releases)
-        context["latest_movies"] = Movie.objects.filter(
+        # Get latest movies (most recent releases) with optimized queries
+        context["latest_movies"] = Movie.objects.select_related('director').prefetch_related(
+            'genres', 'actors'
+        ).filter(
             release_date__isnull=False
         ).order_by("-release_date", "title")[:5]
         
-        # Get top rated movies (highest IMDB ratings)
-        context["top_rated_movies"] = Movie.objects.filter(
+        # Get top rated movies (highest IMDB ratings) with optimized queries
+        context["top_rated_movies"] = Movie.objects.select_related('director').prefetch_related(
+            'genres', 'actors'
+        ).filter(
             imdb_rating__isnull=False
         ).order_by("-imdb_rating", "title")[:5]
         
         # Get popular genres
         context["popular_genres"] = Genre.objects.all()[:8]
         
-        # Get latest reviews
+        # Get latest reviews with optimized queries
         context["latest_reviews"] = Review.objects.select_related(
-            "user", "movie"
+            "user", "movie", "movie__director"
+        ).prefetch_related(
+            "movie__genres", "movie__actors"
         ).order_by("-created_at")[:5]
         
         return context
@@ -90,7 +96,10 @@ class MovieListView(ListView):
 
     def get_queryset(self):
         try:
-            queryset = Movie.objects.all()
+            # Start with optimized base queryset
+            queryset = Movie.objects.select_related('director').prefetch_related(
+                'genres', 'actors'
+            )
 
             # Get search parameters and sanitize them
             query = sanitize_input(self.request.GET.get("query", ""))
@@ -213,14 +222,24 @@ class MovieDetailView(DetailView):
     template_name = "movies/movie_detail.html"
     context_object_name = "movie"
 
+    def get_queryset(self):
+        # Optimize the base queryset for movie detail view
+        return Movie.objects.select_related('director').prefetch_related(
+            'genres', 'actors', 'reviews__user'
+        )
+
     def get_context_data(self, **kwargs):
         try:
             context = super().get_context_data(**kwargs)
             movie = self.get_object()
 
-            # Get related movies (same genre or director)
+            # Get related movies (same genre or director) with optimized queries
             related_movies = (
-                Movie.objects.filter(Q(genres__in=movie.genres.all()) | Q(director=movie.director))
+                Movie.objects.select_related('director').prefetch_related(
+                    'genres', 'actors'
+                ).filter(
+                    Q(genres__in=movie.genres.all()) | Q(director=movie.director)
+                )
                 .exclude(id=movie.id)
                 .distinct()[:6]
             )
@@ -237,8 +256,8 @@ class MovieDetailView(DetailView):
             if self.request.user.is_authenticated:
                 user_review = movie.reviews.filter(user=self.request.user).first()
 
-            # Get all reviews for the movie
-            reviews = movie.reviews.select_related('user').order_by('-created_at')
+            # Get all reviews for the movie (already prefetched in get_queryset)
+            reviews = movie.reviews.all().order_by('-created_at')
 
             context.update(
                 {
@@ -363,7 +382,10 @@ class GenreDetailView(DetailView):
         try:
             context = super().get_context_data(**kwargs)
             genre = self.get_object()
-            context["movies"] = genre.movies.all()
+            # Optimize movies query with select_related and prefetch_related
+            context["movies"] = genre.movies.select_related('director').prefetch_related(
+                'genres', 'actors'
+            ).all()
             return context
         except Exception as e:
             messages.error(self.request, f"Error loading genre details: {e}")

@@ -286,7 +286,11 @@ class UserReviewsListView(ListView):
             # Validate and sanitize user_id
             user_id = validate_user_id(self.kwargs.get("user_id"))
             self.user = get_object_or_404(User, id=user_id)
-            return Review.objects.filter(user=self.user).select_related("movie")
+            return Review.objects.filter(user=self.user).select_related(
+                "movie", "movie__director"
+            ).prefetch_related(
+                "movie__genres", "movie__actors"
+            )
         except (ValidationError, Http404) as e:
             messages.error(self.request, f"Invalid user ID: {e}")
             raise Http404("User not found")

@@ -348,7 +348,11 @@ class WatchlistView(LoginRequiredMixin, ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return Watchlist.objects.filter(user=self.request.user).select_related("movie")
+        return Watchlist.objects.filter(user=self.request.user).select_related(
+            "movie", "movie__director"
+        ).prefetch_related(
+            "movie__genres", "movie__actors"
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -401,7 +405,9 @@ class AdminMovieListView(AdminListView):
     def get_queryset(self):
         from movies.models import Movie
 
-        return Movie.objects.all().order_by("-release_year", "title")
+        return Movie.objects.select_related('director').prefetch_related(
+            'genres', 'actors'
+        ).order_by("-release_year", "title")
 
 
 class AdminGenreListView(AdminListView):
@@ -480,18 +486,14 @@ class AdminReviewListView(AdminListView):
     def get_queryset(self):
         from reviews.models import Review
 
-        return Review.objects.all().select_related("user", "movie").order_by("-created_at")
+        return Review.objects.select_related("user", "movie", "movie__director").prefetch_related(
+            "movie__genres", "movie__actors"
+        ).order_by("-created_at")
 
     def get_context_data(self, **kwargs):
-        try:
-            context = super().get_context_data(**kwargs)
-            context["total_reviews"] = self.get_queryset().count()
-            return context
-        except Exception as e:
-            messages.error(self.request, f"Error loading review statistics: {e}")
-            context = super().get_context_data(**kwargs)
-            context["total_reviews"] = 0
-            return context
+        context = super().get_context_data(**kwargs)
+        context["total_reviews"] = self.get_queryset().count()
+        return context
 
 
 class AdminUserListView(AdminListView):

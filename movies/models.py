@@ -73,6 +73,16 @@ class Movie(models.Model):
 
     class Meta:
         ordering = ["-release_year", "title"]
+        indexes = [
+            models.Index(fields=['release_year']),
+            models.Index(fields=['release_date']),
+            models.Index(fields=['imdb_rating']),
+            models.Index(fields=['title']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['release_year', 'title']),
+            models.Index(fields=['release_date', 'title']),
+            models.Index(fields=['imdb_rating', 'title']),
+        ]
 
     def average_rating(self):
         reviews = self.reviews.all()
@@ -100,14 +110,13 @@ class Movie(models.Model):
 
     @classmethod
     def get_classic_movies(cls, limit=10):
-        """Get classic movies (highly rated older movies)"""
+        """Get classic movies (older than 20 years)"""
         from datetime import date
 
-        # Movies older than 20 years with high ratings
-        cutoff_date = date.today().replace(year=date.today().year - 20)
+        classic_year = date.today().year - 20
         return (
-            cls.objects.filter(release_date__lt=cutoff_date, imdb_rating__gte=8.0)
-            .exclude(release_date__isnull=True, imdb_rating__isnull=True)
+            cls.objects.filter(release_year__lt=classic_year)
+            .exclude(imdb_rating__isnull=True)
             .order_by("-imdb_rating")[:limit]
         )
 
@@ -118,8 +127,12 @@ class Watchlist(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username}'s watchlist: {self.movie.title}"
+        return f"{self.user.username} - {self.movie.title}"
 
     class Meta:
         unique_together = ("user", "movie")
         ordering = ["-added_at"]
+        indexes = [
+            models.Index(fields=['user', 'added_at']),
+            models.Index(fields=['movie', 'added_at']),
+        ]
