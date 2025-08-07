@@ -70,8 +70,8 @@
                         {% for actor in actors %}
                         <tr class="hover:bg-slate-50 transition-colors">
                             <td class="px-6 py-4">
-                                                        {% if actor.photo %}
-                            <img src="{% static actor.photo %}" alt="{{ actor.name }}" class="w-12 h-12 object-cover rounded-lg shadow-sm">
+                                {% if actor.photo %}
+                                    <img src="{% static actor.photo %}" alt="{{ actor.name }}" class="w-12 h-12 object-cover rounded-lg shadow-sm">
                                 {% else %}
                                     <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
                                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

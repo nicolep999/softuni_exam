@@ -1,4 +1,5 @@
 {% extends 'accounts/admin_form_base.html' %}
+{% load static %}
 
 {% block form_fields %}
 <!-- Name Field -->
@@ -90,7 +91,7 @@
                 </button>
             </div>
             <div class="flex items-center space-x-4">
-                <img src="{{ object.photo.url }}" 
+                <img src="{% static object.photo %}" 
                      alt="{{ object.name }}" 
                      class="w-20 h-20 object-cover rounded-lg shadow-sm">
                 <div class="flex-1">

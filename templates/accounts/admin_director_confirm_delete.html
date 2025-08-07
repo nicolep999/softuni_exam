@@ -1,11 +1,12 @@
 {% extends 'accounts/admin_confirm_delete_base.html' %}
+{% load static %}
 
 {% block object_details %}
 <div class="bg-slate-50 rounded-xl p-6 mb-6">
     <div class="flex items-start space-x-4">
         <div class="flex-shrink-0">
             {% if object.photo %}
-                <img src="{{ object.photo.url }}" alt="{{ object.name }}" class="w-12 h-12 rounded-lg object-cover">
+                <img src="{% static object.photo %}" alt="{{ object.name }}" class="w-12 h-12 rounded-lg object-cover">
             {% else %}
                 <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

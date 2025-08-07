@@ -109,10 +109,16 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
         try:
             # Handle photo deletion
             if hasattr(self.model, 'photo') and self.request.POST.get('delete_photo') == 'true':
-                if form.instance.photo:
-                    # Delete the file from storage
-                    form.instance.photo.delete(save=False)
-                    form.instance.photo = None
+                # Since photos are stored in static directory, just set to None
+                form.instance.photo = None
+            else:
+                # If no new photo is uploaded and no deletion is requested, preserve the existing photo
+                if hasattr(self.model, 'photo') and 'photo' in form.fields:
+                    # Get the current instance to preserve existing photo
+                    current_instance = self.get_object()
+                    if not form.cleaned_data.get('photo') and current_instance.photo:
+                        # No new photo uploaded, preserve the existing one
+                        form.instance.photo = current_instance.photo
 
             # Sanitize form data
             for field_name, field_value in form.cleaned_data.items():
