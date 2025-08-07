@@ -55,6 +55,13 @@ def run_command(command, description):
 
 def run_django_tests(test_path=None, verbosity=2, parallel=None, coverage=False):
     """Run Django tests with specified options."""
+    # First, try to clean up any existing test databases
+    try:
+        subprocess.run(["python", "cleanup_test_db.py"], 
+                      shell=True, capture_output=True, text=True, timeout=10)
+    except:
+        pass  # Ignore cleanup errors
+    
     command_parts = ["python", "manage.py", "test"]
 
     if test_path:
@@ -66,8 +73,8 @@ def run_django_tests(test_path=None, verbosity=2, parallel=None, coverage=False)
     if parallel:
         command_parts.extend(["--parallel", str(parallel)])
 
-    # Add quiet flag to suppress expected permission denied messages
-    command_parts.append("--verbosity=1")
+    # Add flags to automatically handle test database cleanup without prompting
+    command_parts.extend(["--verbosity=1", "--noinput"])
 
     command = " ".join(command_parts)
     return run_command(command, "Django Tests")
