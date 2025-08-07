@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -9,13 +9,12 @@ from django.views.generic import (
     TemplateView,
     View,
 )
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout, login
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.exceptions import ValidationError
 from django.db import transaction, IntegrityError
-from django.http import Http404
 from django.utils.html import strip_tags
 import re
 
@@ -80,7 +79,7 @@ class AdminCreateView(AdminPermissionMixin, LoginRequiredMixin, CreateView):
                     form.instance.__dict__[field_name] = sanitize_input(field_value)
 
             with transaction.atomic():
-                obj = form.save()
+                form.save()
             messages.success(self.request, f"{self.model.__name__} was created successfully.")
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
@@ -111,7 +110,7 @@ class AdminUpdateView(AdminPermissionMixin, LoginRequiredMixin, UpdateView):
                     form.instance.__dict__[field_name] = sanitize_input(field_value)
 
             with transaction.atomic():
-                obj = form.save()
+                form.save()
             messages.success(self.request, f"{self.model.__name__} was updated successfully.")
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:

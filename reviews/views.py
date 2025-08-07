@@ -4,13 +4,13 @@ from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.exceptions import ValidationError
 from django.db import transaction, IntegrityError
 from django.http import Http404
 from django.utils.html import strip_tags
 import re
 
-from .models import Review, Comment
+from .models import Review
 from .forms import ReviewForm, CommentForm
 from movies.models import Movie
 
@@ -103,7 +103,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
             form.instance.content = sanitize_input(form.cleaned_data.get("content"))
 
             with transaction.atomic():
-                review = form.save()
+                form.save()
             messages.success(self.request, "Your review has been posted successfully.")
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
@@ -169,7 +169,7 @@ class ReviewUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             form.instance.content = sanitize_input(form.cleaned_data.get("content"))
 
             with transaction.atomic():
-                review = form.save()
+                form.save()
             messages.success(self.request, "Your review has been updated successfully.")
             return super().form_valid(form)
         except (ValidationError, IntegrityError) as e:
@@ -210,7 +210,6 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         try:
             review = self.get_object()
-            movie_id = review.movie.id
             with transaction.atomic():
                 review.delete()
             messages.success(request, "Review has been deleted successfully.")

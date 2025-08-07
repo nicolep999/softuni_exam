@@ -69,7 +69,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # "Moodie.security.SecurityMiddleware",  # Custom security middleware - temporarily disabled
+    "Moodie.security.SecurityMiddleware",  # Custom security middleware
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -240,14 +240,10 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     
-    # Session security - temporarily disabled to fix login issues
-    # Railway provides HTTPS, but let's be more flexible
-    SESSION_COOKIE_SECURE = False  # Temporarily disabled for testing
-    CSRF_COOKIE_SECURE = False     # Temporarily disabled for testing
-    
-    # If you're still having issues, temporarily disable secure cookies:
-    # SESSION_COOKIE_SECURE = False
-    # CSRF_COOKIE_SECURE = False
+    # Session security - enabled for production
+    # Railway provides HTTPS, so we can enable secure cookies
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 else:
     # In development, don't require secure cookies
     SESSION_COOKIE_SECURE = False

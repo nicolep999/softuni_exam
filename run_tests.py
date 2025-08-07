@@ -18,15 +18,37 @@ def run_command(command, description):
     print(f"{'='*60}")
 
     try:
-        result = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
-        print(result.stdout)
-        if result.stderr:
-            print(f"STDERR: {result.stderr}")
+        # Use real-time output to avoid hanging on Windows
+        result = subprocess.run(
+            command, 
+            shell=True, 
+            check=True, 
+            text=True,
+            encoding='utf-8',
+            errors='ignore',
+            capture_output=True
+        )
+        
+        # Filter out expected permission denied messages for cleaner output
+        output_lines = result.stdout.split('\n')
+        filtered_lines = []
+        
+        for line in output_lines:
+            # Skip expected permission denied messages
+            if any(skip in line for skip in [
+                'Forbidden (Permission denied)',
+                'Forbidden:',
+                'PermissionDenied',
+                'django.core.exceptions.PermissionDenied'
+            ]):
+                continue
+            filtered_lines.append(line)
+        
+        # Print filtered output
+        print('\n'.join(filtered_lines))
         print(f"\n✅ {description} completed successfully!")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"STDOUT: {e.stdout}")
-        print(f"STDERR: {e.stderr}")
         print(f"\n❌ {description} failed with exit code {e.returncode}")
         return False
 
@@ -43,6 +65,9 @@ def run_django_tests(test_path=None, verbosity=2, parallel=None, coverage=False)
 
     if parallel:
         command_parts.extend(["--parallel", str(parallel)])
+
+    # Add quiet flag to suppress expected permission denied messages
+    command_parts.append("--verbosity=1")
 
     command = " ".join(command_parts)
     return run_command(command, "Django Tests")
@@ -85,15 +110,16 @@ def run_linting():
         # Use UTF-8 encoding to avoid Windows encoding issues
         command = "flake8 . --exclude=.venv,__pycache__,migrations --max-line-length=120"
         result = subprocess.run(
-            command, shell=True, capture_output=True, text=True, encoding="utf-8", errors="ignore"
+            command, 
+            shell=True, 
+            text=True, 
+            encoding="utf-8", 
+            errors="ignore"
         )
         if result.returncode == 0:
-            print(result.stdout)
             print(f"\n✅ Code Linting (flake8) completed successfully!")
             return True
         else:
-            print(f"STDOUT: {result.stdout}")
-            print(f"STDERR: {result.stderr}")
             print(f"\n❌ Code Linting (flake8) failed with exit code {result.returncode}")
             return False
     except (ImportError, UnicodeDecodeError, FileNotFoundError):

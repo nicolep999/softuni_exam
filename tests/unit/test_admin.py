@@ -72,7 +72,7 @@ class AdminViewsTest(TestCase):
         """Test admin genre update view."""
         self.client.login(username="staffuser", password="testpass123")
         response = self.client.get(
-            reverse("accounts:admin_genre_edit", kwargs={"pk": self.genre.pk})
+            reverse("accounts:admin_genre_update", kwargs={"pk": self.genre.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/admin_genre_form.html")
@@ -180,7 +180,7 @@ class AdminCRUDTest(TestCase):
 
         # Test update view
         response = self.client.get(
-            reverse("accounts:admin_genre_edit", kwargs={"pk": self.genre.pk})
+            reverse("accounts:admin_genre_update", kwargs={"pk": self.genre.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/admin_genre_form.html")
@@ -208,7 +208,7 @@ class AdminCRUDTest(TestCase):
 
         # Test update view
         response = self.client.get(
-            reverse("accounts:admin_director_edit", kwargs={"pk": self.director.pk})
+            reverse("accounts:admin_director_update", kwargs={"pk": self.director.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/admin_director_form.html")
@@ -236,7 +236,7 @@ class AdminCRUDTest(TestCase):
 
         # Test update view
         response = self.client.get(
-            reverse("accounts:admin_actor_edit", kwargs={"pk": self.actor.pk})
+            reverse("accounts:admin_actor_update", kwargs={"pk": self.actor.pk})
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/admin_actor_form.html")

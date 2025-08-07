@@ -4,6 +4,7 @@ Test data factories for creating test objects.
 
 import factory
 from django.contrib.auth.models import User
+from accounts.models import Profile
 from movies.models import Movie, Genre, Director, Actor, Watchlist
 from reviews.models import Review, Comment
 

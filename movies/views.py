@@ -11,13 +11,13 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.db.models import Q, F
-from django.core.exceptions import ValidationError, PermissionDenied
+from django.core.exceptions import ValidationError
 from django.db import transaction, IntegrityError
 from django.http import Http404
 from django.utils.html import strip_tags
 import re
 
-from .models import Movie, Genre, Director, Actor, Watchlist
+from .models import Movie, Genre, Watchlist
 from .forms import MovieForm, MovieSearchForm
 from reviews.models import Review
 
@@ -105,9 +105,9 @@ class MovieListView(ListView):
             # Apply filters
             if query:
                 queryset = queryset.filter(
-                    Q(title__icontains=query) |
-                    Q(director__name__icontains=query) |
-                    Q(actors__name__icontains=query)
+                    Q(title__icontains=query)
+                    | Q(director__name__icontains=query)
+                    | Q(actors__name__icontains=query)
                 ).distinct()
 
             if genre:

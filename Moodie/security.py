@@ -4,10 +4,9 @@ Security middleware and utilities for parameter tampering protection
 
 import re
 import logging
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.utils.html import strip_tags
 from django.core.exceptions import ValidationError
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
