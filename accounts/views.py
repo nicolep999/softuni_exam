@@ -394,8 +394,21 @@ class AdminGenreListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Genre
+        from django.db.models import Q
 
-        return Genre.objects.all().order_by("name")
+        queryset = Genre.objects.all().order_by("name")
+        
+        # Add search functionality
+        search_query = self.request.GET.get('search', '').strip()
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
 
 
 class AdminDirectorListView(AdminListView):
@@ -404,8 +417,21 @@ class AdminDirectorListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Director
+        from django.db.models import Q
 
-        return Director.objects.all().order_by("name")
+        queryset = Director.objects.all().order_by("name")
+        
+        # Add search functionality
+        search_query = self.request.GET.get('search', '').strip()
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
 
 
 class AdminActorListView(AdminListView):
@@ -414,8 +440,21 @@ class AdminActorListView(AdminListView):
 
     def get_queryset(self):
         from movies.models import Actor
+        from django.db.models import Q
 
-        return Actor.objects.all().order_by("name")
+        queryset = Actor.objects.all().order_by("name")
+        
+        # Add search functionality
+        search_query = self.request.GET.get('search', '').strip()
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
 
 
 class AdminReviewListView(AdminListView):
