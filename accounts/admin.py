@@ -88,7 +88,5 @@ def create_admin_groups():
 
 admin.site.register(User, CustomUserAdmin)
 
-try:
-    create_admin_groups()
-except Exception as e:
-    print(f"Error in admin groups creation: {e}")
+# Remove the automatic group creation to avoid database access during app initialization
+# Groups will be created via management command or signals instead
