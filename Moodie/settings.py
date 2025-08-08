@@ -31,7 +31,7 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-+mqyl2zz83xe8tle31jzyy$c
 TMDB_API_KEY = env("TMDB_API_KEY", default=None)
 
 # Environment-based configuration
-DEBUG = env("DEBUG", default=False)
+DEBUG = env("DEBUG", default=True)  # Default to True for development
 
 # ALLOWED_HOSTS configuration
 if DEBUG:
@@ -228,8 +228,17 @@ LOGGING = {
     },
 }
 
-# Security settings for production
-if not DEBUG:
+# Security settings
+if DEBUG:
+    # Development settings - allow HTTP, no secure cookies
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_BROWSER_XSS_FILTER = False
+    SECURE_CONTENT_TYPE_NOSNIFF = False
+    X_FRAME_OPTIONS = 'SAMEORIGIN'
+else:
+    # Production settings - enforce HTTPS and security
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
@@ -244,7 +253,3 @@ if not DEBUG:
     # Railway provides HTTPS, so we can enable secure cookies
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-else:
-    # In development, don't require secure cookies
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
