@@ -163,6 +163,23 @@ class ReviewViewsTest(TestCase):
         response = self.client.get(reverse("reviews:review_delete", kwargs={"pk": self.review.pk}))
         self.assertEqual(response.status_code, 200)
 
+    def test_review_delete_view_post(self):
+        """Test review delete view POST request (actual deletion)."""
+        self.client.login(username="testuser", password="testpass123")
+
+        # Store movie ID for verification
+        movie_id = self.review.movie.id
+
+        # Perform the deletion
+        response = self.client.post(reverse("reviews:review_delete", kwargs={"pk": self.review.pk}))
+
+        # Should redirect to movie detail page
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("movies:movie_detail", kwargs={"pk": movie_id}))
+
+        # Verify the review was actually deleted
+        self.assertFalse(Review.objects.filter(pk=self.review.pk).exists())
+
 
 class ReviewFormsTest(TestCase):
     """Test review forms functionality."""

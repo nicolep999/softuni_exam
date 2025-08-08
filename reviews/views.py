@@ -196,9 +196,22 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         try:
-            review = self.get_object()
-            # Review owner or staff can delete
-            return self.request.user == review.user or self.request.user.is_staff
+            # Get the review ID from kwargs
+            review_id = self.kwargs.get('pk')
+            if not review_id:
+                return False
+
+            # Get fresh objects from database
+            from django.contrib.auth.models import User
+            user = User.objects.get(id=self.request.user.id)
+            review = Review.objects.get(id=review_id)
+
+            # Check permissions
+            is_owner = user.id == review.user.id
+            is_staff = user.is_staff
+            has_permission = is_owner or is_staff
+
+            return has_permission
         except Exception:
             return False
 
@@ -210,16 +223,33 @@ class ReviewDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         try:
             review = self.get_object()
+            movie_id = review.movie.id  # Store movie ID before deletion
             with transaction.atomic():
                 review.delete()
             messages.success(request, "Review has been deleted successfully.")
-            return super().delete(request, *args, **kwargs)
+            return redirect("movies:movie_detail", pk=movie_id)
         except (ValidationError, IntegrityError) as e:
             messages.error(request, f"Error deleting review: {e}")
-            return redirect("movies:movie_detail", pk=self.get_object().movie.id)
+            # Try to get movie ID safely, fallback to movie list if not possible
+            try:
+                review = self.get_object()
+                return redirect("movies:movie_detail", pk=review.movie.id)
+            except:
+                return redirect("movies:movie_list")
         except Exception as e:
             messages.error(request, f"An unexpected error occurred: {e}")
-            return redirect("movies:movie_detail", pk=self.get_object().movie.id)
+            # Try to get movie ID safely, fallback to movie list if not possible
+            try:
+                review = self.get_object()
+                return redirect("movies:movie_detail", pk=review.movie.id)
+            except:
+                return redirect("movies:movie_list")
+
+    def get_success_url(self):
+        try:
+            return reverse("movies:movie_detail", kwargs={"pk": self.get_object().movie.id})
+        except Exception:
+            return reverse("movies:movie_list")
 
 
 class MovieReviewsListView(ListView):
