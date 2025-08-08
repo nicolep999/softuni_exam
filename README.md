@@ -88,27 +88,17 @@ Admins get access to a custom dashboard for managing users, movies, and reviews.
 Moodie is built with the following tools:
 
 
-- ![Django](https://img.shields.io/badge/Django-092E20?style=flat&logo=django&logoColor=white)
-  **Backend** – Handles core logic and routing.
+**Backend**: Django  
+**Database**: PostgreSQL (production), SQLite (development)  
+**Frontend**: Tailwind CSS, HTML, JavaScript  
+**APIs**: TMDB, OMDb  
+**Deployment**: Railway  
+**Testing**: Django TestCase, Pytest
 
-- ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white)
-  **Database** – PostgreSQL in production, SQLite in development.
+![Django](https://img.shields.io/badge/-Django-05122A?style=flat-square&logo=django&logoColor=green) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-05122A?style=flat-square&logo=postgresql&logoColor=blue) ![SQLite](https://img.shields.io/badge/-SQLite-05122A?style=flat-square&logo=sqlite&logoColor=blue) ![Tailwind CSS](https://img.shields.io/badge/-Tailwind_CSS-05122A?style=flat-square&logo=tailwind-css&logoColor=38B2AC) ![HTML5](https://img.shields.io/badge/-HTML5-05122A?style=flat-square&logo=html5&logoColor=E34F26) ![JavaScript](https://img.shields.io/badge/-JavaScript-05122A?style=flat-square&logo=javascript&logoColor=F7DF1E) ![TMDB](https://img.shields.io/badge/-TMDB-05122A?style=flat-square&logo=themoviedatabase&logoColor=01B4E4) ![OMDb](https://img.shields.io/badge/-OMDb-05122A?style=flat-square&logo=imdb&logoColor=F5DE50) ![Railway](https://img.shields.io/badge/-Railway-05122A?style=flat-square&logo=railway&logoColor=white) ![Pytest](https://img.shields.io/badge/-Pytest-05122A?style=flat-square&logo=pytest&logoColor=blue)
 
-- ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwind-css&logoColor=white)
-  ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
-  ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
-  **Frontend** – Built with Tailwind, HTML, and a bit of JS.
 
-- ![TMDB](https://img.shields.io/badge/TMDB-01B4E4?style=flat&logo=themoviedatabase&logoColor=white)
-  ![OMDb](https://img.shields.io/badge/OMDb-FF4500?style=flat)
-  **External APIs** – Movie data from TMDB, IMDb ratings from OMDb.
 
-- ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=flat&logo=railway&logoColor=white)
-  **Deployment** – Deployed with Railway.
-
-- ![Pytest](https://img.shields.io/badge/Pytest-0A9EDC?style=flat&logo=pytest&logoColor=white)
-  ![Django](https://img.shields.io/badge/Django%20TestCase-092E20?style=flat&logo=django&logoColor=white)
-  **Testing** – Pytest and Django’s built-in testing tools.
 
 ---
 
